@@ -1,49 +1,31 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronLeft, Calendar, Package, User } from "lucide-react"
+import { ArrowLeft, Calendar, Package, User, Tag } from "lucide-react"
 import { format } from "date-fns"
 import type { BookingState } from "./BookingWizard"
 
-export default function StepConfirm({
-  state,
-  onBack,
-  onConfirmed,
-}: {
-  state: BookingState
-  onBack: () => void
-  onConfirmed: (booking: any) => void
+export default function StepConfirm({ state, onBack, onConfirmed }: {
+  state: BookingState; onBack: () => void; onConfirmed: (booking: any) => void
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [discountCode, setDiscountCode] = useState("ONLINE15")
 
-  const subtotal = state.items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)
+  const subtotal = state.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0)
   const discount = discountCode.toUpperCase() === "ONLINE15" ? subtotal * 0.15 : 0
   const total = subtotal - discount
 
   async function handleConfirm() {
     setLoading(true)
     setError("")
-
     const res = await fetch("/api/bookings/public", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        customer: {
-          firstName: state.firstName,
-          lastName: state.lastName,
-          email: state.email,
-          phone: state.phone || undefined,
-        },
-        startDate: state.startDate,
-        endDate: state.endDate,
-        items: state.items.map((i) => ({
-          productId: i.productId,
-          size: i.size || undefined,
-          quantity: i.quantity,
-          unitPrice: i.unitPrice,
-        })),
+        customer: { firstName: state.firstName, lastName: state.lastName, email: state.email, phone: state.phone || undefined },
+        startDate: state.startDate, endDate: state.endDate,
+        items: state.items.map((i) => ({ productId: i.productId, size: i.size || undefined, quantity: i.quantity, unitPrice: i.unitPrice })),
         height: state.height ? parseFloat(state.height) : undefined,
         weight: state.weight ? parseFloat(state.weight) : undefined,
         bootSize: state.bootSize ? parseFloat(state.bootSize) : undefined,
@@ -51,149 +33,140 @@ export default function StepConfirm({
         notes: state.notes || undefined,
       }),
     })
-
     if (!res.ok) {
       setError("Something went wrong. Please try again or call us on (02) 9597 3422.")
       setLoading(false)
       return
     }
-
-    const booking = await res.json()
-    onConfirmed(booking)
+    onConfirmed(await res.json())
   }
 
+  const SectionHeader = ({ icon: Icon, label }: { icon: any; label: string }) => (
+    <div className="flex items-center gap-2 mb-3">
+      <div className="w-7 h-7 bg-sky-50 rounded-lg flex items-center justify-center">
+        <Icon className="h-4 w-4 text-sky-500" />
+      </div>
+      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</p>
+    </div>
+  )
+
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-5">
+      <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Review your booking</h1>
-        <p className="text-gray-500 mt-1">Check everything looks right before confirming.</p>
+        <p className="text-gray-500 text-sm mt-1">Looks good? Confirm and we'll prepare your gear.</p>
       </div>
 
       {/* Dates */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Calendar className="h-4 w-4 text-sky-600" />
-          <h2 className="font-semibold text-gray-900">Rental Period</h2>
-        </div>
-        <div className="flex items-center gap-3 text-sm">
-          <div className="bg-sky-50 rounded-xl px-4 py-2 text-center">
-            <p className="text-xs text-gray-500">Pickup</p>
-            <p className="font-semibold text-gray-900">{format(new Date(state.startDate), "EEE d MMM")}</p>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <SectionHeader icon={Calendar} label="Rental Period" />
+        <div className="flex items-center gap-3">
+          <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pickup</p>
+            <p className="font-bold text-gray-900 text-sm mt-0.5">{format(new Date(state.startDate), "EEE d MMM")}</p>
           </div>
-          <div className="text-gray-400">→</div>
-          <div className="bg-sky-50 rounded-xl px-4 py-2 text-center">
-            <p className="text-xs text-gray-500">Return</p>
-            <p className="font-semibold text-gray-900">{format(new Date(state.endDate), "EEE d MMM")}</p>
+          <div className="text-gray-300 text-xl">→</div>
+          <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-center">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Return</p>
+            <p className="font-bold text-gray-900 text-sm mt-0.5">{format(new Date(state.endDate), "EEE d MMM")}</p>
           </div>
-          <div className="ml-auto text-sky-600 font-medium text-sm">{state.rentalDays} days</div>
+          <div className="bg-sky-50 rounded-xl px-3 py-3 text-center">
+            <p className="text-[10px] font-bold text-sky-500 uppercase tracking-wider">Days</p>
+            <p className="font-bold text-sky-600 text-sm mt-0.5">{state.rentalDays}</p>
+          </div>
         </div>
       </div>
 
       {/* Equipment */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Package className="h-4 w-4 text-sky-600" />
-          <h2 className="font-semibold text-gray-900">Equipment</h2>
-        </div>
-        <div className="space-y-2">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <SectionHeader icon={Package} label="Equipment" />
+        <div className="space-y-2.5">
           {state.items.map((item, i) => (
-            <div key={i} className="flex items-center justify-between text-sm">
+            <div key={i} className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900">{item.productName}</p>
-                {item.size && <p className="text-gray-500 text-xs">Size: {item.size}</p>}
+                <p className="text-sm font-semibold text-gray-900">{item.productName}</p>
+                {item.size && <p className="text-xs text-gray-400 mt-0.5">Size: {item.size}</p>}
               </div>
-              <p className="font-medium text-gray-900">${(item.unitPrice * item.quantity).toFixed(2)}</p>
+              <p className="text-sm font-bold text-gray-900">${(item.unitPrice * item.quantity).toFixed(2)}</p>
             </div>
           ))}
-          <div className="border-t border-gray-100 pt-2 mt-2 space-y-1.5">
+
+          {/* Discount code */}
+          <div className="border-t border-gray-50 pt-3 mt-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Tag className="h-3.5 w-3.5 text-gray-400" />
+              <p className="text-xs font-semibold text-gray-500">Discount code</p>
+            </div>
+            <input
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+              placeholder="Enter code"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all"
+            />
             {discount > 0 && (
-              <>
-                <div className="flex justify-between text-sm text-gray-500">
-                  <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-green-600 font-medium">
-                  <span>Discount (ONLINE15 · 15% off)</span>
-                  <span>−${discount.toFixed(2)}</span>
-                </div>
-              </>
+              <p className="text-xs text-emerald-600 font-semibold mt-1.5">✓ 15% discount applied</p>
             )}
-            <div className="flex justify-between font-bold text-base">
+          </div>
+
+          <div className="border-t border-gray-100 pt-3 space-y-1.5">
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-sm text-emerald-600 font-semibold">
+                <span>Discount (ONLINE15)</span>
+                <span>−${discount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-bold text-base pt-1">
               <span>Total</span>
-              <span className="text-sky-600">${total.toFixed(2)}</span>
+              <span className="text-sky-500">${total.toFixed(2)}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Customer */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <User className="h-4 w-4 text-sky-600" />
-          <h2 className="font-semibold text-gray-900">Your Details</h2>
-        </div>
-        <div className="text-sm space-y-1 text-gray-700">
-          <p className="font-medium">{state.firstName} {state.lastName}</p>
-          <p>{state.email}</p>
-          {state.phone && <p>{state.phone}</p>}
-          {state.skillLevel && (
-            <p className="text-gray-500 capitalize">Skill: {state.skillLevel.toLowerCase()}</p>
-          )}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <SectionHeader icon={User} label="Your Details" />
+        <div className="space-y-1 text-sm">
+          <p className="font-semibold text-gray-900">{state.firstName} {state.lastName}</p>
+          <p className="text-gray-500">{state.email}</p>
+          {state.phone && <p className="text-gray-500">{state.phone}</p>}
+          {state.skillLevel && <p className="text-gray-400 text-xs mt-1 capitalize">Skill level: {state.skillLevel.toLowerCase()}</p>}
         </div>
       </div>
 
-      {/* Discount code */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Discount code</label>
-        <div className="flex gap-2">
-          <input
-            value={discountCode}
-            onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-            placeholder="Enter code"
-            className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono"
-          />
+      {/* Notes */}
+      <div className="flex gap-3 text-sm">
+        <div className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4">
+          <p className="font-semibold text-gray-700 mb-0.5">💳 Pay in store</p>
+          <p className="text-gray-500 text-xs">Cash, card or EFTPOS at pickup. No payment needed to book.</p>
         </div>
-        {discount > 0 && (
-          <p className="text-green-600 text-xs font-medium mt-2">✓ 15% discount applied — you save ${discount.toFixed(2)}</p>
-        )}
-      </div>
-
-      {/* Payment note */}
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-600">
-        <p className="font-medium text-gray-800 mb-1">💳 Payment in store</p>
-        <p>Payment is collected when you pick up your gear. We accept cash, card, and EFTPOS.</p>
-      </div>
-
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm text-amber-800">
-        <p className="font-medium mb-0.5">👨‍👩‍👧 Booking for someone under 18?</p>
-        <p className="text-amber-700">A parent or guardian must be present in store to sign the rental agreement for minors.</p>
+        <div className="flex-1 bg-amber-50 border border-amber-100 rounded-xl p-4">
+          <p className="font-semibold text-amber-800 mb-0.5">👨‍👩‍👧 Under 18?</p>
+          <p className="text-amber-700 text-xs">Parent or guardian must be present at pickup to sign.</p>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-700">
-          {error}
-        </div>
+        <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-600">{error}</div>
       )}
 
-      <div className="flex gap-3">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1 px-5 py-4 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back
+      <div className="flex gap-3 pt-2">
+        <button onClick={onBack} className="px-5 py-4 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+          <ArrowLeft className="h-4 w-4" />
         </button>
         <button
           onClick={handleConfirm}
           disabled={loading}
-          className="flex-1 bg-sky-600 text-white py-4 rounded-xl font-bold text-sm hover:bg-sky-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="flex-1 flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all text-sm shadow-lg shadow-sky-100"
         >
           {loading ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-              Confirming...
-            </>
+            <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Confirming...</>
           ) : (
-            "Confirm Booking"
+            <>Confirm Booking — ${total.toFixed(2)}</>
           )}
         </button>
       </div>
