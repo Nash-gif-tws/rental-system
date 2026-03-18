@@ -17,13 +17,13 @@ import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 
 const nav = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/bookings", label: "Bookings", icon: CalendarDays },
-  { href: "/inventory", label: "Inventory", icon: Package },
-  { href: "/customers", label: "Customers", icon: Users },
-  { href: "/products", label: "Products & Pricing", icon: Wrench },
-  { href: "/reports", label: "Reports", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/bookings", label: "Bookings", icon: CalendarDays },
+  { href: "/admin/inventory", label: "Inventory", icon: Package },
+  { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/products", label: "Products & Pricing", icon: Wrench },
+  { href: "/admin/reports", label: "Reports", icon: BarChart3 },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ]
 
 export default function Sidebar({ user }: { user: any }) {
@@ -69,7 +69,7 @@ export default function Sidebar({ user }: { user: any }) {
             <p className="text-xs text-slate-400 truncate">{user?.email}</p>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: "/admin/login" })}
             className="ml-2 p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
           >
             <LogOut className="h-4 w-4" />

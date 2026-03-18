@@ -71,7 +71,7 @@ export default async function BookingsPage({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
         <Link
-          href="/bookings/new"
+          href="/admin/bookings/new"
           className="flex items-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
@@ -135,7 +135,7 @@ export default async function BookingsPage({
               bookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
-                    <Link href={`/bookings/${booking.id}`} className="text-sky-600 hover:text-sky-700 font-medium">
+                    <Link href={`/admin/bookings/${booking.id}`} className="text-sky-600 hover:text-sky-700 font-medium">
                       {booking.bookingNumber}
                     </Link>
                   </td>

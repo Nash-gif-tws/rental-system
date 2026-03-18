@@ -40,7 +40,7 @@ export default async function BookingDetailPage({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <Link href="/bookings" className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-2">
+          <Link href="/admin/bookings" className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-2">
             <ArrowLeft className="h-4 w-4" /> Back to Bookings
           </Link>
           <div className="flex items-center gap-3">

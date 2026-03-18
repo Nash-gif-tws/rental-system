@@ -111,7 +111,7 @@ export default async function DashboardPage() {
       {/* Today's Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
-          href="/bookings?filter=pickup-today"
+          href="/admin/bookings?filter=pickup-today"
           className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-blue-200 transition-colors group"
         >
           <div className="flex items-center gap-3">
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
         </Link>
 
         <Link
-          href="/bookings?filter=return-today"
+          href="/admin/bookings?filter=return-today"
           className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-green-200 transition-colors"
         >
           <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
         </Link>
 
         <Link
-          href="/bookings?filter=pending"
+          href="/admin/bookings?filter=pending"
           className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-yellow-200 transition-colors"
         >
           <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <h2 className="font-semibold text-gray-900">Recent Bookings</h2>
-          <Link href="/bookings" className="text-sm text-sky-600 hover:text-sky-700 font-medium">
+          <Link href="/admin/bookings" className="text-sm text-sky-600 hover:text-sky-700 font-medium">
             View all →
           </Link>
         </div>

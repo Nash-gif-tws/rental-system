@@ -46,7 +46,7 @@ export default async function InventoryPage({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
         <Link
-          href="/inventory/new"
+          href="/admin/inventory/new"
           className="flex items-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
@@ -58,7 +58,7 @@ export default async function InventoryPage({
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-wrap gap-3">
         <div className="flex gap-2 flex-wrap">
           <Link
-            href="/inventory"
+            href="/admin/inventory"
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               !params.category ? "bg-sky-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
