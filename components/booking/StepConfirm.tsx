@@ -16,8 +16,11 @@ export default function StepConfirm({
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [discountCode, setDiscountCode] = useState("ONLINE15")
 
   const subtotal = state.items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)
+  const discount = discountCode.toUpperCase() === "ONLINE15" ? subtotal * 0.15 : 0
+  const total = subtotal - discount
 
   async function handleConfirm() {
     setLoading(true)
@@ -102,9 +105,23 @@ export default function StepConfirm({
               <p className="font-medium text-gray-900">${(item.unitPrice * item.quantity).toFixed(2)}</p>
             </div>
           ))}
-          <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between font-semibold">
-            <span>Total</span>
-            <span className="text-sky-600">${subtotal.toFixed(2)}</span>
+          <div className="border-t border-gray-100 pt-2 mt-2 space-y-1.5">
+            {discount > 0 && (
+              <>
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Subtotal</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-green-600 font-medium">
+                  <span>Discount (ONLINE15 · 15% off)</span>
+                  <span>−${discount.toFixed(2)}</span>
+                </div>
+              </>
+            )}
+            <div className="flex justify-between font-bold text-base">
+              <span>Total</span>
+              <span className="text-sky-600">${total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -125,10 +142,31 @@ export default function StepConfirm({
         </div>
       </div>
 
+      {/* Discount code */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Discount code</label>
+        <div className="flex gap-2">
+          <input
+            value={discountCode}
+            onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+            placeholder="Enter code"
+            className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono"
+          />
+        </div>
+        {discount > 0 && (
+          <p className="text-green-600 text-xs font-medium mt-2">✓ 15% discount applied — you save ${discount.toFixed(2)}</p>
+        )}
+      </div>
+
       {/* Payment note */}
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-600">
         <p className="font-medium text-gray-800 mb-1">💳 Payment in store</p>
         <p>Payment is collected when you pick up your gear. We accept cash, card, and EFTPOS.</p>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm text-amber-800">
+        <p className="font-medium mb-0.5">👨‍👩‍👧 Booking for someone under 18?</p>
+        <p className="text-amber-700">A parent or guardian must be present in store to sign the rental agreement for minors.</p>
       </div>
 
       {error && (
