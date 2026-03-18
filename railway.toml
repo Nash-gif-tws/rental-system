@@ -3,7 +3,7 @@ builder = "nixpacks"
 
 [deploy]
 startCommand = "npm start"
-preDeployCommand = "npx prisma db push --schema=prisma/schema.prisma"
+preDeployCommand = "npx prisma db push --schema=prisma/schema.prisma && npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 30
 restartPolicyType = "on_failure"
