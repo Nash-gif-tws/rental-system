@@ -1,16 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #0D0D0D;
+  --foreground: #F2EDE4;
+  --ink: #0D0D0D;
+  --cream: #F2EDE4;
+  --gold: #C4973A;
+  --blue: #3A8EE6;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), Impact, sans-serif;
+  }
+  .font-editorial {
+    font-family: var(--font-editorial), Georgia, serif;
+  }
+  .font-body {
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
 }
 
 details > summary {
@@ -22,4 +38,53 @@ details > summary::-webkit-details-marker {
 
 * {
   box-sizing: border-box;
+}
+
+/* Snow fall animation */
+@keyframes snowFall {
+  0% {
+    transform: translateY(-20px) translateX(0px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.75;
+  }
+  88% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) translateX(35px);
+    opacity: 0;
+  }
+}
+
+/* Fade up reveal */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fadeUp 0.8s ease 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fadeUp 0.8s ease 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fadeUp 0.8s ease 0.5s forwards;
+  opacity: 0;
 }
