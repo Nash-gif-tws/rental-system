@@ -20,11 +20,11 @@ export default async function EditUnitPage({
   return (
     <div className="max-w-xl space-y-6">
       <div>
-        <Link href="/admin/inventory" className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-3">
+        <Link href="/admin/inventory" className="flex items-center gap-1 text-sm text-[#B4B4B4] hover:text-white mb-4 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Inventory
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Edit Unit</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{unit.product.name} · {unit.product.category.name}</p>
+        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Edit Unit</h1>
+        <p className="text-sm text-[#B4B4B4] mt-0.5">{unit.product.name} · {unit.product.category.name}</p>
       </div>
       <EditUnitForm unit={unit as any} />
     </div>

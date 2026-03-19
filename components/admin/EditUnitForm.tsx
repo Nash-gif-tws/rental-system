@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation"
 
 const CONDITIONS = ["EXCELLENT", "GOOD", "FAIR", "NEEDS_SERVICE", "RETIRED"] as const
 
-export default function EditUnitForm({ unit }: {
+export default function EditUnitForm({
+  unit,
+}: {
   unit: {
     id: string
     serialNumber: string | null
@@ -27,7 +29,7 @@ export default function EditUnitForm({ unit }: {
     notes: unit.notes ?? "",
   })
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError("")
@@ -47,7 +49,7 @@ export default function EditUnitForm({ unit }: {
   }
 
   async function handleRetire() {
-    if (!confirm("Retire this unit? It will be hidden from inventory.")) return
+    if (!confirm("Retire this unit? It will be hidden from active inventory.")) return
     await fetch(`/api/units/${unit.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -56,50 +58,90 @@ export default function EditUnitForm({ unit }: {
     router.push("/admin/inventory")
   }
 
-  const inputClass = "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-  const labelClass = "block text-sm font-medium text-gray-700 mb-1"
+  const inputClass =
+    "w-full px-3 py-2.5 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+  const labelClass = "block text-xs font-medium text-[#B4B4B4] uppercase tracking-wider mb-1.5"
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-5">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-[#1e1e1e] rounded-xl border border-[#2e2e2e] p-6 space-y-5"
+    >
       <div>
-        <label className={labelClass}>Serial Number <span className="text-gray-400 font-normal">(optional)</span></label>
-        <input className={inputClass} value={form.serialNumber} onChange={(e) => setForm((f) => ({ ...f, serialNumber: e.target.value }))}
-          placeholder="e.g. SKI-2024-001" />
+        <label className={labelClass}>
+          Serial Number{" "}
+          <span className="text-[#555] font-normal normal-case">(optional)</span>
+        </label>
+        <input
+          className={inputClass}
+          value={form.serialNumber}
+          onChange={(e) => setForm((f) => ({ ...f, serialNumber: e.target.value }))}
+          placeholder="e.g. 23267762"
+        />
       </div>
 
       <div>
         <label className={labelClass}>Size</label>
-        <input className={inputClass} value={form.size} onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
-          placeholder="e.g. 160cm, 42 EU, M" />
+        <input
+          className={inputClass}
+          value={form.size}
+          onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
+          placeholder="e.g. 160cm · 27.5 · M · XL"
+        />
       </div>
 
       <div>
         <label className={labelClass}>Condition</label>
-        <select className={inputClass} value={form.condition} onChange={(e) => setForm((f) => ({ ...f, condition: e.target.value }))}>
-          {CONDITIONS.map((c) => <option key={c} value={c}>{c.replace("_", " ")}</option>)}
+        <select
+          className={inputClass}
+          value={form.condition}
+          onChange={(e) => setForm((f) => ({ ...f, condition: e.target.value }))}
+        >
+          {CONDITIONS.map((c) => (
+            <option key={c} value={c}>
+              {c.replace("_", " ")}
+            </option>
+          ))}
         </select>
       </div>
 
       <div>
         <label className={labelClass}>Notes</label>
-        <input className={inputClass} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-          placeholder="Any notes about this unit" />
+        <input
+          className={inputClass}
+          value={form.notes}
+          onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+          placeholder="Any notes about this unit"
+        />
       </div>
 
-      {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+          {error}
+        </p>
+      )}
 
       <div className="flex items-center gap-3 pt-2">
-        <button type="button" onClick={() => router.back()}
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="px-4 py-2.5 border border-[#2e2e2e] rounded-lg text-sm font-medium text-[#B4B4B4] hover:bg-white/5 hover:text-white transition-colors"
+        >
           Cancel
         </button>
-        <button type="submit" disabled={loading}
-          className="flex-1 bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors">
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex-1 bg-[#C8FF00] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+        >
           {loading ? "Saving..." : saved ? "✓ Saved" : "Save Changes"}
         </button>
-        <button type="button" onClick={handleRetire}
-          className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors">
-          Retire Unit
+        <button
+          type="button"
+          onClick={handleRetire}
+          className="px-4 py-2.5 border border-red-500/30 text-red-400 rounded-lg text-sm font-medium hover:bg-red-500/10 transition-colors"
+        >
+          Retire
         </button>
       </div>
     </form>

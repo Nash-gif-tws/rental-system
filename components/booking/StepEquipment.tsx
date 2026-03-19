@@ -1,18 +1,30 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowRight, ArrowLeft, Plus, Minus } from "lucide-react"
+import { ArrowRight, ArrowLeft, ChevronDown } from "lucide-react"
 import type { BookingState, BookingItem } from "./BookingWizard"
 
 type PricingTier = { id: string; label: string; days: number; price: number }
+type SizeOption = { size: string; total: number; available: number }
 type Product = {
-  id: string; name: string; category: string; categorySlug: string
-  isPackage: boolean; available: number; totalUnits: number; pricingTiers: PricingTier[]
+  id: string
+  name: string
+  category: string
+  categorySlug: string
+  isPackage: boolean
+  available: number
+  totalUnits: number
+  hasSizes: boolean
+  sizes: SizeOption[]
+  pricingTiers: PricingTier[]
 }
 
 const CATEGORY_ORDER = ["snowboards", "skis", "boots", "clothing", "accessories"]
 const CATEGORY_EMOJI: Record<string, string> = {
   snowboards: "🏂", skis: "🎿", boots: "🥾", clothing: "🧥", accessories: "🪖"
+}
+const CATEGORY_LABELS: Record<string, string> = {
+  snowboards: "Snowboards", skis: "Skis", boots: "Boots", clothing: "Clothing", accessories: "Accessories"
 }
 
 function getBestPrice(tiers: PricingTier[], days: number): number {
@@ -21,54 +33,126 @@ function getBestPrice(tiers: PricingTier[], days: number): number {
   return sorted.find((t) => t.days <= days)?.price ?? tiers[0].price
 }
 
-export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
-  state: BookingState; onUpdate: (u: Partial<BookingState>) => void
-  onNext: () => void; onBack: () => void
+export default function StepEquipment({
+  state,
+  onUpdate,
+  onNext,
+  onBack,
+}: {
+  state: BookingState
+  onUpdate: (u: Partial<BookingState>) => void
+  onNext: () => void
+  onBack: () => void
 }) {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [sizes, setSizes] = useState<Record<string, string>>({})
+  // Which product is "open" (showing size picker)
+  const [openProductId, setOpenProductId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/availability?start=${state.startDate}&end=${state.endDate}`)
       .then((r) => r.json())
-      .then((data) => { setProducts(data); setLoading(false) })
+      .then((data) => {
+        setProducts(data)
+        setLoading(false)
+      })
   }, [state.startDate, state.endDate])
 
-  function getQty(id: string) { return state.items.find((i) => i.productId === id)?.quantity ?? 0 }
+  function getSelectedItem(productId: string): BookingItem | undefined {
+    return state.items.find((i) => i.productId === productId)
+  }
 
-  function setQty(product: Product, qty: number) {
+  function selectSize(product: Product, size: string) {
     const price = getBestPrice(product.pricingTiers, state.rentalDays)
+    const existing = state.items.find((i) => i.productId === product.id)
     let items: BookingItem[]
-    if (qty === 0) {
-      items = state.items.filter((i) => i.productId !== product.id)
-    } else if (state.items.find((i) => i.productId === product.id)) {
-      items = state.items.map((i) => i.productId === product.id ? { ...i, quantity: qty, unitPrice: price } : i)
+    if (existing) {
+      if (existing.size === size) {
+        // Deselect
+        items = state.items.filter((i) => i.productId !== product.id)
+        setOpenProductId(null)
+      } else {
+        items = state.items.map((i) =>
+          i.productId === product.id ? { ...i, size, unitPrice: price } : i
+        )
+      }
     } else {
-      items = [...state.items, { productId: product.id, productName: product.name, category: product.category, size: sizes[product.id] ?? "", quantity: qty, unitPrice: price }]
+      items = [
+        ...state.items,
+        {
+          productId: product.id,
+          productName: product.name,
+          category: product.category,
+          size,
+          quantity: 1,
+          unitPrice: price,
+        },
+      ]
     }
     onUpdate({ items })
   }
 
-  function updateSize(productId: string, size: string) {
-    setSizes((p) => ({ ...p, [productId]: size }))
-    onUpdate({ items: state.items.map((i) => i.productId === productId ? { ...i, size } : i) })
+  function removeProduct(productId: string) {
+    onUpdate({ items: state.items.filter((i) => i.productId !== productId) })
+    setOpenProductId(null)
+  }
+
+  function toggleProduct(product: Product) {
+    if (!product.hasSizes && product.available > 0) {
+      // No sizes — toggle directly
+      const exists = state.items.find((i) => i.productId === product.id)
+      if (exists) {
+        removeProduct(product.id)
+      } else {
+        const price = getBestPrice(product.pricingTiers, state.rentalDays)
+        onUpdate({
+          items: [
+            ...state.items,
+            {
+              productId: product.id,
+              productName: product.name,
+              category: product.category,
+              size: "",
+              quantity: 1,
+              unitPrice: price,
+            },
+          ],
+        })
+      }
+      return
+    }
+    setOpenProductId((prev) => (prev === product.id ? null : product.id))
   }
 
   const subtotal = state.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0)
-  const grouped = products.reduce((acc, p) => {
-    if (!acc[p.categorySlug]) acc[p.categorySlug] = []
-    acc[p.categorySlug].push(p)
-    return acc
-  }, {} as Record<string, Product[]>)
+  const itemCount = state.items.length
+
+  const grouped = products.reduce(
+    (acc, p) => {
+      if (!acc[p.categorySlug]) acc[p.categorySlug] = []
+      acc[p.categorySlug].push(p)
+      return acc
+    },
+    {} as Record<string, Product[]>
+  )
   const sortedCategories = CATEGORY_ORDER.filter((s) => grouped[s])
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="w-10 h-10 border-2 border-[#C8FF00] border-t-transparent rounded-full animate-spin" />
-      <p className="text-sm text-[#B4B4B4]">Checking availability...</p>
-    </div>
-  )
+  // Validation: all selected items must have a size if the product has sizes
+  const canProceed =
+    itemCount > 0 &&
+    state.items.every((item) => {
+      const product = products.find((p) => p.id === item.productId)
+      return !product?.hasSizes || item.size
+    })
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <div className="w-10 h-10 border-2 border-[#C8FF00] border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-[#B4B4B4]">Checking availability...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -77,9 +161,13 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
           <span className="w-5 h-px bg-[#C8FF00]" />
           <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 2</span>
         </div>
-        <h1 className="font-display text-3xl font-bold text-white leading-tight">Choose your<br />equipment</h1>
+        <h1 className="font-display text-3xl font-bold text-white leading-tight">
+          Choose your
+          <br />
+          equipment
+        </h1>
         <p className="text-[#B4B4B4] text-sm mt-2">
-          Prices shown for your {state.rentalDays}-day rental.
+          Prices shown for your {state.rentalDays}-day rental. Tap a product to select your size.
         </p>
       </div>
 
@@ -88,25 +176,33 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">{CATEGORY_EMOJI[slug]}</span>
             <h2 className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.25em]">
-              {grouped[slug][0].category}
+              {CATEGORY_LABELS[slug] ?? grouped[slug][0].category}
             </h2>
           </div>
           <div className="space-y-2">
             {grouped[slug].map((product) => {
               const price = getBestPrice(product.pricingTiers, state.rentalDays)
-              const qty = getQty(product.id)
+              const selected = getSelectedItem(product.id)
+              const isOpen = openProductId === product.id
               const outOfStock = product.totalUnits > 0 && product.available === 0
 
               return (
                 <div
                   key={product.id}
                   className={`bg-[#1e1e1e] border rounded-xl transition-all duration-200 overflow-hidden ${
-                    qty > 0 ? "border-[#C8FF00]/50"
-                    : outOfStock ? "border-[#2e2e2e] opacity-50"
-                    : "border-[#2e2e2e] hover:border-[#444]"
+                    selected
+                      ? "border-[#C8FF00]/50"
+                      : outOfStock
+                        ? "border-[#2e2e2e] opacity-50"
+                        : "border-[#2e2e2e] hover:border-[#444]"
                   }`}
                 >
-                  <div className="flex items-center justify-between p-4 gap-4">
+                  {/* Product row */}
+                  <button
+                    onClick={() => !outOfStock && toggleProduct(product)}
+                    disabled={outOfStock}
+                    className="w-full flex items-center justify-between p-4 gap-4 text-left"
+                  >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-semibold text-white text-sm">{product.name}</p>
@@ -116,51 +212,88 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                           </span>
                         )}
                       </div>
-                      <p className="text-[#C8FF00] font-bold text-sm mt-0.5">
-                        ${price.toFixed(2)}
-                        <span className="text-[#B4B4B4] font-normal text-xs"> / rental</span>
-                      </p>
+                      <div className="flex items-center gap-3 mt-0.5">
+                        <p className="text-[#C8FF00] font-bold text-sm">
+                          ${price.toFixed(2)}
+                          <span className="text-[#B4B4B4] font-normal text-xs"> / rental</span>
+                        </p>
+                        {selected?.size && (
+                          <span className="text-xs bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 px-2 py-0.5 rounded-full">
+                            {selected.size}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {outOfStock ? (
                       <span className="text-xs text-red-400 font-semibold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg flex-shrink-0">
                         Fully booked
                       </span>
+                    ) : selected ? (
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-[#C8FF00] font-semibold bg-[#C8FF00]/10 border border-[#C8FF00]/20 px-3 py-1.5 rounded-lg">
+                          ✓ Added
+                        </span>
+                        {product.hasSizes && (
+                          <ChevronDown
+                            className={`h-4 w-4 text-[#B4B4B4] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                          />
+                        )}
+                      </div>
                     ) : (
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        {qty > 0 && (
-                          <button
-                            onClick={() => setQty(product, qty - 1)}
-                            className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-                          >
-                            <Minus className="h-3.5 w-3.5 text-white" />
-                          </button>
+                        <span className="text-xs text-[#B4B4B4] bg-white/5 border border-[#2e2e2e] px-3 py-1.5 rounded-lg">
+                          {product.hasSizes ? "Select size" : "Add"}
+                        </span>
+                        {product.hasSizes && (
+                          <ChevronDown
+                            className={`h-4 w-4 text-[#B4B4B4] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                          />
                         )}
-                        {qty > 0 && (
-                          <span className="w-5 text-center font-bold text-white text-sm">{qty}</span>
-                        )}
-                        <button
-                          onClick={() => setQty(product, qty + 1)}
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                            qty > 0
-                              ? "bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212]"
-                              : "bg-white/10 hover:bg-white/20 text-white"
-                          }`}
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                        </button>
                       </div>
                     )}
-                  </div>
+                  </button>
 
-                  {qty > 0 && (
-                    <div className="px-4 pb-4 border-t border-[#C8FF00]/10 pt-3">
-                      <input
-                        placeholder="Size? (e.g. 42 EU boots · 160cm skis · M jacket)"
-                        value={sizes[product.id] ?? ""}
-                        onChange={(e) => updateSize(product.id, e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
-                      />
+                  {/* Size picker — shown when open */}
+                  {isOpen && product.hasSizes && (
+                    <div className="px-4 pb-4 border-t border-[#2a2a2a] pt-3">
+                      <p className="text-xs text-[#B4B4B4] mb-2 uppercase tracking-wider">
+                        Select your size
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {product.sizes.map((sz) => {
+                          const isSelected = selected?.size === sz.size
+                          const unavailable = sz.available === 0
+
+                          return (
+                            <button
+                              key={sz.size}
+                              onClick={() => !unavailable && selectSize(product, sz.size)}
+                              disabled={unavailable}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                                isSelected
+                                  ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
+                                  : unavailable
+                                    ? "bg-white/[0.03] text-[#555] border-[#2a2a2a] line-through cursor-not-allowed"
+                                    : "bg-white/5 text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
+                              }`}
+                            >
+                              {sz.size}
+                              {unavailable && (
+                                <span className="ml-1 text-[10px] opacity-60">×</span>
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {selected && (
+                        <button
+                          onClick={() => removeProduct(product.id)}
+                          className="mt-3 text-xs text-red-400 hover:text-red-300 transition-colors"
+                        >
+                          Remove from cart
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -171,22 +304,41 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
       ))}
 
       {/* Sticky cart */}
-      <div className={`sticky bottom-4 transition-all duration-300 ${subtotal > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
+      <div
+        className={`sticky bottom-4 transition-all duration-300 ${
+          subtotal > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+      >
         <div className="bg-[#1a1a1a] border border-[#C8FF00]/30 rounded-xl p-4 flex items-center justify-between shadow-xl shadow-black/40">
           <div>
-            <p className="text-[#B4B4B4] text-xs">{state.items.length} item{state.items.length !== 1 ? "s" : ""} selected</p>
+            <p className="text-[#B4B4B4] text-xs">
+              {itemCount} item{itemCount !== 1 ? "s" : ""} selected
+            </p>
             <p className="text-white font-bold text-lg">${subtotal.toFixed(2)}</p>
           </div>
           <button
             onClick={onNext}
-            className="flex items-center gap-2 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase"
+            disabled={!canProceed}
+            className={`flex items-center gap-2 font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase ${
+              canProceed
+                ? "bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212]"
+                : "bg-white/10 text-[#555] cursor-not-allowed"
+            }`}
           >
             Continue <ArrowRight className="h-4 w-4" />
           </button>
         </div>
+        {!canProceed && itemCount > 0 && (
+          <p className="text-center text-xs text-[#B4B4B4] mt-2">
+            Please select a size for each item
+          </p>
+        )}
       </div>
 
-      <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to dates
       </button>
     </div>
