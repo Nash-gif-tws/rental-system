@@ -1,0 +1,656 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { Plus, Minus, X, User, Search, ChevronDown, CheckCircle2, ArrowRight } from "lucide-react"
+import { format, addDays } from "date-fns"
+import { formatCurrency } from "@/lib/utils"
+
+// ── Types ──────────────────────────────────────────────────────────────────
+
+type PricingTier = { id: string; label: string; days: number; price: number }
+type Product = {
+  id: string
+  name: string
+  isPackage: boolean
+  isActive: boolean
+  category: { id: string; name: string }
+  pricingTiers: PricingTier[]
+  _count: { units: number }
+}
+type CartItem = {
+  productId: string
+  name: string
+  categoryName: string
+  qty: number
+  size: string
+  unitPrice: number
+}
+type Customer = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function getBestPrice(tiers: PricingTier[], days: number): number {
+  if (!tiers.length || days === 0) return 0
+  const sorted = [...tiers].sort((a, b) => b.days - a.days)
+  const match = sorted.find((t) => t.days <= days)
+  return match ? match.price : tiers[0].price
+}
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  Skis: "🎿",
+  Snowboards: "🏂",
+  Boots: "🥾",
+  Clothing: "🧥",
+  Accessories: "⛑️",
+  Packages: "📦",
+}
+
+const DURATIONS = [
+  { label: "1 day", days: 1 },
+  { label: "2 days", days: 2 },
+  { label: "3 days", days: 3 },
+  { label: "4 days", days: 4 },
+  { label: "5 days", days: 5 },
+  { label: "7 days", days: 7 },
+  { label: "14 days", days: 14 },
+  { label: "21 days", days: 21 },
+  { label: "28 days", days: 28 },
+]
+
+// ── Main Component ─────────────────────────────────────────────────────────
+
+export default function POSClient({ products }: { products: Product[] }) {
+  const router = useRouter()
+  const [mode, setMode] = useState<"book" | "reserve">("book")
+  const [durationDays, setDurationDays] = useState(1)
+  const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"))
+  const [showDurationPicker, setShowDurationPicker] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [discount, setDiscount] = useState("")
+  const [rightPanel, setRightPanel] = useState<"order" | "customer">("order")
+  const [customer, setCustomer] = useState<Customer | null>(null)
+  const [customerSearch, setCustomerSearch] = useState("")
+  const [customerResults, setCustomerResults] = useState<any[]>([])
+  const [customerForm, setCustomerForm] = useState({ firstName: "", lastName: "", email: "", phone: "" })
+  const [customerMode, setCustomerMode] = useState<"search" | "new">("search")
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
+  const [done, setDone] = useState<string | null>(null)
+  const searchTimeout = useRef<any>(null)
+
+  const endDate = format(addDays(new Date(startDate), durationDays), "yyyy-MM-dd")
+
+  // Category tabs
+  const categories = ["all", ...Array.from(new Set(products.map((p) => p.category.name)))]
+  const filtered = products.filter(
+    (p) => p.isActive && (categoryFilter === "all" || p.category.name === categoryFilter)
+  )
+
+  // Cart helpers
+  function getCartQty(productId: string) {
+    return cart.find((c) => c.productId === productId)?.qty ?? 0
+  }
+
+  function addToCart(product: Product) {
+    const unitPrice = getBestPrice(product.pricingTiers, durationDays)
+    setCart((prev) => {
+      const existing = prev.find((c) => c.productId === product.id)
+      if (existing) {
+        return prev.map((c) => c.productId === product.id ? { ...c, qty: c.qty + 1 } : c)
+      }
+      return [...prev, {
+        productId: product.id,
+        name: product.name,
+        categoryName: product.category.name,
+        qty: 1,
+        size: "",
+        unitPrice,
+      }]
+    })
+  }
+
+  function removeFromCart(productId: string) {
+    setCart((prev) => {
+      const existing = prev.find((c) => c.productId === productId)
+      if (existing && existing.qty > 1) {
+        return prev.map((c) => c.productId === productId ? { ...c, qty: c.qty - 1 } : c)
+      }
+      return prev.filter((c) => c.productId !== productId)
+    })
+  }
+
+  function removeItemFully(productId: string) {
+    setCart((prev) => prev.filter((c) => c.productId !== productId))
+  }
+
+  function updateSize(productId: string, size: string) {
+    setCart((prev) => prev.map((c) => c.productId === productId ? { ...c, size } : c))
+  }
+
+  // Recalculate prices when duration changes
+  useEffect(() => {
+    setCart((prev) =>
+      prev.map((item) => {
+        const product = products.find((p) => p.id === item.productId)
+        return product ? { ...item, unitPrice: getBestPrice(product.pricingTiers, durationDays) } : item
+      })
+    )
+  }, [durationDays, products])
+
+  // Customer search
+  useEffect(() => {
+    clearTimeout(searchTimeout.current)
+    if (customerSearch.length < 2) { setCustomerResults([]); return }
+    searchTimeout.current = setTimeout(async () => {
+      const res = await fetch(`/api/customers?q=${encodeURIComponent(customerSearch)}`)
+      if (res.ok) setCustomerResults(await res.json())
+    }, 300)
+  }, [customerSearch])
+
+  // Totals
+  const subtotal = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
+  const discountAmt = discount ? subtotal * (parseFloat(discount) / 100) : 0
+  const total = subtotal - discountAmt
+
+  async function handleSubmit() {
+    if (!cart.length) return setError("Add at least one product")
+    const cust = customer ?? (customerMode === "new" ? customerForm : null)
+    if (!cust?.firstName || !cust?.email) return setError("Add customer details")
+
+    setSubmitting(true)
+    setError("")
+
+    const res = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer: { firstName: cust.firstName, lastName: cust.lastName, email: cust.email, phone: cust.phone || undefined },
+        startDate,
+        endDate,
+        items: cart.map((c) => ({ productId: c.productId, size: c.size || undefined, quantity: c.qty, unitPrice: c.unitPrice })),
+      }),
+    })
+
+    if (!res.ok) {
+      const d = await res.json()
+      setError(d.error ?? "Failed to create booking")
+      setSubmitting(false)
+      return
+    }
+
+    const booking = await res.json()
+
+    // If "book" mode, also mark as CONFIRMED
+    if (mode === "book") {
+      await fetch(`/api/bookings/${booking.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CONFIRMED" }),
+      })
+    }
+
+    setDone(booking.bookingNumber)
+  }
+
+  // ── Done state ────────────────────────────────────────────────────────────
+  if (done) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <CheckCircle2 className="h-16 w-16 text-[#C8FF00] mx-auto" />
+          <h2 className="font-display text-3xl font-bold text-white tracking-wide">BOOKING CREATED</h2>
+          <p className="text-[#B4B4B4]">Booking number: <span className="text-white font-semibold">{done}</span></p>
+          <p className="text-sm text-[#B4B4B4]">Status: {mode === "book" ? "Confirmed" : "Pending (reserved)"}</p>
+          <div className="flex gap-3 justify-center pt-4">
+            <button
+              onClick={() => { setCart([]); setCustomer(null); setCustomerForm({ firstName: "", lastName: "", email: "", phone: "" }); setDiscount(""); setDone(null); setRightPanel("order") }}
+              className="bg-[#C8FF00] text-[#121212] font-semibold px-6 py-3 rounded-lg text-sm hover:bg-[#b3e600] transition-colors"
+            >
+              New Order
+            </button>
+            <button
+              onClick={() => router.push("/admin/bookings")}
+              className="border border-[#333] text-[#B4B4B4] px-6 py-3 rounded-lg text-sm hover:bg-white/5 transition-colors"
+            >
+              View Bookings
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+
+      {/* ── Top bar ──────────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-4 pb-5 border-b border-[#2e2e2e] flex-shrink-0">
+
+        {/* Mode toggle */}
+        <div className="flex bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg p-1">
+          <button
+            onClick={() => setMode("book")}
+            className={`px-5 py-2 rounded-md text-xs font-semibold tracking-widest uppercase transition-all ${
+              mode === "book" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4] hover:text-white"
+            }`}
+          >
+            Book Now
+          </button>
+          <button
+            onClick={() => setMode("reserve")}
+            className={`px-5 py-2 rounded-md text-xs font-semibold tracking-widest uppercase transition-all ${
+              mode === "reserve" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4] hover:text-white"
+            }`}
+          >
+            Reserve
+          </button>
+        </div>
+
+        {/* Duration picker */}
+        <div className="relative">
+          <button
+            onClick={() => setShowDurationPicker(!showDurationPicker)}
+            className="flex items-center gap-2 bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg px-4 py-2.5 text-sm text-white hover:border-[#C8FF00]/40 transition-colors"
+          >
+            <span className="font-medium">{durationDays} day{durationDays !== 1 ? "s" : ""}</span>
+            <span className="text-[#B4B4B4] text-xs">
+              {format(new Date(startDate), "d MMM")} → {format(new Date(endDate), "d MMM")}
+            </span>
+            <ChevronDown className="h-4 w-4 text-[#B4B4B4]" />
+          </button>
+          {showDurationPicker && (
+            <div className="absolute top-full mt-1 left-0 z-50 bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl shadow-xl p-3 w-72">
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {DURATIONS.map((d) => (
+                  <button
+                    key={d.days}
+                    onClick={() => { setDurationDays(d.days); setShowDurationPicker(false) }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      durationDays === d.days ? "bg-[#C8FF00] text-[#121212]" : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+              <div className="border-t border-[#2e2e2e] pt-3 space-y-2">
+                <label className="text-xs text-[#B4B4B4] tracking-widest uppercase">Start Date</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="ml-auto text-xs text-[#B4B4B4]">
+          <span className="text-white font-medium">{cart.length}</span> item{cart.length !== 1 ? "s" : ""} in order
+        </div>
+      </div>
+
+      {/* ── Body ─────────────────────────────────────────────────────────── */}
+      <div className="flex gap-5 flex-1 min-h-0 pt-5">
+
+        {/* ── Product catalog ─────────────────────────────────────────── */}
+        <div className="flex-1 flex flex-col min-h-0">
+
+          {/* Category tabs */}
+          <div className="flex gap-1.5 flex-wrap mb-4 flex-shrink-0">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategoryFilter(cat)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors capitalize ${
+                  categoryFilter === cat
+                    ? "bg-[#C8FF00] text-[#121212]"
+                    : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {cat === "all" ? "All Products" : cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Product grid */}
+          <div className="flex-1 overflow-y-auto pr-1">
+            {/* Group by packages first, then individual */}
+            {[true, false].map((isPackage) => {
+              const group = filtered.filter((p) => p.isPackage === isPackage)
+              if (!group.length) return null
+              return (
+                <div key={String(isPackage)} className="mb-6">
+                  <p className="text-[10px] tracking-[0.25em] uppercase text-[#B4B4B4] mb-3">
+                    {isPackage ? "Packages" : "Individual Items"}
+                  </p>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                    {group.map((product) => {
+                      const qty = getCartQty(product.id)
+                      const price = getBestPrice(product.pricingTiers, durationDays)
+                      const emoji = CATEGORY_EMOJI[product.category.name] ?? "📦"
+                      const inCart = qty > 0
+
+                      return (
+                        <div
+                          key={product.id}
+                          className={`relative rounded-xl border transition-all duration-150 overflow-hidden ${
+                            inCart
+                              ? "border-[#C8FF00]/60 bg-[#C8FF00]/5"
+                              : "border-[#2e2e2e] bg-[#1e1e1e] hover:border-[#444]"
+                          }`}
+                        >
+                          {/* Product info */}
+                          <button
+                            className="w-full text-left p-4"
+                            onClick={() => addToCart(product)}
+                          >
+                            <div className="text-2xl mb-2">{emoji}</div>
+                            <p className="font-medium text-white text-sm leading-tight">{product.name}</p>
+                            <p className="text-xs text-[#B4B4B4] mt-0.5">{product.category.name}</p>
+                            {price > 0 ? (
+                              <p className="text-[#C8FF00] font-bold text-sm mt-2">
+                                {formatCurrency(price * durationDays)}
+                                <span className="text-[#B4B4B4] font-normal text-xs"> / {durationDays}d</span>
+                              </p>
+                            ) : (
+                              <p className="text-[#B4B4B4] text-xs mt-2">No pricing set</p>
+                            )}
+                          </button>
+
+                          {/* Qty controls — shown when in cart */}
+                          {inCart && (
+                            <div className="flex items-center justify-between border-t border-[#C8FF00]/20 px-3 py-2 bg-[#C8FF00]/5">
+                              <button
+                                onClick={() => removeFromCart(product.id)}
+                                className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                              >
+                                <Minus className="h-3 w-3 text-white" />
+                              </button>
+                              <span className="font-bold text-white text-sm">{qty}</span>
+                              <button
+                                onClick={() => addToCart(product)}
+                                className="w-7 h-7 rounded-lg bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center transition-colors"
+                              >
+                                <Plus className="h-3 w-3 text-[#121212]" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ── Right panel ─────────────────────────────────────────────── */}
+        <div className="w-80 flex-shrink-0 flex flex-col bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl overflow-hidden">
+
+          {rightPanel === "order" ? (
+            <>
+              {/* Order items */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                <p className="text-[10px] tracking-[0.25em] uppercase text-[#B4B4B4] mb-3">Order</p>
+
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-32 text-center">
+                    <p className="text-[#B4B4B4] text-sm">No items yet</p>
+                    <p className="text-[#B4B4B4]/50 text-xs mt-1">Tap a product to add it</p>
+                  </div>
+                ) : (
+                  cart.map((item) => (
+                    <div key={item.productId} className="bg-[#252525] rounded-lg p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">{item.name}</p>
+                          <p className="text-xs text-[#B4B4B4]">{item.categoryName}</p>
+                        </div>
+                        <button onClick={() => removeItemFully(item.productId)} className="text-[#B4B4B4] hover:text-red-400 transition-colors mt-0.5">
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Size input */}
+                      <input
+                        value={item.size}
+                        onChange={(e) => updateSize(item.productId, e.target.value)}
+                        placeholder="Size (e.g. 27.5, 160cm)"
+                        className="w-full bg-[#1e1e1e] border border-[#333] rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      />
+
+                      {/* Qty + price */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => removeFromCart(item.productId)} className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                            <Minus className="h-3 w-3 text-white" />
+                          </button>
+                          <span className="text-white text-sm font-medium w-4 text-center">{item.qty}</span>
+                          <button onClick={() => addToCart(products.find((p) => p.id === item.productId)!)} className="w-6 h-6 rounded bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center">
+                            <Plus className="h-3 w-3 text-[#121212]" />
+                          </button>
+                        </div>
+                        <span className="text-[#C8FF00] font-bold text-sm">
+                          {formatCurrency(item.unitPrice * item.qty)}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Customer section */}
+              <div className="border-t border-[#2e2e2e] p-4">
+                {customer ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#C8FF00]/20 flex items-center justify-center">
+                        <User className="h-3.5 w-3.5 text-[#C8FF00]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">{customer.firstName} {customer.lastName}</p>
+                        <p className="text-xs text-[#B4B4B4]">{customer.email}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => { setCustomer(null); setRightPanel("customer") }} className="text-xs text-[#B4B4B4] hover:text-white transition-colors">
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setRightPanel("customer")}
+                    className="w-full flex items-center gap-2 border border-dashed border-[#333] hover:border-[#C8FF00]/40 rounded-lg px-3 py-2.5 text-sm text-[#B4B4B4] hover:text-white transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    Add Customer
+                  </button>
+                )}
+              </div>
+
+              {/* Discount + totals */}
+              <div className="border-t border-[#2e2e2e] p-4 space-y-3">
+                {/* Discount */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[#B4B4B4] w-16">Discount</span>
+                  <div className="flex-1 relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={discount}
+                      onChange={(e) => setDiscount(e.target.value)}
+                      placeholder="0"
+                      className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-[#C8FF00] transition-colors"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B4B4B4] text-xs">%</span>
+                  </div>
+                </div>
+
+                {/* Totals */}
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex justify-between text-[#B4B4B4]">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(subtotal)}</span>
+                  </div>
+                  {discountAmt > 0 && (
+                    <div className="flex justify-between text-emerald-400">
+                      <span>Discount ({discount}%)</span>
+                      <span>−{formatCurrency(discountAmt)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-white font-bold text-base pt-1 border-t border-[#2e2e2e]">
+                    <span>Total</span>
+                    <span className="text-[#C8FF00]">{formatCurrency(total)}</span>
+                  </div>
+                </div>
+
+                {/* Duration summary */}
+                <div className="text-xs text-[#B4B4B4] bg-[#252525] rounded-lg px-3 py-2 flex justify-between">
+                  <span>{durationDays} day{durationDays !== 1 ? "s" : ""}</span>
+                  <span>{format(new Date(startDate), "d MMM")} → {format(new Date(endDate), "d MMM")}</span>
+                </div>
+
+                {error && (
+                  <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>
+                )}
+
+                {/* Submit */}
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting || !cart.length}
+                  className="w-full bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-bold py-3 rounded-lg text-sm tracking-widest uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {submitting ? "Creating..." : mode === "book" ? "Book Now" : "Reserve"}
+                  {!submitting && <ArrowRight className="h-4 w-4" />}
+                </button>
+              </div>
+            </>
+          ) : (
+            /* ── Customer panel ───────────────────────────────────────── */
+            <div className="flex flex-col h-full">
+              <div className="p-4 border-b border-[#2e2e2e] flex items-center gap-3">
+                <button
+                  onClick={() => setRightPanel("order")}
+                  className="text-[#B4B4B4] hover:text-white transition-colors"
+                >
+                  ← Back
+                </button>
+                <p className="text-sm font-semibold text-white">Customer</p>
+              </div>
+
+              {/* Search/New toggle */}
+              <div className="p-4 border-b border-[#2e2e2e]">
+                <div className="flex bg-[#252525] rounded-lg p-0.5 mb-3">
+                  <button
+                    onClick={() => setCustomerMode("search")}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                      customerMode === "search" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4]"
+                    }`}
+                  >
+                    Find Existing
+                  </button>
+                  <button
+                    onClick={() => setCustomerMode("new")}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                      customerMode === "new" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4]"
+                    }`}
+                  >
+                    New Customer
+                  </button>
+                </div>
+
+                {customerMode === "search" && (
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#B4B4B4]" />
+                    <input
+                      autoFocus
+                      value={customerSearch}
+                      onChange={(e) => setCustomerSearch(e.target.value)}
+                      placeholder="Search name, email or phone..."
+                      className="w-full bg-[#121212] border border-[#333] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4">
+                {customerMode === "search" ? (
+                  <>
+                    {customerResults.length === 0 && customerSearch.length >= 2 && (
+                      <p className="text-sm text-[#B4B4B4] text-center py-4">No customers found</p>
+                    )}
+                    {customerResults.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => { setCustomer(c); setRightPanel("order"); setCustomerSearch(""); setCustomerResults([]) }}
+                        className="w-full text-left flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors mb-1"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-[#C8FF00]/10 flex items-center justify-center flex-shrink-0">
+                          <User className="h-4 w-4 text-[#C8FF00]" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-white">{c.firstName} {c.lastName}</p>
+                          <p className="text-xs text-[#B4B4B4] truncate">{c.email}</p>
+                          {c.phone && <p className="text-xs text-[#B4B4B4]">{c.phone}</p>}
+                        </div>
+                      </button>
+                    ))}
+                    {customerSearch.length < 2 && (
+                      <p className="text-xs text-[#B4B4B4] text-center py-4">Type to search customers</p>
+                    )}
+                  </>
+                ) : (
+                  <div className="space-y-3">
+                    {[
+                      { label: "First Name *", key: "firstName", type: "text" },
+                      { label: "Last Name *", key: "lastName", type: "text" },
+                      { label: "Email *", key: "email", type: "email" },
+                      { label: "Phone", key: "phone", type: "tel" },
+                    ].map(({ label, key, type }) => (
+                      <div key={key}>
+                        <label className="block text-[10px] tracking-widest uppercase text-[#B4B4B4] mb-1.5">{label}</label>
+                        <input
+                          type={type}
+                          value={(customerForm as any)[key]}
+                          onChange={(e) => setCustomerForm((f) => ({ ...f, [key]: e.target.value }))}
+                          className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {customerMode === "new" && (
+                <div className="p-4 border-t border-[#2e2e2e]">
+                  <button
+                    onClick={() => {
+                      if (!customerForm.firstName || !customerForm.email) return
+                      setCustomer(customerForm)
+                      setRightPanel("order")
+                    }}
+                    disabled={!customerForm.firstName || !customerForm.email}
+                    className="w-full bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-bold py-2.5 rounded-lg text-sm tracking-wide disabled:opacity-40 transition-colors"
+                  >
+                    Confirm Customer
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

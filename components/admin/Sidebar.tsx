@@ -12,12 +12,14 @@ import {
   Settings,
   LogOut,
   ScanLine,
+  ShoppingCart,
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 
 const nav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/pos", label: "In-Store POS", icon: ShoppingCart },
   { href: "/admin/scan", label: "Scan / Check Out", icon: ScanLine },
   { href: "/admin/bookings", label: "Bookings", icon: CalendarDays },
   { href: "/admin/inventory", label: "Inventory", icon: Package },
