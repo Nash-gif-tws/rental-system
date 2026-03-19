@@ -10,7 +10,7 @@ export default async function NewBookingPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">New Booking</h1>
+      <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase mb-6">New Booking</h1>
       <NewBookingForm products={products} />
     </div>
   )

@@ -154,15 +154,13 @@ model Customer {
   id                String    @id @default(cuid())
   firstName         String
   lastName          String
-  email             String
+  email             String    @unique
   phone             String?
   dateOfBirth       DateTime?
   shopifyCustomerId String?   @unique
   bookings          Booking[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-
-  @@index([email])
 }
 
 // ─── Bookings ────────────────────────────────────────────────────────────────
@@ -215,7 +213,7 @@ enum SkillLevel {
 model BookingItem {
   id              String         @id @default(cuid())
   bookingId       String
-  booking         Booking        @relation(fields: [bookingId], references: [id])
+  booking         Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   productId       String
   product         Product        @relation(fields: [productId], references: [id])
   unitId          String?
@@ -225,4 +223,6 @@ model BookingItem {
   unitPrice       Float
   returnCondition Condition?
   returnNotes     String?
+
+  @@index([bookingId])
 }

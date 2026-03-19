@@ -108,124 +108,74 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
     }
 
     const booking = await res.json()
-    router.push(`/bookings/${booking.id}`)
+    router.push(`/admin/bookings/${booking.id}`)
   }
+
+  const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+  const labelCls = "block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1.5"
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Customer */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Customer Details</h2>
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-white tracking-wide">Customer Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
-            <input
-              required
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>First Name *</label>
+            <input required value={firstName} onChange={(e) => setFirstName(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
-            <input
-              required
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Last Name *</label>
+            <input required value={lastName} onChange={(e) => setLastName(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-            <input
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Email *</label>
+            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Phone</label>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
           </div>
         </div>
       </div>
 
       {/* Dates */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Rental Period</h2>
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-white tracking-wide">Rental Period</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
-            <input
-              required
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Start Date *</label>
+            <input required type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
-            <input
-              required
-              type="date"
-              value={endDate}
-              min={startDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>End Date *</label>
+            <input required type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} className={inputCls} />
           </div>
         </div>
         {rentalDays > 0 && (
-          <p className="text-sm text-sky-600 font-medium">{rentalDays} day{rentalDays !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-[#C8FF00] font-medium">{rentalDays} day{rentalDays !== 1 ? "s" : ""}</p>
         )}
       </div>
 
       {/* Fitting */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Fitting Info</h2>
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-white tracking-wide">Fitting Info</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
-            <input
-              type="number"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Height (cm)</label>
+            <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
-            <input
-              type="number"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Weight (kg)</label>
+            <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Boot Size (EU)</label>
-            <input
-              type="number"
-              step="0.5"
-              value={bootSize}
-              onChange={(e) => setBootSize(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            <label className={labelCls}>Boot Size (EU)</label>
+            <input type="number" step="0.5" value={bootSize} onChange={(e) => setBootSize(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Skill Level</label>
-            <select
-              value={skillLevel}
-              onChange={(e) => setSkillLevel(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-            >
+            <label className={labelCls}>Skill Level</label>
+            <select value={skillLevel} onChange={(e) => setSkillLevel(e.target.value)} className={inputCls + " bg-[#121212]"}>
               <option value="">Select...</option>
               <option value="BEGINNER">Beginner</option>
               <option value="INTERMEDIATE">Intermediate</option>
@@ -237,20 +187,16 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
       </div>
 
       {/* Items */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Equipment</h2>
-          <button
-            type="button"
-            onClick={addItem}
-            className="text-sm text-sky-600 hover:text-sky-700 font-medium"
-          >
+          <h2 className="text-sm font-semibold text-white tracking-wide">Equipment</h2>
+          <button type="button" onClick={addItem} className="text-sm text-[#C8FF00] hover:text-[#b3e600] font-medium transition-colors">
             + Add Item
           </button>
         </div>
 
         {selectedItems.length === 0 && (
-          <p className="text-sm text-gray-400">No items added yet.</p>
+          <p className="text-sm text-[#B4B4B4]">No items added yet.</p>
         )}
 
         {selectedItems.map((item, i) => {
@@ -258,13 +204,13 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
           const price = product ? getBestPrice(product.pricingTiers, rentalDays) : 0
 
           return (
-            <div key={i} className="flex gap-3 items-end p-3 bg-gray-50 rounded-lg">
+            <div key={i} className="flex gap-3 items-end p-3 bg-[#252525] rounded-lg">
               <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Product</label>
+                <label className={labelCls}>Product</label>
                 <select
                   value={item.productId}
                   onChange={(e) => updateItem(i, "productId", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className={inputCls + " bg-[#121212]"}
                 >
                   <option value="">Select product...</option>
                   {products.map((p) => (
@@ -275,34 +221,23 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
                 </select>
               </div>
               <div className="w-28">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Size</label>
-                <input
-                  value={item.size}
-                  onChange={(e) => updateItem(i, "size", e.target.value)}
-                  placeholder="e.g. 27.5"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                />
+                <label className={labelCls}>Size</label>
+                <input value={item.size} onChange={(e) => updateItem(i, "size", e.target.value)} placeholder="e.g. 27.5" className={inputCls} />
               </div>
               <div className="w-20">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Qty</label>
+                <label className={labelCls}>Qty</label>
                 <input
-                  type="number"
-                  min={1}
-                  value={item.quantity}
+                  type="number" min={1} value={item.quantity}
                   onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className={inputCls}
                 />
               </div>
               {price > 0 && (
-                <div className="text-sm font-medium text-gray-700 pb-2 whitespace-nowrap">
+                <div className="text-sm font-medium text-[#C8FF00] pb-2 whitespace-nowrap">
                   ${(price * item.quantity).toFixed(2)}
                 </div>
               )}
-              <button
-                type="button"
-                onClick={() => removeItem(i)}
-                className="pb-2 text-gray-400 hover:text-red-500 transition-colors"
-              >
+              <button type="button" onClick={() => removeItem(i)} className="pb-2 text-[#B4B4B4] hover:text-red-400 transition-colors">
                 ✕
               </button>
             </div>
@@ -310,38 +245,33 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
         })}
 
         {subtotal > 0 && (
-          <div className="flex justify-end border-t border-gray-100 pt-3">
-            <p className="font-semibold text-gray-900">Total: ${subtotal.toFixed(2)}</p>
+          <div className="flex justify-end border-t border-[#2e2e2e] pt-3">
+            <p className="font-semibold text-[#C8FF00]">Total: ${subtotal.toFixed(2)}</p>
           </div>
         )}
       </div>
 
       {/* Notes */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-        />
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6">
+        <label className={labelCls}>Notes</label>
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={inputCls + " resize-none"} />
       </div>
 
       {error && (
-        <p className="text-sm text-red-600 bg-red-50 px-4 py-3 rounded-lg">{error}</p>
+        <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 px-4 py-3 rounded-lg">{error}</p>
       )}
 
       <div className="flex gap-3">
         <button
           type="submit"
           disabled={loading}
-          className="bg-sky-600 text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-sky-700 transition-colors disabled:opacity-50"
+          className="bg-[#C8FF00] text-[#121212] px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b3e600] transition-colors disabled:opacity-50"
         >
           {loading ? "Creating..." : "Create Booking"}
         </button>
         <a
-          href="/bookings"
-          className="border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-50 transition-colors"
+          href="/admin/bookings"
+          className="border border-[#2e2e2e] text-[#B4B4B4] px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-white/5 transition-colors"
         >
           Cancel
         </a>

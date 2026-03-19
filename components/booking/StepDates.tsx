@@ -1,7 +1,7 @@
 "use client"
 
 import { differenceInDays } from "date-fns"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, MapPin } from "lucide-react"
 import type { BookingState } from "./BookingWizard"
 
 export default function StepDates({ state, onUpdate, onNext }: {
@@ -18,43 +18,47 @@ export default function StepDates({ state, onUpdate, onNext }: {
   return (
     <div className="space-y-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">When do you need gear?</h1>
-        <p className="text-gray-500 text-sm mt-1">Select your pickup and return dates to see availability.</p>
+        <div className="flex items-center gap-3 mb-3">
+          <span className="w-5 h-px bg-[#C8FF00]" />
+          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 1</span>
+        </div>
+        <h1 className="font-display text-3xl font-bold text-white leading-tight">When do you<br />need gear?</h1>
+        <p className="text-[#B4B4B4] text-sm mt-2">Select your pickup and return dates to see availability.</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pickup date</label>
+            <label className="block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-2">Pickup date</label>
             <input
               type="date"
               min={today}
               value={state.startDate}
               onChange={(e) => onUpdate({ startDate: e.target.value, endDate: "" })}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all"
+              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Return date</label>
+            <label className="block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-2">Return date</label>
             <input
               type="date"
               min={state.startDate || today}
               value={state.endDate}
               onChange={(e) => onUpdate({ endDate: e.target.value })}
               disabled={!state.startDate}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             />
           </div>
         </div>
 
         {rentalDays > 0 && (
-          <div className="flex items-center gap-3 bg-sky-50 border border-sky-100 rounded-xl px-4 py-3">
-            <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+          <div className="flex items-center gap-3 bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-lg px-4 py-3">
+            <div className="w-9 h-9 bg-[#C8FF00] rounded-lg flex items-center justify-center text-[#121212] text-sm font-bold flex-shrink-0">
               {rentalDays}
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">{rentalDays}-day rental</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-semibold text-white">{rentalDays}-day rental</p>
+              <p className="text-xs text-[#B4B4B4]">
                 {rentalDays >= 7 ? "Weekly rate applies — great value!" :
                  rentalDays >= 3 ? "3+ day rate applies" :
                  "Daily rate applies"}
@@ -64,18 +68,18 @@ export default function StepDates({ state, onUpdate, onNext }: {
         )}
       </div>
 
-      <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3.5 flex gap-3">
-        <span className="text-lg flex-shrink-0">📍</span>
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl px-4 py-3.5 flex gap-3">
+        <MapPin className="h-4 w-4 text-[#C8FF00] flex-shrink-0 mt-0.5" />
         <div className="text-sm">
-          <p className="font-semibold text-amber-900">Pickup & return in store</p>
-          <p className="text-amber-700 mt-0.5">Princes Highway, Rockdale — open 7 days during snow season.</p>
+          <p className="font-semibold text-white">Pickup & return in store</p>
+          <p className="text-[#B4B4B4] mt-0.5 text-xs">Princes Highway, Rockdale — open 7 days during snow season.</p>
         </div>
       </div>
 
       <button
         onClick={() => { onUpdate({ rentalDays }); onNext() }}
         disabled={!valid}
-        className="w-full flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-sm shadow-lg shadow-sky-100 hover:shadow-sky-200 hover:-translate-y-0.5 disabled:shadow-none disabled:translate-y-0"
+        className="w-full flex items-center justify-center gap-2 bg-[#C8FF00] hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
       >
         See Available Gear
         <ArrowRight className="h-4 w-4" />

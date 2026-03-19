@@ -38,10 +38,10 @@ export default function BookingActions({ booking }: { booking: any }) {
           key={next}
           onClick={() => updateStatus(next)}
           disabled={loading}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
+          className={`px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-colors disabled:opacity-50 ${
             next === "CANCELLED" || next === "NO_SHOW"
-              ? "border border-gray-300 text-gray-700 hover:bg-gray-50"
-              : "bg-sky-600 text-white hover:bg-sky-700"
+              ? "border border-[#2e2e2e] text-[#B4B4B4] hover:bg-white/5"
+              : "bg-[#C8FF00] text-[#121212] hover:bg-[#b3e600]"
           }`}
         >
           {loading ? "..." : label}

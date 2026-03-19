@@ -57,25 +57,31 @@ export default function BookingWizard() {
   if (confirmedBooking) return <BookingSuccess booking={confirmedBooking} />
 
   return (
-    <div className="max-w-2xl mx-auto px-5 py-10">
+    <div className="max-w-2xl mx-auto px-5 pt-28 pb-16">
       {/* Step indicator */}
       <div className="flex items-center mb-10">
         {STEPS.map(({ label, icon }, i) => (
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1.5">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                i < step ? "bg-sky-500 text-white"
-                : i === step ? "bg-sky-500 text-white ring-4 ring-sky-100 scale-110"
-                : "bg-gray-100 text-gray-400"
+                i < step
+                  ? "bg-[#C8FF00] text-[#121212]"
+                  : i === step
+                  ? "bg-[#C8FF00] text-[#121212] ring-4 ring-[#C8FF00]/20 scale-110"
+                  : "bg-[#1e1e1e] text-[#B4B4B4] border border-[#2e2e2e]"
               }`}>
                 {i < step ? "✓" : icon}
               </div>
-              <span className={`text-xs font-medium hidden sm:block ${i === step ? "text-sky-500" : "text-gray-400"}`}>
+              <span className={`text-[10px] font-medium tracking-wider uppercase hidden sm:block ${
+                i === step ? "text-[#C8FF00]" : "text-[#B4B4B4]/50"
+              }`}>
                 {label}
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-0.5 mx-3 mb-5 transition-all duration-500 ${i < step ? "bg-sky-500" : "bg-gray-100"}`} />
+              <div className={`flex-1 h-px mx-3 mb-5 transition-all duration-500 ${
+                i < step ? "bg-[#C8FF00]" : "bg-[#2e2e2e]"
+              }`} />
             )}
           </div>
         ))}

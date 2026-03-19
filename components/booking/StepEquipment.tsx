@@ -65,17 +65,21 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="w-10 h-10 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
-      <p className="text-sm text-gray-500">Checking availability...</p>
+      <div className="w-10 h-10 border-2 border-[#C8FF00] border-t-transparent rounded-full animate-spin" />
+      <p className="text-sm text-[#B4B4B4]">Checking availability...</p>
     </div>
   )
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Choose your equipment</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Prices shown for your {state.rentalDays}-day rental. Packages include board/skis + boots.
+        <div className="flex items-center gap-3 mb-3">
+          <span className="w-5 h-px bg-[#C8FF00]" />
+          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 2</span>
+        </div>
+        <h1 className="font-display text-3xl font-bold text-white leading-tight">Choose your<br />equipment</h1>
+        <p className="text-[#B4B4B4] text-sm mt-2">
+          Prices shown for your {state.rentalDays}-day rental.
         </p>
       </div>
 
@@ -83,11 +87,11 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
         <div key={slug}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">{CATEGORY_EMOJI[slug]}</span>
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+            <h2 className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.25em]">
               {grouped[slug][0].category}
             </h2>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {grouped[slug].map((product) => {
               const price = getBestPrice(product.pricingTiers, state.rentalDays)
               const qty = getQty(product.id)
@@ -96,30 +100,30 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
               return (
                 <div
                   key={product.id}
-                  className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden ${
-                    qty > 0 ? "border-sky-300 shadow-md shadow-sky-50"
-                    : outOfStock ? "border-gray-100 opacity-50"
-                    : "border-gray-100 hover:border-gray-200 hover:shadow-sm"
+                  className={`bg-[#1e1e1e] border rounded-xl transition-all duration-200 overflow-hidden ${
+                    qty > 0 ? "border-[#C8FF00]/50"
+                    : outOfStock ? "border-[#2e2e2e] opacity-50"
+                    : "border-[#2e2e2e] hover:border-[#444]"
                   }`}
                 >
                   <div className="flex items-center justify-between p-4 gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-semibold text-gray-900 text-sm">{product.name}</p>
+                        <p className="font-semibold text-white text-sm">{product.name}</p>
                         {product.isPackage && (
-                          <span className="text-[10px] bg-sky-50 text-sky-600 font-bold px-1.5 py-0.5 rounded-full border border-sky-100">
-                            PACKAGE
+                          <span className="text-[9px] bg-[#C8FF00]/10 text-[#C8FF00] font-bold px-2 py-0.5 rounded border border-[#C8FF00]/20 tracking-wider uppercase">
+                            Package
                           </span>
                         )}
                       </div>
-                      <p className="text-sky-500 font-bold text-sm mt-0.5">
+                      <p className="text-[#C8FF00] font-bold text-sm mt-0.5">
                         ${price.toFixed(2)}
-                        <span className="text-gray-400 font-normal text-xs"> / rental</span>
+                        <span className="text-[#B4B4B4] font-normal text-xs"> / rental</span>
                       </p>
                     </div>
 
                     {outOfStock ? (
-                      <span className="text-xs text-red-400 font-semibold bg-red-50 border border-red-100 px-3 py-1.5 rounded-full flex-shrink-0">
+                      <span className="text-xs text-red-400 font-semibold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg flex-shrink-0">
                         Fully booked
                       </span>
                     ) : (
@@ -127,18 +131,20 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                         {qty > 0 && (
                           <button
                             onClick={() => setQty(product, qty - 1)}
-                            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                            className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
                           >
-                            <Minus className="h-3.5 w-3.5 text-gray-600" />
+                            <Minus className="h-3.5 w-3.5 text-white" />
                           </button>
                         )}
                         {qty > 0 && (
-                          <span className="w-5 text-center font-bold text-gray-900 text-sm">{qty}</span>
+                          <span className="w-5 text-center font-bold text-white text-sm">{qty}</span>
                         )}
                         <button
                           onClick={() => setQty(product, qty + 1)}
                           className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                            qty > 0 ? "bg-sky-500 hover:bg-sky-600 text-white" : "bg-gray-100 hover:bg-sky-50 hover:text-sky-600"
+                            qty > 0
+                              ? "bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212]"
+                              : "bg-white/10 hover:bg-white/20 text-white"
                           }`}
                         >
                           <Plus className="h-3.5 w-3.5" />
@@ -148,12 +154,12 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                   </div>
 
                   {qty > 0 && (
-                    <div className="px-4 pb-4 border-t border-gray-50 pt-3">
+                    <div className="px-4 pb-4 border-t border-[#C8FF00]/10 pt-3">
                       <input
                         placeholder="Size? (e.g. 42 EU boots · 160cm skis · M jacket)"
                         value={sizes[product.id] ?? ""}
                         onChange={(e) => updateSize(product.id, e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:bg-white transition-all"
+                        className="w-full px-3.5 py-2.5 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
                       />
                     </div>
                   )}
@@ -166,21 +172,21 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
 
       {/* Sticky cart */}
       <div className={`sticky bottom-4 transition-all duration-300 ${subtotal > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
-        <div className="bg-[#0f172a] rounded-2xl p-4 flex items-center justify-between shadow-xl shadow-slate-900/20">
+        <div className="bg-[#1a1a1a] border border-[#C8FF00]/30 rounded-xl p-4 flex items-center justify-between shadow-xl shadow-black/40">
           <div>
-            <p className="text-slate-400 text-xs">{state.items.length} item{state.items.length !== 1 ? "s" : ""} selected</p>
+            <p className="text-[#B4B4B4] text-xs">{state.items.length} item{state.items.length !== 1 ? "s" : ""} selected</p>
             <p className="text-white font-bold text-lg">${subtotal.toFixed(2)}</p>
           </div>
           <button
             onClick={onNext}
-            className="flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-white font-bold px-5 py-3 rounded-xl transition-all text-sm"
+            className="flex items-center gap-2 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase"
           >
             Continue <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back to dates
       </button>
     </div>

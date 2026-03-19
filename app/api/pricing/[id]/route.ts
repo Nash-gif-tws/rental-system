@@ -22,7 +22,14 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
-  const { isActive } = await req.json()
+  let isActive: boolean
+  try {
+    const body = await req.json()
+    if (typeof body.isActive !== "boolean") throw new Error("isActive must be a boolean")
+    isActive = body.isActive
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 400 })
+  }
   const tier = await prisma.pricingTier.update({ where: { id }, data: { isActive } })
   return NextResponse.json(tier)
 }
