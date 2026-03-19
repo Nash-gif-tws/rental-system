@@ -3,11 +3,11 @@ import Link from "next/link"
 import { Plus } from "lucide-react"
 
 const CONDITION_COLORS: Record<string, string> = {
-  EXCELLENT: "bg-green-100 text-green-800",
-  GOOD: "bg-blue-100 text-blue-800",
-  FAIR: "bg-yellow-100 text-yellow-800",
-  NEEDS_SERVICE: "bg-red-100 text-red-800",
-  RETIRED: "bg-gray-100 text-gray-800",
+  EXCELLENT: "bg-emerald-500/20 text-emerald-300",
+  GOOD: "bg-[#C8FF00]/20 text-[#C8FF00]",
+  FAIR: "bg-yellow-500/20 text-yellow-300",
+  NEEDS_SERVICE: "bg-red-500/20 text-red-300",
+  RETIRED: "bg-zinc-500/20 text-zinc-400",
 }
 
 export default async function InventoryPage({
@@ -44,10 +44,10 @@ export default async function InventoryPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
+        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Inventory</h1>
         <Link
           href="/admin/inventory/new"
-          className="flex items-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700 transition-colors"
+          className="flex items-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Unit
@@ -55,12 +55,12 @@ export default async function InventoryPage({
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-wrap gap-3">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-4 flex flex-wrap gap-3">
         <div className="flex gap-2 flex-wrap">
           <Link
             href="/admin/inventory"
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              !params.category ? "bg-sky-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
+              !params.category ? "bg-[#C8FF00] text-[#121212]" : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
             }`}
           >
             All Categories
@@ -69,8 +69,8 @@ export default async function InventoryPage({
             <Link
               key={c.id}
               href={`/admin/inventory?category=${c.id}`}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                params.category === c.id ? "bg-sky-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
+                params.category === c.id ? "bg-[#C8FF00] text-[#121212]" : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
               }`}
             >
               {c.name}
@@ -82,8 +82,8 @@ export default async function InventoryPage({
             <Link
               key={c}
               href={`/admin/inventory?condition=${c}`}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                params.condition === c ? "bg-sky-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
+                params.condition === c ? "bg-[#C8FF00] text-[#121212]" : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
               }`}
             >
               {c === "NEEDS_SERVICE" ? "Needs Service" : "Fair Condition"}
@@ -95,52 +95,52 @@ export default async function InventoryPage({
       {/* Inventory grouped by product */}
       <div className="space-y-4">
         {Object.values(grouped).length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
+          <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-12 text-center text-[#B4B4B4]">
             No inventory items found. Add some units to get started.
           </div>
         ) : (
           Object.values(grouped).map(({ product, units }) => (
-            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div key={product.id} className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                  <p className="text-xs text-gray-500">{product.category.name} · {units.length} units</p>
+                  <h3 className="font-semibold text-white">{product.name}</h3>
+                  <p className="text-xs text-[#B4B4B4] mt-0.5">{product.category.name} · {units.length} units</p>
                 </div>
                 <Link
                   href={`/admin/products/${product.id}/edit`}
-                  className="text-sm text-sky-600 hover:text-sky-700"
+                  className="text-xs text-[#C8FF00] hover:text-[#b3e600] transition-colors"
                 >
                   Edit Product
                 </Link>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
+                  <thead className="border-b border-[#2e2e2e]">
                     <tr>
-                      <th className="text-left px-6 py-2 font-medium text-gray-500">Serial / ID</th>
-                      <th className="text-left px-6 py-2 font-medium text-gray-500">Size</th>
-                      <th className="text-left px-6 py-2 font-medium text-gray-500">Condition</th>
-                      <th className="text-left px-6 py-2 font-medium text-gray-500">Notes</th>
-                      <th className="text-left px-6 py-2 font-medium text-gray-500"></th>
+                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Serial / ID</th>
+                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Size</th>
+                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Condition</th>
+                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Notes</th>
+                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-[#252525]">
                     {units.map((unit) => (
-                      <tr key={unit.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-3 font-mono text-xs text-gray-600">
+                      <tr key={unit.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-3 font-mono text-xs text-[#E6E6E6]">
                           {unit.serialNumber ?? unit.id.slice(-8).toUpperCase()}
                         </td>
-                        <td className="px-6 py-3 text-gray-700">{unit.size ?? "—"}</td>
+                        <td className="px-6 py-3 text-[#E6E6E6]">{unit.size ?? "—"}</td>
                         <td className="px-6 py-3">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${CONDITION_COLORS[unit.condition]}`}>
                             {unit.condition.replace("_", " ")}
                           </span>
                         </td>
-                        <td className="px-6 py-3 text-gray-500 text-xs">{unit.notes ?? "—"}</td>
+                        <td className="px-6 py-3 text-[#B4B4B4] text-xs">{unit.notes ?? "—"}</td>
                         <td className="px-6 py-3">
                           <Link
                             href={`/admin/inventory/${unit.id}`}
-                            className="text-sky-600 hover:text-sky-700 text-xs"
+                            className="text-[#C8FF00] hover:text-[#b3e600] text-xs transition-colors"
                           >
                             Edit
                           </Link>

@@ -11,7 +11,7 @@ export default async function AdminLayout({
   if (!session) redirect("/admin/login")
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-[#121212]">
       <Sidebar user={session.user} />
       <main className="flex-1 overflow-y-auto">
         <div className="p-8">{children}</div>

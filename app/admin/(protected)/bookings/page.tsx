@@ -14,12 +14,12 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
 }
 
 const STATUS_COLORS: Record<BookingStatus, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  CONFIRMED: "bg-blue-100 text-blue-800",
-  CHECKED_OUT: "bg-purple-100 text-purple-800",
-  RETURNED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-red-100 text-red-800",
-  NO_SHOW: "bg-gray-100 text-gray-800",
+  PENDING: "bg-yellow-500/20 text-yellow-300",
+  CONFIRMED: "bg-[#C8FF00]/20 text-[#C8FF00]",
+  CHECKED_OUT: "bg-purple-500/20 text-purple-300",
+  RETURNED: "bg-emerald-500/20 text-emerald-300",
+  CANCELLED: "bg-red-500/20 text-red-300",
+  NO_SHOW: "bg-zinc-500/20 text-zinc-400",
 }
 
 export default async function BookingsPage({
@@ -69,10 +69,10 @@ export default async function BookingsPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
+        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Bookings</h1>
         <Link
           href="/admin/bookings/new"
-          className="flex items-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700 transition-colors"
+          className="flex items-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
         >
           <Plus className="h-4 w-4" />
           New Booking
@@ -80,16 +80,16 @@ export default async function BookingsPage({
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-4">
         <div className="flex flex-wrap gap-3">
           <form className="flex-1 min-w-48">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#B4B4B4]" />
               <input
                 name="q"
                 defaultValue={params.q}
                 placeholder="Search booking # or customer..."
-                className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full pl-9 pr-4 py-2 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00] transition-colors"
               />
             </div>
           </form>
@@ -97,11 +97,11 @@ export default async function BookingsPage({
             {(["", "PENDING", "CONFIRMED", "CHECKED_OUT", "RETURNED", "CANCELLED"] as const).map((s) => (
               <Link
                 key={s}
-                href={s ? `/bookings?status=${s}` : "/bookings"}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                href={s ? `/admin/bookings?status=${s}` : "/admin/bookings"}
+                className={`px-3 py-2 rounded-lg text-xs font-medium tracking-wide transition-colors ${
                   (params.status ?? "") === s
-                    ? "bg-sky-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-[#C8FF00] text-[#121212]"
+                    : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {s ? STATUS_LABELS[s as BookingStatus] : "All"}
@@ -112,54 +112,50 @@ export default async function BookingsPage({
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
+          <thead className="border-b border-[#2e2e2e]">
             <tr>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Booking #</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Customer</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Dates</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Items</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Total</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Status</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Booking #</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Customer</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Dates</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Items</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Total</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-[#252525]">
             {bookings.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                <td colSpan={6} className="px-6 py-12 text-center text-[#B4B4B4]">
                   No bookings found
                 </td>
               </tr>
             ) : (
               bookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={booking.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
-                    <Link href={`/admin/bookings/${booking.id}`} className="text-sky-600 hover:text-sky-700 font-medium">
+                    <Link href={`/admin/bookings/${booking.id}`} className="text-[#C8FF00] hover:text-[#b3e600] font-medium transition-colors">
                       {booking.bookingNumber}
                     </Link>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-white">
                       {booking.customer.firstName} {booking.customer.lastName}
                     </p>
-                    <p className="text-gray-500 text-xs">{booking.customer.email}</p>
+                    <p className="text-[#B4B4B4] text-xs">{booking.customer.email}</p>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">
+                  <td className="px-6 py-4 text-[#E6E6E6]">
                     {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
                   </td>
-                  <td className="px-6 py-4 text-gray-600">
+                  <td className="px-6 py-4 text-[#E6E6E6]">
                     {booking.items.map((i) => i.product.name).join(", ")}
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">
+                  <td className="px-6 py-4 font-medium text-white">
                     {formatCurrency(booking.subtotal)}
                   </td>
                   <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        STATUS_COLORS[booking.status]
-                      }`}
-                    >
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[booking.status]}`}>
                       {STATUS_LABELS[booking.status]}
                     </span>
                   </td>

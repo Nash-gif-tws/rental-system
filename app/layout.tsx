@@ -1,23 +1,14 @@
 import type { Metadata } from "next"
-import { Bebas_Neue, Cormorant_Garamond, DM_Sans } from "next/font/google"
+import { Syne, Jost } from "next/font/google"
 import "./globals.css"
 
-const bebasNeue = Bebas_Neue({
-  weight: "400",
+const syne = Syne({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 })
 
-const cormorant = Cormorant_Garamond({
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-editorial",
-  display: "swap",
-})
-
-const dmSans = DM_Sans({
+const jost = Jost({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -30,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${bebasNeue.variable} ${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${syne.variable} ${jost.variable}`}>
       <body>{children}</body>
     </html>
   )

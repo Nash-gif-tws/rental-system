@@ -32,52 +32,52 @@ export default async function CustomersPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+      <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Customers</h1>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-4">
         <form>
           <input
             name="q"
             defaultValue={params.q}
             placeholder="Search by name or email..."
-            className="w-full max-w-sm px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full max-w-sm px-4 py-2 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00] transition-colors"
           />
         </form>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
+          <thead className="border-b border-[#2e2e2e]">
             <tr>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Name</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Email</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Phone</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Bookings</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-500">Last Booking</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Name</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Email</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Phone</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Bookings</th>
+              <th className="text-left px-6 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Last Booking</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-[#252525]">
             {customers.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
+                <td colSpan={5} className="px-6 py-12 text-center text-[#B4B4B4]">
                   No customers found
                 </td>
               </tr>
             ) : (
               customers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={customer.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
                     <Link
                       href={`/customers/${customer.id}`}
-                      className="font-medium text-sky-600 hover:text-sky-700"
+                      className="font-medium text-[#C8FF00] hover:text-[#b3e600] transition-colors"
                     >
                       {customer.firstName} {customer.lastName}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">{customer.email}</td>
-                  <td className="px-6 py-4 text-gray-600">{customer.phone ?? "—"}</td>
-                  <td className="px-6 py-4 text-gray-600">{customer._count.bookings}</td>
-                  <td className="px-6 py-4 text-gray-500 text-xs">
+                  <td className="px-6 py-4 text-[#E6E6E6]">{customer.email}</td>
+                  <td className="px-6 py-4 text-[#E6E6E6]">{customer.phone ?? "—"}</td>
+                  <td className="px-6 py-4 text-[#E6E6E6]">{customer._count.bookings}</td>
+                  <td className="px-6 py-4 text-[#B4B4B4] text-xs">
                     {customer.bookings[0] ? formatDate(customer.bookings[0].createdAt) : "—"}
                   </td>
                 </tr>

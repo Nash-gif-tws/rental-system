@@ -56,52 +56,60 @@ export default async function DashboardPage() {
       label: "Active Bookings",
       value: activeBookings,
       icon: CalendarDays,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
     },
     {
       label: "This Month Revenue",
       value: formatCurrency(monthlyRevenue._sum.subtotal ?? 0),
       icon: TrendingUp,
-      color: "text-green-600",
-      bg: "bg-green-50",
+      accent: true,
     },
     {
       label: "Total Customers",
       value: totalCustomers,
       icon: Users,
-      color: "text-purple-600",
-      bg: "bg-purple-50",
     },
     {
       label: "Needs Service",
       value: lowInventory,
       icon: Package,
-      color: "text-orange-600",
-      bg: "bg-orange-50",
+      warn: lowInventory > 0,
     },
   ]
+
+  const STATUS_COLORS: Record<string, string> = {
+    PENDING: "bg-yellow-500/20 text-yellow-300",
+    CONFIRMED: "bg-[#C8FF00]/20 text-[#C8FF00]",
+    CHECKED_OUT: "bg-purple-500/20 text-purple-300",
+    RETURNED: "bg-emerald-500/20 text-emerald-300",
+    CANCELLED: "bg-red-500/20 text-red-300",
+    NO_SHOW: "bg-zinc-500/20 text-zinc-400",
+  }
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Dashboard</h1>
+        <p className="text-[#B4B4B4] text-sm mt-1">
           {today.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {stats.map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        {stats.map(({ label, value, icon: Icon, accent, warn }) => (
+          <div
+            key={label}
+            className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6"
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">{label}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+                <p className="text-xs tracking-widest uppercase text-[#B4B4B4]">{label}</p>
+                <p className={`text-2xl font-bold mt-1.5 ${accent ? "text-[#C8FF00]" : warn ? "text-red-400" : "text-white"}`}>
+                  {value}
+                </p>
               </div>
-              <div className={`${bg} p-3 rounded-xl`}>
-                <Icon className={`h-6 w-6 ${color}`} />
+              <div className={`p-3 rounded-xl ${accent ? "bg-[#C8FF00]/10" : warn ? "bg-red-500/10" : "bg-white/5"}`}>
+                <Icon className={`h-5 w-5 ${accent ? "text-[#C8FF00]" : warn ? "text-red-400" : "text-[#B4B4B4]"}`} />
               </div>
             </div>
           </div>
@@ -109,94 +117,82 @@ export default async function DashboardPage() {
       </div>
 
       {/* Today's Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/admin/bookings?filter=pickup-today"
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-blue-200 transition-colors group"
+          className="bg-[#1e1e1e] border border-[#2e2e2e] hover:border-[#C8FF00]/40 rounded-xl p-6 transition-colors group"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-50 p-3 rounded-xl">
-              <Clock className="h-6 w-6 text-blue-600" />
+          <div className="flex items-center gap-4">
+            <div className="bg-[#C8FF00]/10 p-3 rounded-xl">
+              <Clock className="h-5 w-5 text-[#C8FF00]" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{checkoutsToday}</p>
-              <p className="text-sm text-gray-500">Pickups Today</p>
+              <p className="text-2xl font-bold text-white">{checkoutsToday}</p>
+              <p className="text-sm text-[#B4B4B4]">Pickups Today</p>
             </div>
           </div>
         </Link>
 
         <Link
           href="/admin/bookings?filter=return-today"
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-green-200 transition-colors"
+          className="bg-[#1e1e1e] border border-[#2e2e2e] hover:border-emerald-500/40 rounded-xl p-6 transition-colors"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-green-50 p-3 rounded-xl">
-              <CheckCircle2 className="h-6 w-6 text-green-600" />
+          <div className="flex items-center gap-4">
+            <div className="bg-emerald-500/10 p-3 rounded-xl">
+              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{returnsToday}</p>
-              <p className="text-sm text-gray-500">Returns Today</p>
+              <p className="text-2xl font-bold text-white">{returnsToday}</p>
+              <p className="text-sm text-[#B4B4B4]">Returns Today</p>
             </div>
           </div>
         </Link>
 
         <Link
           href="/admin/bookings?filter=pending"
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-yellow-200 transition-colors"
+          className="bg-[#1e1e1e] border border-[#2e2e2e] hover:border-yellow-500/40 rounded-xl p-6 transition-colors"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-yellow-50 p-3 rounded-xl">
-              <AlertCircle className="h-6 w-6 text-yellow-600" />
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-500/10 p-3 rounded-xl">
+              <AlertCircle className="h-5 w-5 text-yellow-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{pendingBookings}</p>
-              <p className="text-sm text-gray-500">Pending Confirmation</p>
+              <p className="text-2xl font-bold text-white">{pendingBookings}</p>
+              <p className="text-sm text-[#B4B4B4]">Pending Confirmation</p>
             </div>
           </div>
         </Link>
       </div>
 
       {/* Recent Bookings */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Recent Bookings</h2>
-          <Link href="/admin/bookings" className="text-sm text-sky-600 hover:text-sky-700 font-medium">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
+          <h2 className="font-semibold text-white text-sm tracking-wide">Recent Bookings</h2>
+          <Link href="/admin/bookings" className="text-xs text-[#C8FF00] hover:text-[#b3e600] font-medium transition-colors">
             View all →
           </Link>
         </div>
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-[#252525]">
           {recentBookings.length === 0 ? (
-            <p className="p-6 text-sm text-gray-500">No bookings yet.</p>
+            <p className="p-6 text-sm text-[#B4B4B4]">No bookings yet.</p>
           ) : (
             recentBookings.map((booking) => (
               <Link
                 key={booking.id}
-                href={`/bookings/${booking.id}`}
-                className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                href={`/admin/bookings/${booking.id}`}
+                className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors"
               >
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-white">
                     {booking.customer.firstName} {booking.customer.lastName}
                   </p>
-                  <p className="text-xs text-gray-500">{booking.bookingNumber}</p>
+                  <p className="text-xs text-[#B4B4B4] mt-0.5">{booking.bookingNumber}</p>
                 </div>
                 <div className="text-right">
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      booking.status === "PENDING"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : booking.status === "CONFIRMED"
-                        ? "bg-blue-100 text-blue-800"
-                        : booking.status === "CHECKED_OUT"
-                        ? "bg-purple-100 text-purple-800"
-                        : booking.status === "RETURNED"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[booking.status] ?? "bg-zinc-500/20 text-zinc-400"}`}>
                     {booking.status.replace("_", " ")}
                   </span>
-                  <p className="text-xs text-gray-500 mt-0.5">{formatCurrency(booking.subtotal)}</p>
+                  <p className="text-xs text-[#B4B4B4] mt-0.5">{formatCurrency(booking.subtotal)}</p>
                 </div>
               </Link>
             ))
