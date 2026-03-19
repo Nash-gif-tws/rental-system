@@ -36,6 +36,21 @@ export default function HomePage() {
           }}
         />
 
+        {/* Snow particles */}
+        {snowParticles.map((p, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white/50 pointer-events-none"
+            style={{
+              width: p.size,
+              height: p.size,
+              left: p.left,
+              top: "-8px",
+              animation: `snowFall ${p.duration}s linear ${p.delay}s infinite`,
+            }}
+          />
+        ))}
+
         {/* Diagonal accent bar */}
         <div
           className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-[#C8FF00]/20 to-transparent hidden lg:block"
@@ -556,6 +571,14 @@ const reviews = [
   { text: "Season rental is a game changer. Monthly billing and a free tune-up halfway through. Couldn't recommend more.", author: "Alex & Kim, Thredbo" },
   { text: "Booked online, picked up, done. Staff were brilliant with our kids and made sure they were safe and comfortable.", author: "Priya K." },
 ]
+
+// Deterministic snow particles — no random() to avoid hydration mismatch
+const snowParticles = Array.from({ length: 40 }, (_, i) => ({
+  size: `${1.5 + (Math.sin(i * 2.3) + 1) * 2}px`,
+  left: `${(i * 2.6) % 100}%`,
+  duration: 10 + (i % 7) * 2,
+  delay: -((i * 1.3) % 14),
+}))
 
 const faqs = [
   { question: "What do I need to bring when picking up?", answer: "A valid ID and a credit card for the security deposit. Parents or guardians must be present for anyone under 18 to sign the rental agreement." },
