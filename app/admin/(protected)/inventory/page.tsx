@@ -68,7 +68,7 @@ export default async function InventoryPage({
           {categories.map((c) => (
             <Link
               key={c.id}
-              href={`/inventory?category=${c.id}`}
+              href={`/admin/inventory?category=${c.id}`}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 params.category === c.id ? "bg-sky-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
@@ -81,7 +81,7 @@ export default async function InventoryPage({
           {["NEEDS_SERVICE", "FAIR"].map((c) => (
             <Link
               key={c}
-              href={`/inventory?condition=${c}`}
+              href={`/admin/inventory?condition=${c}`}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 params.condition === c ? "bg-sky-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
@@ -107,7 +107,7 @@ export default async function InventoryPage({
                   <p className="text-xs text-gray-500">{product.category.name} · {units.length} units</p>
                 </div>
                 <Link
-                  href={`/products/${product.id}`}
+                  href={`/admin/products/${product.id}/edit`}
                   className="text-sm text-sky-600 hover:text-sky-700"
                 >
                   Edit Product
@@ -139,7 +139,7 @@ export default async function InventoryPage({
                         <td className="px-6 py-3 text-gray-500 text-xs">{unit.notes ?? "—"}</td>
                         <td className="px-6 py-3">
                           <Link
-                            href={`/inventory/${unit.id}`}
+                            href={`/admin/inventory/${unit.id}`}
                             className="text-sky-600 hover:text-sky-700 text-xs"
                           >
                             Edit

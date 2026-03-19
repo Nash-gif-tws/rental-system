@@ -12,16 +12,18 @@ import {
   Settings,
   LogOut,
   Snowflake,
+  ScanLine,
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 
 const nav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/scan", label: "Scan / Check Out", icon: ScanLine },
   { href: "/admin/bookings", label: "Bookings", icon: CalendarDays },
   { href: "/admin/inventory", label: "Inventory", icon: Package },
-  { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/products", label: "Products & Pricing", icon: Wrench },
+  { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ]
