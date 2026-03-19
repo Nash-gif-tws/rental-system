@@ -118,6 +118,7 @@ export async function GET(req: NextRequest) {
 
       return {
         id: product.id,
+        slug: product.slug,
         name: product.name,
         category: product.category.name,
         categorySlug: product.category.slug,

@@ -85,15 +85,28 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-5">
         <SectionHeader icon={Package} label="Equipment" />
         <div className="space-y-2.5">
-          {state.items.map((item, i) => (
-            <div key={i} className="flex items-center justify-between py-1">
-              <div>
-                <p className="text-sm font-semibold text-white">{item.productName}</p>
-                {item.size && <p className="text-xs text-[#B4B4B4] mt-0.5">Size: {item.size}</p>}
+          {state.items.map((item, i) => {
+            // Package sizes are stored as "Label: value · Label: value"
+            const isMultiSize = item.size?.includes(" · ")
+            return (
+              <div key={i} className="flex items-start justify-between py-1 gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white">{item.productName}</p>
+                  {item.size && !isMultiSize && (
+                    <p className="text-xs text-[#B4B4B4] mt-0.5">Size: {item.size}</p>
+                  )}
+                  {isMultiSize && (
+                    <div className="mt-1 space-y-0.5">
+                      {item.size!.split(" · ").map((part) => (
+                        <p key={part} className="text-xs text-[#B4B4B4]">{part}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm font-bold text-white flex-shrink-0">${(item.unitPrice * item.quantity).toFixed(2)}</p>
               </div>
-              <p className="text-sm font-bold text-white">${(item.unitPrice * item.quantity).toFixed(2)}</p>
-            </div>
-          ))}
+            )
+          })}
 
           {/* Discount code */}
           <div className="border-t border-[#2e2e2e] pt-4 mt-3">
