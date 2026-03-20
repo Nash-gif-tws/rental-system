@@ -4,11 +4,15 @@ import POSClient from "@/components/admin/POSClient"
 export default async function POSPage() {
   const products = await prisma.product.findMany({
     where: { isActive: true },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      isPackage: true,
+      isActive: true,
       category: true,
       pricingTiers: { where: { isActive: true }, orderBy: { days: "asc" } },
       _count: { select: { units: true } },
-      packageItems: { include: { product: true } },
     },
     orderBy: [{ isPackage: "desc" }, { category: { name: "asc" } }, { name: "asc" }],
   })
