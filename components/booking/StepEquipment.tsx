@@ -75,8 +75,15 @@ const CATEGORY_EMOJI: Record<string, string> = {
 
 function getBestPrice(tiers: PricingTier[], days: number): number {
   if (!tiers.length) return 0
-  const sorted = [...tiers].sort((a, b) => b.days - a.days)
-  return sorted.find((t) => t.days <= days)?.price ?? tiers[0].price
+  const sorted = [...tiers].sort((a, b) => a.days - b.days)
+  // Use the smallest tier that covers the rental duration
+  return sorted.find((t) => t.days >= days)?.price ?? sorted[sorted.length - 1].price
+}
+
+function getActiveTier(tiers: PricingTier[], days: number): PricingTier | null {
+  if (!tiers.length) return null
+  const sorted = [...tiers].sort((a, b) => a.days - b.days)
+  return sorted.find((t) => t.days >= days) ?? sorted[sorted.length - 1]
 }
 
 function mergeComponentSizes(
@@ -291,6 +298,7 @@ export default function StepEquipment({
           <div className="space-y-2">
             {grouped[slug].map((product) => {
               const price = getBestPrice(product.pricingTiers, state.rentalDays)
+              const activeTier = getActiveTier(product.pricingTiers, state.rentalDays)
               const selected = getSelectedItem(product.id)
               const isOpen = openProductId === product.id
               const isPkg = !!PACKAGE_COMPONENTS[product.slug]
@@ -322,10 +330,12 @@ export default function StepEquipment({
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                      <div className="flex items-center gap-3 mt-1 flex-wrap">
                         <p className="text-[#C8FF00] font-bold text-sm">
                           ${price.toFixed(2)}
-                          <span className="text-[#B4B4B4] font-normal text-xs"> / rental</span>
+                          {activeTier && (
+                            <span className="text-[#B4B4B4] font-normal text-xs"> / {activeTier.label.toLowerCase()}</span>
+                          )}
                         </p>
                         {selected?.size && !isPkg && (
                           <span className="text-xs bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 px-2 py-0.5 rounded-full">
@@ -333,6 +343,26 @@ export default function StepEquipment({
                           </span>
                         )}
                       </div>
+                      {/* Pricing tier pills */}
+                      {product.pricingTiers.length > 0 && (
+                        <div className="flex gap-1.5 mt-1.5 flex-wrap">
+                          {[...product.pricingTiers].sort((a, b) => a.days - b.days).map((tier) => {
+                            const isActive = activeTier?.id === tier.id
+                            return (
+                              <span
+                                key={tier.id}
+                                className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                                  isActive
+                                    ? "bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30"
+                                    : "bg-white/[0.04] text-[#555] border border-transparent"
+                                }`}
+                              >
+                                {tier.label} ${tier.price}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     {outOfStock ? (
