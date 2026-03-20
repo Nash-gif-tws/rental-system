@@ -13,12 +13,16 @@ export function formatCurrency(amount: number): string {
   }).format(amount)
 }
 
-export function formatDate(date: Date | string): string {
-  return format(new Date(date), "dd MMM yyyy")
+export function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return "—"
+  const d = new Date(date)
+  return isNaN(d.getTime()) ? "—" : format(d, "dd MMM yyyy")
 }
 
-export function formatDateTime(date: Date | string): string {
-  return format(new Date(date), "dd MMM yyyy, h:mm a")
+export function formatDateTime(date: Date | string | null | undefined): string {
+  if (!date) return "—"
+  const d = new Date(date)
+  return isNaN(d.getTime()) ? "—" : format(d, "dd MMM yyyy, h:mm a")
 }
 
 export function generateBookingNumber(): string {

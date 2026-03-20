@@ -67,12 +67,12 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
         <div className="flex items-center gap-3">
           <div className="flex-1 bg-[#252525] rounded-lg px-4 py-3 text-center">
             <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-wider">Pickup</p>
-            <p className="font-bold text-white text-sm mt-0.5">{format(new Date(state.startDate), "EEE d MMM")}</p>
+            <p className="font-bold text-white text-sm mt-0.5">{state.startDate ? format(new Date(state.startDate), "EEE d MMM") : "—"}</p>
           </div>
           <div className="text-[#B4B4B4] text-lg">→</div>
           <div className="flex-1 bg-[#252525] rounded-lg px-4 py-3 text-center">
             <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-wider">Return</p>
-            <p className="font-bold text-white text-sm mt-0.5">{format(new Date(state.endDate), "EEE d MMM")}</p>
+            <p className="font-bold text-white text-sm mt-0.5">{state.endDate ? format(new Date(state.endDate), "EEE d MMM") : "—"}</p>
           </div>
           <div className="bg-[#C8FF00]/10 border border-[#C8FF00]/20 rounded-lg px-3 py-3 text-center">
             <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-wider">Days</p>
