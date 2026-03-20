@@ -30,31 +30,31 @@ const PACKAGE_COMPONENTS: Record<string, PackageComponent[]> = {
     { label: "Ski Length", productSlugs: ["adult-skis"] },
     { label: "Boot Size", productSlugs: ["mens-ski-boots", "womens-ski-boots"] },
     { label: "Pole Length", productSlugs: ["ski-poles"] },
-    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
-    { label: "Jacket Size", productSlugs: ["mens-jackets", "womens-jackets"], optional: true },
-    { label: "Pants Size", productSlugs: ["mens-pants", "womens-pants"], optional: true },
   ],
   "junior-ski-package": [
     { label: "Ski Length", productSlugs: ["kids-skis"] },
     { label: "Boot Size", productSlugs: ["kids-ski-boots"] },
     { label: "Pole Length", productSlugs: ["ski-poles"] },
-    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
-    { label: "Jacket Size", productSlugs: ["kids-boys-jackets", "kids-girls-jackets"], optional: true },
-    { label: "Pants Size", productSlugs: ["kids-pants", "kids-snowsuits"], optional: true },
   ],
   "adult-snowboard-package": [
     { label: "Board Length", productSlugs: ["mens-snowboards", "womens-snowboards"] },
     { label: "Boot Size", productSlugs: ["mens-snowboard-boots", "womens-snowboard-boots", "mens-stepon-boots", "womens-stepon-boots"] },
-    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
-    { label: "Jacket Size", productSlugs: ["mens-jackets", "womens-jackets"], optional: true },
-    { label: "Pants Size", productSlugs: ["mens-pants", "womens-pants"], optional: true },
   ],
   "junior-snowboard-package": [
     { label: "Board Length", productSlugs: ["kids-snowboards"] },
     { label: "Boot Size", productSlugs: ["kids-snowboard-boots"] },
-    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
-    { label: "Jacket Size", productSlugs: ["kids-boys-jackets", "kids-girls-jackets"], optional: true },
-    { label: "Pants Size", productSlugs: ["kids-pants", "kids-snowsuits"], optional: true },
+  ],
+  "mens-outerwear-package": [
+    { label: "Jacket Size", productSlugs: ["mens-jackets"] },
+    { label: "Pants Size", productSlugs: ["mens-pants"] },
+  ],
+  "womens-outerwear-package": [
+    { label: "Jacket Size", productSlugs: ["womens-jackets"] },
+    { label: "Pants Size", productSlugs: ["womens-pants"] },
+  ],
+  "kids-outerwear-package": [
+    { label: "Jacket Size", productSlugs: ["kids-boys-jackets", "kids-girls-jackets"] },
+    { label: "Pants Size", productSlugs: ["kids-pants", "kids-snowsuits"] },
   ],
 }
 type CartItem = {
