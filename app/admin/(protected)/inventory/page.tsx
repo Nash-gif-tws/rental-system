@@ -3,77 +3,84 @@ import Link from "next/link"
 import { Plus } from "lucide-react"
 import InventorySearch from "./InventorySearch"
 
+// Category → emoji icon for thumbnail placeholder
+const CATEGORY_ICON: Record<string, string> = {
+  skis: "🎿",
+  snowboards: "🏂",
+  boots: "🥾",
+  clothing: "🧥",
+  accessories: "🪖",
+}
+
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; q?: string; view?: string; status?: string }>
+  searchParams: Promise<{ category?: string; q?: string; status?: string }>
 }) {
   const params = await searchParams
-  const view = params.view ?? "summary"
 
-  // Get units currently checked out (in use)
-  const checkedOutUnitIds = await prisma.bookingItem.findMany({
-    where: {
-      unitId: { not: null },
-      booking: { status: "CHECKED_OUT" },
-    },
-    select: { unitId: true },
-  }).then((items) => new Set(items.map((i) => i.unitId!)))
+  // Units currently checked out
+  const checkedOutUnitIds = await prisma.bookingItem
+    .findMany({
+      where: { unitId: { not: null }, booking: { status: "CHECKED_OUT" } },
+      select: { unitId: true },
+    })
+    .then((items) => new Set(items.map((i) => i.unitId!)))
 
-  const [categories, products] = await Promise.all([
+  const [categories, units] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.product.findMany({
+    prisma.equipmentUnit.findMany({
       where: {
-        isActive: true,
-        ...(params.category ? { categoryId: params.category } : {}),
-        ...(params.q ? { name: { contains: params.q, mode: "insensitive" } } : {}),
+        ...(params.category ? { product: { categoryId: params.category } } : {}),
+        ...(params.q
+          ? {
+              OR: [
+                { product: { name: { contains: params.q, mode: "insensitive" } } },
+                { serialNumber: { contains: params.q, mode: "insensitive" } },
+                { size: { contains: params.q, mode: "insensitive" } },
+              ],
+            }
+          : {}),
       },
-      include: {
-        category: true,
-        units: {
-          orderBy: [{ size: "asc" }],
-        },
-      },
-      orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
+      include: { product: { include: { category: true } } },
+      orderBy: [
+        { product: { category: { name: "asc" } } },
+        { product: { name: "asc" } },
+        { size: "asc" },
+      ],
     }),
   ])
 
-  // Apply status filter after fetch
-  const filteredProducts = products
-    .map((p) => {
-      let units = p.units
-      if (params.status === "in-use") {
-        units = units.filter((u) => checkedOutUnitIds.has(u.id))
-      } else if (params.status === "available") {
-        units = units.filter((u) => u.isActive && !checkedOutUnitIds.has(u.id))
-      } else if (params.status === "inactive") {
-        units = units.filter((u) => !u.isActive)
-      }
-      return { ...p, units }
-    })
-    .filter((p) => p.units.length > 0 || !params.status)
+  // Apply status filter
+  const allUnits = units.filter((u) => {
+    if (params.status === "in-use") return checkedOutUnitIds.has(u.id)
+    if (params.status === "available") return u.isActive && !checkedOutUnitIds.has(u.id)
+    if (params.status === "inactive") return !u.isActive
+    return true
+  })
 
-  const totalUnits = filteredProducts.reduce((s, p) => s + p.units.length, 0)
-  const totalActive = filteredProducts.reduce(
-    (s, p) => s + p.units.filter((u) => u.isActive).length,
-    0
-  )
+  // Counts for status tabs
+  const totalCount = units.length
+  const availableCount = units.filter((u) => u.isActive && !checkedOutUnitIds.has(u.id)).length
+  const inUseCount = units.filter((u) => checkedOutUnitIds.has(u.id)).length
+  const inactiveCount = units.filter((u) => !u.isActive).length
+
+  // Derive SKU from product slug + size
+  function deriveSkuLabel(productName: string, size: string | null): string {
+    const base = productName
+      .replace(/\s+/g, "-")
+      .toUpperCase()
+      .replace(/[^A-Z0-9-]/g, "")
+    return size ? `${base}-${size.replace(/\s+/g, "").toUpperCase()}` : base
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">
-            Inventory
-          </h1>
-          <p className="text-xs text-[#B4B4B4] mt-1">
-            {totalUnits.toLocaleString()} units · {filteredProducts.length} products
-            {totalActive !== totalUnits && (
-              <> · <span className="text-[#C8FF00]">{totalActive} active</span></>
-            )}
-          </p>
-        </div>
+        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">
+          Inventory
+        </h1>
         <Link
           href="/admin/inventory/new"
           className="flex items-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
@@ -83,242 +90,193 @@ export default async function InventoryPage({
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-4 space-y-3">
-        <InventorySearch defaultValue={params.q} />
-
-        <div className="flex gap-2 flex-wrap">
-          <Link
-            href={buildUrl(params, { category: undefined })}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
-              !params.category
-                ? "bg-[#C8FF00] text-[#121212]"
-                : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
-            }`}
-          >
-            All Categories
-          </Link>
-          {categories.map((c) => (
+      {/* Tabs + search */}
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
+        {/* Status tabs */}
+        <div className="flex border-b border-[#2e2e2e] overflow-x-auto">
+          {[
+            { key: undefined, label: "All", count: totalCount },
+            { key: "available", label: "Active", count: availableCount },
+            { key: "inactive", label: "Draft", count: inactiveCount },
+            { key: "in-use", label: "In Use", count: inUseCount },
+          ].map(({ key, label, count }) => (
             <Link
-              key={c.id}
-              href={buildUrl(params, { category: c.id })}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
-                params.category === c.id
-                  ? "bg-[#C8FF00] text-[#121212]"
-                  : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
+              key={label}
+              href={buildUrl(params, { status: key })}
+              className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
+                params.status === key
+                  ? "border-[#C8FF00] text-white"
+                  : "border-transparent text-[#B4B4B4] hover:text-white"
               }`}
             >
-              {c.name}
+              {label}
+              <span
+                className={`text-[11px] px-1.5 py-0.5 rounded font-bold ${
+                  params.status === key
+                    ? "bg-[#C8FF00]/15 text-[#C8FF00]"
+                    : "bg-white/5 text-[#555]"
+                }`}
+              >
+                {count}
+              </span>
             </Link>
           ))}
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex gap-2 flex-wrap">
-            {[
-              { key: "available", label: "Available" },
-              { key: "in-use", label: "In Use" },
-              { key: "inactive", label: "Inactive" },
-            ].map(({ key, label }) => (
+        {/* Search + category filters */}
+        <div className="p-3 flex flex-wrap items-center gap-2 border-b border-[#2e2e2e]">
+          <div className="flex-1 min-w-48">
+            <InventorySearch defaultValue={params.q} />
+          </div>
+          <div className="flex gap-1.5 flex-wrap">
+            <Link
+              href={buildUrl(params, { category: undefined })}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                !params.category
+                  ? "bg-[#C8FF00] text-[#121212]"
+                  : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              All
+            </Link>
+            {categories.map((c) => (
               <Link
-                key={key}
-                href={buildUrl(params, { status: params.status === key ? undefined : key })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
-                  params.status === key
+                key={c.id}
+                href={buildUrl(params, { category: c.id })}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  params.category === c.id
                     ? "bg-[#C8FF00] text-[#121212]"
                     : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
                 }`}
               >
-                {label}
+                {CATEGORY_ICON[c.slug] ?? ""} {c.name}
               </Link>
             ))}
           </div>
-          <div className="flex gap-1 bg-[#121212] rounded-lg p-1">
-            <Link
-              href={buildUrl(params, { view: "summary" })}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                view === "summary" ? "bg-[#2e2e2e] text-white" : "text-[#B4B4B4] hover:text-white"
-              }`}
-            >
-              Summary
-            </Link>
-            <Link
-              href={buildUrl(params, { view: "detail" })}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                view === "detail" ? "bg-[#2e2e2e] text-white" : "text-[#B4B4B4] hover:text-white"
-              }`}
-            >
-              Detail
-            </Link>
-          </div>
         </div>
-      </div>
 
-      {/* Inventory */}
-      <div className="space-y-3">
-        {filteredProducts.length === 0 ? (
-          <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-12 text-center text-[#B4B4B4]">
-            {params.q ? `No products matching "${params.q}"` : "No inventory items found."}
+        {/* Table */}
+        {allUnits.length === 0 ? (
+          <div className="py-16 text-center text-[#B4B4B4] text-sm">
+            {params.q ? `No results for "${params.q}"` : "No units found."}
           </div>
-        ) : view === "summary" ? (
-          filteredProducts.map((product) => {
-            const bySize = product.units.reduce(
-              (acc, u) => {
-                const sz = u.size ?? "—"
-                if (!acc[sz]) acc[sz] = { total: 0, active: 0, inUse: 0 }
-                acc[sz].total++
-                if (u.isActive) acc[sz].active++
-                if (checkedOutUnitIds.has(u.id)) acc[sz].inUse++
-                return acc
-              },
-              {} as Record<string, { total: number; active: number; inUse: number }>
-            )
-
-            const sizeEntries = Object.entries(bySize).sort(([a], [b]) => sortSize(a, b))
-            const totalAvailable = product.units.filter(
-              (u) => u.isActive && !checkedOutUnitIds.has(u.id)
-            ).length
-            const totalInUse = product.units.filter((u) => checkedOutUnitIds.has(u.id)).length
-
-            return (
-              <div
-                key={product.id}
-                className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden"
-              >
-                <div className="px-5 py-4 flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="font-semibold text-white text-sm">{product.name}</h3>
-                      <span className="text-[10px] text-[#B4B4B4] bg-white/5 px-2 py-0.5 rounded">
-                        {product.category.name}
-                      </span>
-                      {totalInUse > 0 && (
-                        <span className="text-[10px] text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded">
-                          {totalInUse} in use
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-[#B4B4B4] mt-1">
-                      {totalAvailable} available · {product.units.length} total
-                    </p>
-                    {sizeEntries.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-3">
-                        {sizeEntries.map(([size, counts]) => (
-                          <span
-                            key={size}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border ${
-                              counts.active === 0
-                                ? "bg-white/[0.03] border-[#2a2a2a] text-[#555]"
-                                : counts.inUse > 0
-                                  ? "bg-orange-500/5 border-orange-500/20 text-orange-300"
-                                  : "bg-white/5 border-[#2e2e2e] text-[#E6E6E6]"
-                            }`}
-                          >
-                            <span className="font-medium">{size}</span>
-                            <span className="text-[#777]">
-                              {counts.active - counts.inUse}/{counts.total}
-                            </span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex gap-3 flex-shrink-0">
-                    <Link
-                      href={buildUrl(params, { view: "detail", q: product.name })}
-                      className="text-xs text-[#B4B4B4] hover:text-white transition-colors"
-                    >
-                      Units
-                    </Link>
-                    <Link
-                      href={`/admin/inventory/new?productId=${product.id}`}
-                      className="text-xs text-[#C8FF00] hover:text-[#b3e600] transition-colors"
-                    >
-                      + Add
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )
-          })
         ) : (
-          filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden"
-            >
-              <div className="px-6 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-white">{product.name}</h3>
-                  <p className="text-xs text-[#B4B4B4] mt-0.5">
-                    {product.category.name} · {product.units.length} units
-                  </p>
-                </div>
-                <Link
-                  href={`/admin/inventory/new?productId=${product.id}`}
-                  className="text-xs text-[#C8FF00] hover:text-[#b3e600] transition-colors"
-                >
-                  + Add Unit
-                </Link>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-[#2e2e2e]">
-                    <tr>
-                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">
-                        SKU
-                      </th>
-                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">
-                        Size
-                      </th>
-                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">
-                        Status
-                      </th>
-                      <th className="text-left px-6 py-2 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">
-                        Notes
-                      </th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#252525]">
-                    {product.units.map((unit) => {
-                      const inUse = checkedOutUnitIds.has(unit.id)
-                      const status = !unit.isActive
-                        ? { label: "Inactive", className: "text-[#555]" }
-                        : inUse
-                          ? { label: "In Use", className: "text-orange-400" }
-                          : { label: "Available", className: "text-[#C8FF00]" }
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b border-[#2e2e2e]">
+                <tr>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest w-12" />
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
+                    Product
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
+                    ID
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
+                    SKU
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
+                    Quantity
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
+                    Status
+                  </th>
+                  <th className="w-10" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1a1a1a]">
+                {allUnits.map((unit) => {
+                  const inUse = checkedOutUnitIds.has(unit.id)
+                  const categorySlug = unit.product.category.slug
+                  const sku = deriveSkuLabel(unit.product.name, unit.size)
 
-                      return (
-                        <tr key={unit.id} className="hover:bg-white/[0.02] transition-colors">
-                          <td className="px-6 py-3 font-mono text-xs text-[#E6E6E6]">
-                            {unit.serialNumber ?? unit.id.slice(-8).toUpperCase()}
-                          </td>
-                          <td className="px-6 py-3 text-[#E6E6E6]">{unit.size ?? "—"}</td>
-                          <td className="px-6 py-3">
-                            <span className={`text-xs font-semibold ${status.className}`}>
-                              {status.label}
+                  const status = !unit.isActive
+                    ? { label: "Inactive", dot: "bg-[#444]", text: "text-[#666]" }
+                    : inUse
+                      ? { label: "In Use", dot: "bg-orange-400", text: "text-orange-400" }
+                      : { label: "Active", dot: "bg-[#C8FF00]", text: "text-[#C8FF00]" }
+
+                  return (
+                    <tr
+                      key={unit.id}
+                      className="hover:bg-white/[0.025] transition-colors group"
+                    >
+                      {/* Thumbnail */}
+                      <td className="px-4 py-3">
+                        <div className="w-10 h-10 rounded-lg bg-[#252525] border border-[#2e2e2e] flex items-center justify-center text-xl">
+                          {unit.product.images?.[0] ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={unit.product.images[0]}
+                              alt=""
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            CATEGORY_ICON[categorySlug] ?? "📦"
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Product + size */}
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-medium text-white leading-tight">
+                          {unit.product.name}
+                          {unit.size && (
+                            <span className="ml-2 text-[11px] text-[#B4B4B4] font-normal">
+                              {unit.size}
                             </span>
-                          </td>
-                          <td className="px-6 py-3 text-[#B4B4B4] text-xs">
-                            {unit.notes ?? "—"}
-                          </td>
-                          <td className="px-6 py-3">
-                            <Link
-                              href={`/admin/inventory/${unit.id}`}
-                              className="text-[#C8FF00] hover:text-[#b3e600] text-xs transition-colors"
-                            >
-                              Edit
-                            </Link>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                          )}
+                        </p>
+                        <p className="text-[11px] text-[#555] mt-0.5">
+                          {unit.product.category.name}
+                        </p>
+                      </td>
+
+                      {/* ID */}
+                      <td className="px-4 py-3 font-mono text-xs text-[#777]">
+                        {unit.serialNumber ?? unit.id.slice(-8).toUpperCase()}
+                      </td>
+
+                      {/* SKU */}
+                      <td className="px-4 py-3 font-mono text-xs text-[#B4B4B4]">
+                        {sku}
+                      </td>
+
+                      {/* Quantity */}
+                      <td className="px-4 py-3 text-sm text-[#E6E6E6]">
+                        1
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status.dot}`} />
+                          <span className={`text-xs font-medium ${status.text}`}>
+                            {status.label}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Edit */}
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          href={`/admin/inventory/${unit.id}`}
+                          className="text-xs text-[#555] group-hover:text-[#C8FF00] transition-colors"
+                        >
+                          Edit
+                        </Link>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+
+            {/* Footer count */}
+            <div className="px-4 py-3 border-t border-[#2e2e2e] text-xs text-[#555]">
+              {allUnits.length.toLocaleString()} unit{allUnits.length !== 1 ? "s" : ""}
             </div>
-          ))
+          </div>
         )}
       </div>
     </div>
@@ -336,17 +294,4 @@ function buildUrl(
   }
   const qs = p.toString()
   return `/admin/inventory${qs ? `?${qs}` : ""}`
-}
-
-function sortSize(a: string, b: string): number {
-  const numA = parseFloat(a)
-  const numB = parseFloat(b)
-  if (!isNaN(numA) && !isNaN(numB)) return numA - numB
-  const order = ["XS", "S", "M", "L", "XL", "2XL", "3XL"]
-  const ia = order.indexOf(a.toUpperCase())
-  const ib = order.indexOf(b.toUpperCase())
-  if (ia !== -1 && ib !== -1) return ia - ib
-  if (ia !== -1) return -1
-  if (ib !== -1) return 1
-  return a.localeCompare(b)
 }
