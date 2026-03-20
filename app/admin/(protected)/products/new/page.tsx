@@ -9,10 +9,10 @@ export default async function NewProductPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <Link href="/admin/products" className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-3">
+        <Link href="/admin/products" className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors mb-4">
           <ArrowLeft className="h-4 w-4" /> Back to Products
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">New Product</h1>
+        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">New Product</h1>
       </div>
       <NewProductForm categories={categories} />
     </div>

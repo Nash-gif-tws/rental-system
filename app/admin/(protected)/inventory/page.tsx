@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 import InventorySearch from "./InventorySearch"
+import InventoryTable from "@/components/admin/InventoryTable"
 
 // Category → emoji icon for thumbnail placeholder
 const CATEGORY_ICON: Record<string, string> = {
@@ -65,14 +66,6 @@ export default async function InventoryPage({
   const inUseCount = units.filter((u) => checkedOutUnitIds.has(u.id)).length
   const inactiveCount = units.filter((u) => !u.isActive).length
 
-  // Derive SKU from product slug + size
-  function deriveSkuLabel(productName: string, size: string | null): string {
-    const base = productName
-      .replace(/\s+/g, "-")
-      .toUpperCase()
-      .replace(/[^A-Z0-9-]/g, "")
-    return size ? `${base}-${size.replace(/\s+/g, "").toUpperCase()}` : base
-  }
 
   return (
     <div className="space-y-5">
@@ -161,122 +154,7 @@ export default async function InventoryPage({
             {params.q ? `No results for "${params.q}"` : "No units found."}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-[#2e2e2e]">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest w-12" />
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
-                    Product
-                  </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
-                    ID
-                  </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
-                    SKU
-                  </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
-                    Quantity
-                  </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">
-                    Status
-                  </th>
-                  <th className="w-10" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1a1a1a]">
-                {allUnits.map((unit) => {
-                  const inUse = checkedOutUnitIds.has(unit.id)
-                  const categorySlug = unit.product.category.slug
-                  const sku = deriveSkuLabel(unit.product.name, unit.size)
-
-                  const status = !unit.isActive
-                    ? { label: "Inactive", dot: "bg-[#444]", text: "text-[#666]" }
-                    : inUse
-                      ? { label: "In Use", dot: "bg-orange-400", text: "text-orange-400" }
-                      : { label: "Active", dot: "bg-[#C8FF00]", text: "text-[#C8FF00]" }
-
-                  return (
-                    <tr
-                      key={unit.id}
-                      className="hover:bg-white/[0.025] transition-colors group"
-                    >
-                      {/* Thumbnail */}
-                      <td className="px-4 py-3">
-                        <div className="w-10 h-10 rounded-lg bg-[#252525] border border-[#2e2e2e] flex items-center justify-center text-xl">
-                          {unit.product.images?.[0] ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={unit.product.images[0]}
-                              alt=""
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            CATEGORY_ICON[categorySlug] ?? "📦"
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Product + size */}
-                      <td className="px-4 py-3">
-                        <p className="text-sm font-medium text-white leading-tight">
-                          {unit.product.name}
-                          {unit.size && (
-                            <span className="ml-2 text-[11px] text-[#B4B4B4] font-normal">
-                              {unit.size}
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-[11px] text-[#555] mt-0.5">
-                          {unit.product.category.name}
-                        </p>
-                      </td>
-
-                      {/* ID */}
-                      <td className="px-4 py-3 font-mono text-xs text-[#777]">
-                        {unit.serialNumber ?? unit.id.slice(-8).toUpperCase()}
-                      </td>
-
-                      {/* SKU */}
-                      <td className="px-4 py-3 font-mono text-xs text-[#B4B4B4]">
-                        {sku}
-                      </td>
-
-                      {/* Quantity */}
-                      <td className="px-4 py-3 text-sm text-[#E6E6E6]">
-                        1
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status.dot}`} />
-                          <span className={`text-xs font-medium ${status.text}`}>
-                            {status.label}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Edit */}
-                      <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/admin/inventory/${unit.id}`}
-                          className="text-xs text-[#555] group-hover:text-[#C8FF00] transition-colors"
-                        >
-                          Edit
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-
-            {/* Footer count */}
-            <div className="px-4 py-3 border-t border-[#2e2e2e] text-xs text-[#555]">
-              {allUnits.length.toLocaleString()} unit{allUnits.length !== 1 ? "s" : ""}
-            </div>
-          </div>
+          <InventoryTable units={allUnits} checkedOutUnitIds={checkedOutUnitIds} />
         )}
       </div>
     </div>

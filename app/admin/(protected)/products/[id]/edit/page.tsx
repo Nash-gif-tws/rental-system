@@ -34,16 +34,16 @@ export default async function EditProductPage({
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <Link href="/admin/products" className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-3">
+        <Link href="/admin/products" className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors mb-4">
           <ArrowLeft className="h-4 w-4" /> Back to Products
         </Link>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-          <span className={`text-xs px-2 py-0.5 rounded font-medium ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-500"}`}>
+          <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">{product.name}</h1>
+          <span className={`text-xs px-2 py-0.5 rounded font-bold ${product.isActive ? "bg-[#C8FF00]/15 text-[#C8FF00]" : "bg-white/5 text-[#555]"}`}>
             {product.isActive ? "Active" : "Inactive"}
           </span>
           {product.isPackage && (
-            <span className="text-xs px-2 py-0.5 rounded font-medium bg-purple-100 text-purple-800">Package</span>
+            <span className="text-xs px-2 py-0.5 rounded font-bold bg-blue-500/15 text-blue-400">Package</span>
           )}
         </div>
       </div>

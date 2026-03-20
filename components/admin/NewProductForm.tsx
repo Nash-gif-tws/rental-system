@@ -44,15 +44,15 @@ export default function NewProductForm({ categories }: { categories: Category[] 
     router.push(`/admin/products/${product.id}/edit`)
   }
 
-  const inputClass = "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-  const labelClass = "block text-sm font-medium text-gray-700 mb-1"
+  const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+  const labelCls = "block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1.5"
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-5">
       <div>
-        <label className={labelClass}>Name</label>
+        <label className={labelCls}>Name</label>
         <input
-          className={inputClass}
+          className={inputCls}
           value={form.name}
           onChange={(e) => handleNameChange(e.target.value)}
           placeholder="e.g. Adult Ski Package"
@@ -61,21 +61,21 @@ export default function NewProductForm({ categories }: { categories: Category[] 
       </div>
 
       <div>
-        <label className={labelClass}>Slug</label>
+        <label className={labelCls}>Slug</label>
         <input
-          className={inputClass}
+          className={inputCls}
           value={form.slug}
           onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
           placeholder="auto-generated from name"
           required
         />
-        <p className="text-xs text-gray-400 mt-1">URL-safe identifier. Auto-filled from name.</p>
+        <p className="text-xs text-[#555] mt-1">URL-safe identifier. Auto-filled from name.</p>
       </div>
 
       <div>
-        <label className={labelClass}>Description</label>
+        <label className={labelCls}>Description</label>
         <textarea
-          className={inputClass}
+          className={inputCls + " resize-none"}
           rows={3}
           value={form.description}
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -84,9 +84,9 @@ export default function NewProductForm({ categories }: { categories: Category[] 
       </div>
 
       <div>
-        <label className={labelClass}>Category</label>
+        <label className={labelCls}>Category</label>
         <select
-          className={inputClass}
+          className={inputCls + " bg-[#121212]"}
           value={form.categoryId}
           onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
           required
@@ -98,40 +98,40 @@ export default function NewProductForm({ categories }: { categories: Category[] 
       </div>
 
       <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={form.isPackage}
-            onChange={(e) => setForm((f) => ({ ...f, isPackage: e.target.checked }))}
-            className="w-4 h-4 rounded border-gray-300 text-sky-600 focus:ring-sky-400"
-          />
-          <span className="text-sm font-medium text-gray-700">This is a package</span>
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <div
+            onClick={() => setForm((f) => ({ ...f, isPackage: !f.isPackage }))}
+            className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${form.isPackage ? "bg-[#C8FF00]" : "bg-[#333]"}`}
+          >
+            <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#121212] transition-transform ${form.isPackage ? "translate-x-4" : "translate-x-0.5"}`} />
+          </div>
+          <span className="text-sm text-[#B4B4B4]">This is a package</span>
         </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={form.isActive}
-            onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-            className="w-4 h-4 rounded border-gray-300 text-sky-600 focus:ring-sky-400"
-          />
-          <span className="text-sm font-medium text-gray-700">Active (visible to customers)</span>
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <div
+            onClick={() => setForm((f) => ({ ...f, isActive: !f.isActive }))}
+            className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#C8FF00]" : "bg-[#333]"}`}
+          >
+            <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#121212] transition-transform ${form.isActive ? "translate-x-4" : "translate-x-0.5"}`} />
+          </div>
+          <span className="text-sm text-[#B4B4B4]">Active (visible to customers)</span>
         </label>
       </div>
 
-      {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3">{error}</p>}
+      {error && <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">{error}</p>}
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3 pt-2 border-t border-[#2e2e2e]">
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className="px-4 py-2.5 border border-[#2e2e2e] rounded-lg text-sm font-medium text-[#B4B4B4] hover:bg-white/5 transition-colors"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors"
+          className="flex-1 bg-[#C8FF00] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
         >
           {loading ? "Creating..." : "Create Product →"}
         </button>
