@@ -26,24 +26,45 @@ type Product = {
 type PackageComponent = { label: string; productSlugs: string[]; optional?: boolean }
 
 const PACKAGE_COMPONENTS: Record<string, PackageComponent[]> = {
-  "adult-ski-package": [
+  // Ski packages
+  "mens-ski-package": [
     { label: "Ski Length", productSlugs: ["adult-skis"] },
-    { label: "Boot Size", productSlugs: ["mens-ski-boots", "womens-ski-boots"] },
+    { label: "Boot Size", productSlugs: ["mens-ski-boots"] },
     { label: "Pole Length", productSlugs: ["ski-poles"] },
   ],
-  "junior-ski-package": [
+  "womens-ski-package": [
+    { label: "Ski Length", productSlugs: ["adult-skis"] },
+    { label: "Boot Size", productSlugs: ["womens-ski-boots"] },
+    { label: "Pole Length", productSlugs: ["ski-poles"] },
+  ],
+  "kids-ski-package": [
     { label: "Ski Length", productSlugs: ["kids-skis"] },
     { label: "Boot Size", productSlugs: ["kids-ski-boots"] },
     { label: "Pole Length", productSlugs: ["ski-poles"] },
   ],
-  "adult-snowboard-package": [
-    { label: "Board Length", productSlugs: ["mens-snowboards", "womens-snowboards"] },
-    { label: "Boot Size", productSlugs: ["mens-snowboard-boots", "womens-snowboard-boots", "mens-stepon-boots", "womens-stepon-boots"] },
+  // Snowboard packages
+  "mens-snowboard-package": [
+    { label: "Board Length", productSlugs: ["mens-snowboards"] },
+    { label: "Boot Size", productSlugs: ["mens-snowboard-boots"] },
   ],
-  "junior-snowboard-package": [
+  "womens-snowboard-package": [
+    { label: "Board Length", productSlugs: ["womens-snowboards"] },
+    { label: "Boot Size", productSlugs: ["womens-snowboard-boots"] },
+  ],
+  "kids-snowboard-package": [
     { label: "Board Length", productSlugs: ["kids-snowboards"] },
     { label: "Boot Size", productSlugs: ["kids-snowboard-boots"] },
   ],
+  // Burton Step-On packages
+  "mens-burton-stepon-package": [
+    { label: "Board Length", productSlugs: ["mens-snowboards"] },
+    { label: "Boot Size", productSlugs: ["mens-stepon-boots"] },
+  ],
+  "womens-burton-stepon-package": [
+    { label: "Board Length", productSlugs: ["womens-snowboards"] },
+    { label: "Boot Size", productSlugs: ["womens-stepon-boots"] },
+  ],
+  // Outerwear packages
   "mens-outerwear-package": [
     { label: "Jacket Size", productSlugs: ["mens-jackets"] },
     { label: "Pants Size", productSlugs: ["mens-pants"] },
