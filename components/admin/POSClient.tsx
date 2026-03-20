@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Minus, X, User, Search, ChevronDown, CheckCircle2, ArrowRight } from "lucide-react"
+import { Plus, Minus, X, User, Search, ChevronDown, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react"
 import { format, addDays } from "date-fns"
 import { formatCurrency } from "@/lib/utils"
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type PricingTier = { id: string; label: string; days: number; price: number }
+type SizeOption = { size: string; total: number; available: number }
 type Product = {
   id: string
   name: string
@@ -38,18 +39,12 @@ type Customer = {
 
 function getBestPrice(tiers: PricingTier[], days: number): number {
   if (!tiers.length || days === 0) return 0
-  const sorted = [...tiers].sort((a, b) => b.days - a.days)
-  const match = sorted.find((t) => t.days <= days)
-  return match ? match.price : tiers[0].price
+  const sorted = [...tiers].sort((a, b) => a.days - b.days)
+  return sorted.find((t) => t.days >= days)?.price ?? sorted[sorted.length - 1].price
 }
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  Skis: "🎿",
-  Snowboards: "🏂",
-  Boots: "🥾",
-  Clothing: "🧥",
-  Accessories: "⛑️",
-  Packages: "📦",
+  Skis: "🎿", Snowboards: "🏂", Boots: "🥾", Clothing: "🧥", Accessories: "⛑️", Packages: "📦",
 }
 
 const DURATIONS = [
@@ -63,6 +58,48 @@ const DURATIONS = [
   { label: "21 days", days: 21 },
   { label: "28 days", days: 28 },
 ]
+
+// ── Size tile grid ─────────────────────────────────────────────────────────
+
+function SizeTiles({
+  sizes,
+  selected,
+  onSelect,
+}: {
+  sizes: SizeOption[]
+  selected?: string
+  onSelect: (size: string) => void
+}) {
+  return (
+    <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+      {sizes.map((sz) => {
+        const isSelected = selected === sz.size
+        const unavailable = sz.available === 0
+        return (
+          <button
+            key={sz.size}
+            onClick={() => !unavailable && onSelect(sz.size)}
+            disabled={unavailable}
+            className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl border transition-all ${
+              isSelected
+                ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
+                : unavailable
+                  ? "bg-white/[0.02] text-[#3a3a3a] border-[#222] cursor-not-allowed"
+                  : "bg-[#252525] text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
+            }`}
+          >
+            <span className="text-sm font-bold leading-tight">{sz.size}</span>
+            <span className={`text-[10px] mt-0.5 font-medium ${
+              isSelected ? "text-[#121212]/60" : unavailable ? "text-[#3a3a3a]" : "text-[#555]"
+            }`}>
+              {sz.available}/{sz.total}
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 // ── Main Component ─────────────────────────────────────────────────────────
 
@@ -84,9 +121,25 @@ export default function POSClient({ products }: { products: Product[] }) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [done, setDone] = useState<string | null>(null)
-  const searchTimeout = useRef<any>(null)
 
+  // Availability / size picker
+  const [availMap, setAvailMap] = useState<Record<string, SizeOption[]>>({})
+  const [sizePicker, setSizePicker] = useState<{ product: Product; sizes: SizeOption[] } | null>(null)
+
+  const searchTimeout = useRef<any>(null)
   const endDate = format(addDays(new Date(startDate), durationDays), "yyyy-MM-dd")
+
+  // Fetch availability when dates change
+  useEffect(() => {
+    fetch(`/api/availability?start=${startDate}&end=${endDate}`)
+      .then((r) => r.json())
+      .then((data: any[]) => {
+        const map: Record<string, SizeOption[]> = {}
+        for (const p of data) map[p.id] = p.sizes ?? []
+        setAvailMap(map)
+      })
+      .catch(() => {})
+  }, [startDate, endDate])
 
   // Category tabs
   const categories = ["all", ...Array.from(new Set(products.map((p) => p.category.name)))]
@@ -95,29 +148,49 @@ export default function POSClient({ products }: { products: Product[] }) {
   )
 
   // Cart helpers
-  function getCartQty(productId: string) {
-    return cart.find((c) => c.productId === productId)?.qty ?? 0
+  function getCartItem(productId: string) {
+    return cart.find((c) => c.productId === productId)
   }
 
-  function addToCart(product: Product) {
+  function handleProductClick(product: Product) {
+    const sizes = availMap[product.id] ?? []
+    if (sizes.length > 0) {
+      setSizePicker({ product, sizes })
+    } else {
+      addToCartWithSize(product, "")
+    }
+  }
+
+  function addToCartWithSize(product: Product, size: string) {
     const unitPrice = getBestPrice(product.pricingTiers, durationDays)
     setCart((prev) => {
       const existing = prev.find((c) => c.productId === product.id)
       if (existing) {
-        return prev.map((c) => c.productId === product.id ? { ...c, qty: c.qty + 1 } : c)
+        return prev.map((c) => c.productId === product.id ? { ...c, size, unitPrice } : c)
       }
       return [...prev, {
         productId: product.id,
         name: product.name,
         categoryName: product.category.name,
         qty: 1,
-        size: "",
+        size,
         unitPrice,
       }]
     })
+    setSizePicker(null)
   }
 
-  function removeFromCart(productId: string) {
+  function incrementCart(product: Product) {
+    setCart((prev) => {
+      const existing = prev.find((c) => c.productId === product.id)
+      if (existing) {
+        return prev.map((c) => c.productId === product.id ? { ...c, qty: c.qty + 1 } : c)
+      }
+      return prev
+    })
+  }
+
+  function decrementCart(productId: string) {
     setCart((prev) => {
       const existing = prev.find((c) => c.productId === productId)
       if (existing && existing.qty > 1) {
@@ -129,10 +202,6 @@ export default function POSClient({ products }: { products: Product[] }) {
 
   function removeItemFully(productId: string) {
     setCart((prev) => prev.filter((c) => c.productId !== productId))
-  }
-
-  function updateSize(productId: string, size: string) {
-    setCart((prev) => prev.map((c) => c.productId === productId ? { ...c, size } : c))
   }
 
   // Recalculate prices when duration changes
@@ -187,8 +256,6 @@ export default function POSClient({ products }: { products: Product[] }) {
     }
 
     const booking = await res.json()
-
-    // If "book" mode, also mark as CONFIRMED
     if (mode === "book") {
       await fetch(`/api/bookings/${booking.id}/status`, {
         method: "PATCH",
@@ -196,11 +263,10 @@ export default function POSClient({ products }: { products: Product[] }) {
         body: JSON.stringify({ status: "CONFIRMED" }),
       })
     }
-
     setDone(booking.bookingNumber)
   }
 
-  // ── Done state ────────────────────────────────────────────────────────────
+  // ── Done state ─────────────────────────────────────────────────────────
   if (done) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -230,6 +296,39 @@ export default function POSClient({ products }: { products: Product[] }) {
 
   return (
     <div className="flex flex-col h-full">
+
+      {/* ── Size picker overlay ──────────────────────────────────────────── */}
+      {sizePicker && (
+        <div className="absolute inset-0 z-50 bg-black/70 flex items-end sm:items-center justify-center p-4" onClick={() => setSizePicker(null)}>
+          <div
+            className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-2xl w-full max-w-lg p-6 space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-white">{sizePicker.product.name}</p>
+                <p className="text-xs text-[#B4B4B4] mt-0.5">Select a size to add to order</p>
+              </div>
+              <button onClick={() => setSizePicker(null)} className="text-[#B4B4B4] hover:text-white transition-colors">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <SizeTiles
+              sizes={sizePicker.sizes}
+              selected={getCartItem(sizePicker.product.id)?.size}
+              onSelect={(size) => addToCartWithSize(sizePicker.product, size)}
+            />
+            <p className="text-center text-xs text-[#555]">
+              {sizePicker.product.pricingTiers.length > 0 && (
+                <span className="text-[#C8FF00] font-bold">
+                  {formatCurrency(getBestPrice(sizePicker.product.pricingTiers, durationDays))}
+                </span>
+              )}{" "}
+              for {durationDays} day{durationDays !== 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-4 pb-5 border-b border-[#2e2e2e] flex-shrink-0">
@@ -302,7 +401,7 @@ export default function POSClient({ products }: { products: Product[] }) {
       {/* ── Body ─────────────────────────────────────────────────────────── */}
       <div className="flex gap-5 flex-1 min-h-0 pt-5">
 
-        {/* ── Product catalog ─────────────────────────────────────────── */}
+        {/* ── Product catalog ──────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col min-h-0">
 
           {/* Category tabs */}
@@ -324,7 +423,6 @@ export default function POSClient({ products }: { products: Product[] }) {
 
           {/* Product grid */}
           <div className="flex-1 overflow-y-auto pr-1">
-            {/* Group by packages first, then individual */}
             {[true, false].map((isPackage) => {
               const group = filtered.filter((p) => p.isPackage === isPackage)
               if (!group.length) return null
@@ -335,10 +433,11 @@ export default function POSClient({ products }: { products: Product[] }) {
                   </p>
                   <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                     {group.map((product) => {
-                      const qty = getCartQty(product.id)
+                      const cartItem = getCartItem(product.id)
                       const price = getBestPrice(product.pricingTiers, durationDays)
                       const emoji = CATEGORY_EMOJI[product.category.name] ?? "📦"
-                      const inCart = qty > 0
+                      const inCart = !!cartItem
+                      const sizes = availMap[product.id] ?? []
 
                       return (
                         <div
@@ -349,36 +448,44 @@ export default function POSClient({ products }: { products: Product[] }) {
                               : "border-[#2e2e2e] bg-[#1e1e1e] hover:border-[#444]"
                           }`}
                         >
-                          {/* Product info */}
                           <button
                             className="w-full text-left p-4"
-                            onClick={() => addToCart(product)}
+                            onClick={() => handleProductClick(product)}
                           >
                             <div className="text-2xl mb-2">{emoji}</div>
                             <p className="font-medium text-white text-sm leading-tight">{product.name}</p>
                             <p className="text-xs text-[#B4B4B4] mt-0.5">{product.category.name}</p>
                             {price > 0 ? (
                               <p className="text-[#C8FF00] font-bold text-sm mt-2">
-                                {formatCurrency(price * durationDays)}
+                                {formatCurrency(price)}
                                 <span className="text-[#B4B4B4] font-normal text-xs"> / {durationDays}d</span>
                               </p>
                             ) : (
                               <p className="text-[#B4B4B4] text-xs mt-2">No pricing set</p>
                             )}
+                            {inCart && cartItem.size && (
+                              <span className="inline-block mt-1.5 text-[10px] font-bold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 px-2 py-0.5 rounded">
+                                {cartItem.size}
+                              </span>
+                            )}
+                            {!inCart && sizes.length > 0 && (
+                              <p className="text-[10px] text-[#555] mt-1">
+                                {sizes.filter(s => s.available > 0).length} sizes available
+                              </p>
+                            )}
                           </button>
 
-                          {/* Qty controls — shown when in cart */}
                           {inCart && (
                             <div className="flex items-center justify-between border-t border-[#C8FF00]/20 px-3 py-2 bg-[#C8FF00]/5">
                               <button
-                                onClick={() => removeFromCart(product.id)}
+                                onClick={() => decrementCart(product.id)}
                                 className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
                               >
                                 <Minus className="h-3 w-3 text-white" />
                               </button>
-                              <span className="font-bold text-white text-sm">{qty}</span>
+                              <span className="font-bold text-white text-sm">{cartItem.qty}</span>
                               <button
-                                onClick={() => addToCart(product)}
+                                onClick={() => incrementCart(product)}
                                 className="w-7 h-7 rounded-lg bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center transition-colors"
                               >
                                 <Plus className="h-3 w-3 text-[#121212]" />
@@ -395,7 +502,7 @@ export default function POSClient({ products }: { products: Product[] }) {
           </div>
         </div>
 
-        {/* ── Right panel ─────────────────────────────────────────────── */}
+        {/* ── Right panel ──────────────────────────────────────────────── */}
         <div className="w-80 flex-shrink-0 flex flex-col bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl overflow-hidden">
 
           {rightPanel === "order" ? (
@@ -410,43 +517,70 @@ export default function POSClient({ products }: { products: Product[] }) {
                     <p className="text-[#B4B4B4]/50 text-xs mt-1">Tap a product to add it</p>
                   </div>
                 ) : (
-                  cart.map((item) => (
-                    <div key={item.productId} className="bg-[#252525] rounded-lg p-3 space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">{item.name}</p>
-                          <p className="text-xs text-[#B4B4B4]">{item.categoryName}</p>
-                        </div>
-                        <button onClick={() => removeItemFully(item.productId)} className="text-[#B4B4B4] hover:text-red-400 transition-colors mt-0.5">
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-
-                      {/* Size input */}
-                      <input
-                        value={item.size}
-                        onChange={(e) => updateSize(item.productId, e.target.value)}
-                        placeholder="Size (e.g. 27.5, 160cm)"
-                        className="w-full bg-[#1e1e1e] border border-[#333] rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
-                      />
-
-                      {/* Qty + price */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => removeFromCart(item.productId)} className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center">
-                            <Minus className="h-3 w-3 text-white" />
-                          </button>
-                          <span className="text-white text-sm font-medium w-4 text-center">{item.qty}</span>
-                          <button onClick={() => addToCart(products.find((p) => p.id === item.productId)!)} className="w-6 h-6 rounded bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center">
-                            <Plus className="h-3 w-3 text-[#121212]" />
+                  cart.map((item) => {
+                    const product = products.find((p) => p.id === item.productId)
+                    const sizes = product ? (availMap[product.id] ?? []) : []
+                    return (
+                      <div key={item.productId} className="bg-[#252525] rounded-lg p-3 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-white truncate">{item.name}</p>
+                            <p className="text-xs text-[#B4B4B4]">{item.categoryName}</p>
+                          </div>
+                          <button onClick={() => removeItemFully(item.productId)} className="text-[#B4B4B4] hover:text-red-400 transition-colors mt-0.5">
+                            <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <span className="text-[#C8FF00] font-bold text-sm">
-                          {formatCurrency(item.unitPrice * item.qty)}
-                        </span>
+
+                        {/* Size — show tag if set, or picker if has sizes */}
+                        {sizes.length > 0 ? (
+                          <div className="flex items-center gap-2">
+                            {item.size ? (
+                              <>
+                                <span className="text-xs font-bold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 px-2 py-0.5 rounded">
+                                  {item.size}
+                                </span>
+                                <button
+                                  onClick={() => product && setSizePicker({ product, sizes })}
+                                  className="text-[10px] text-[#555] hover:text-[#B4B4B4] transition-colors"
+                                >
+                                  Change
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => product && setSizePicker({ product, sizes })}
+                                className="text-xs text-red-400 hover:text-red-300 transition-colors font-medium"
+                              >
+                                ⚠ Select size
+                              </button>
+                            )}
+                          </div>
+                        ) : item.size ? (
+                          <span className="text-xs text-[#B4B4B4]">Size: {item.size}</span>
+                        ) : null}
+
+                        {/* Qty + price */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => decrementCart(item.productId)} className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                              <Minus className="h-3 w-3 text-white" />
+                            </button>
+                            <span className="text-white text-sm font-medium w-4 text-center">{item.qty}</span>
+                            <button
+                              onClick={() => product && incrementCart(product)}
+                              className="w-6 h-6 rounded bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center"
+                            >
+                              <Plus className="h-3 w-3 text-[#121212]" />
+                            </button>
+                          </div>
+                          <span className="text-[#C8FF00] font-bold text-sm">
+                            {formatCurrency(item.unitPrice * item.qty)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    )
+                  })
                 )}
               </div>
 
@@ -480,14 +614,11 @@ export default function POSClient({ products }: { products: Product[] }) {
 
               {/* Discount + totals */}
               <div className="border-t border-[#2e2e2e] p-4 space-y-3">
-                {/* Discount */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-[#B4B4B4] w-16">Discount</span>
                   <div className="flex-1 relative">
                     <input
-                      type="number"
-                      min="0"
-                      max="100"
+                      type="number" min="0" max="100"
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
                       placeholder="0"
@@ -497,7 +628,6 @@ export default function POSClient({ products }: { products: Product[] }) {
                   </div>
                 </div>
 
-                {/* Totals */}
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between text-[#B4B4B4]">
                     <span>Subtotal</span>
@@ -515,7 +645,6 @@ export default function POSClient({ products }: { products: Product[] }) {
                   </div>
                 </div>
 
-                {/* Duration summary */}
                 <div className="text-xs text-[#B4B4B4] bg-[#252525] rounded-lg px-3 py-2 flex justify-between">
                   <span>{durationDays} day{durationDays !== 1 ? "s" : ""}</span>
                   <span>{format(new Date(startDate), "d MMM")} → {format(new Date(endDate), "d MMM")}</span>
@@ -525,7 +654,6 @@ export default function POSClient({ products }: { products: Product[] }) {
                   <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>
                 )}
 
-                {/* Submit */}
                 <button
                   onClick={handleSubmit}
                   disabled={submitting || !cart.length}
@@ -537,19 +665,15 @@ export default function POSClient({ products }: { products: Product[] }) {
               </div>
             </>
           ) : (
-            /* ── Customer panel ───────────────────────────────────────── */
+            /* ── Customer panel ──────────────────────────────────────── */
             <div className="flex flex-col h-full">
               <div className="p-4 border-b border-[#2e2e2e] flex items-center gap-3">
-                <button
-                  onClick={() => setRightPanel("order")}
-                  className="text-[#B4B4B4] hover:text-white transition-colors"
-                >
-                  ← Back
+                <button onClick={() => setRightPanel("order")} className="text-[#B4B4B4] hover:text-white transition-colors">
+                  <ArrowLeft className="h-4 w-4" />
                 </button>
                 <p className="text-sm font-semibold text-white">Customer</p>
               </div>
 
-              {/* Search/New toggle */}
               <div className="p-4 border-b border-[#2e2e2e]">
                 <div className="flex bg-[#252525] rounded-lg p-0.5 mb-3">
                   <button
