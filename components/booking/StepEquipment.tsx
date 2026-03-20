@@ -426,29 +426,12 @@ export default function StepEquipment({
                   {/* ── Individual size picker ── */}
                   {isOpen && !isPkg && product.hasSizes && (
                     <div className="border-t border-[#2a2a2a] px-4 pb-4 pt-3">
-                      <p className="text-xs text-[#B4B4B4] mb-2.5 uppercase tracking-wider">Select your size</p>
-                      <div className="flex flex-wrap gap-2">
-                        {product.sizes.map((sz) => {
-                          const isSelected = selected?.size === sz.size
-                          const unavailable = sz.available === 0
-                          return (
-                            <button
-                              key={sz.size}
-                              onClick={() => !unavailable && selectSize(product, sz.size)}
-                              disabled={unavailable}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                isSelected
-                                  ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
-                                  : unavailable
-                                    ? "bg-white/[0.03] text-[#444] border-[#252525] line-through cursor-not-allowed"
-                                    : "bg-white/5 text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
-                              }`}
-                            >
-                              {sz.size}
-                            </button>
-                          )
-                        })}
-                      </div>
+                      <SizeTiles
+                        label="Select your size"
+                        sizes={product.sizes}
+                        selected={selected?.size}
+                        onSelect={(size) => selectSize(product, size)}
+                      />
                       {selected && (
                         <button
                           onClick={() => removeProduct(product.id)}
@@ -499,8 +482,8 @@ export default function StepEquipment({
   )
 }
 
-// ── Reusable size field component ──────────────────────────────────────────────
-function SizeField({
+// ── Size tile grid — shows available/total per size ───────────────────────────
+function SizeTiles({
   label,
   sizes,
   selected,
@@ -513,11 +496,11 @@ function SizeField({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-[#B4B4B4] uppercase tracking-wider mb-2">{label}</p>
+      <p className="text-xs font-semibold text-[#B4B4B4] uppercase tracking-wider mb-2.5">{label}</p>
       {sizes.length === 0 ? (
         <p className="text-xs text-[#555]">No sizes available</p>
       ) : (
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
           {sizes.map((sz) => {
             const isSelected = selected === sz.size
             const unavailable = sz.available === 0
@@ -526,20 +509,42 @@ function SizeField({
                 key={sz.size}
                 onClick={() => !unavailable && onSelect(sz.size)}
                 disabled={unavailable}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl border transition-all ${
                   isSelected
                     ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
                     : unavailable
-                      ? "bg-white/[0.03] text-[#444] border-[#252525] line-through cursor-not-allowed"
-                      : "bg-white/5 text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
+                      ? "bg-white/[0.02] text-[#3a3a3a] border-[#222] cursor-not-allowed"
+                      : "bg-[#252525] text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
                 }`}
               >
-                {sz.size}
+                <span className="text-sm font-bold leading-tight">{sz.size}</span>
+                <span className={`text-[10px] mt-0.5 font-medium ${
+                  isSelected ? "text-[#121212]/60" : unavailable ? "text-[#3a3a3a]" : "text-[#555]"
+                }`}>
+                  {sz.available}/{sz.total}
+                </span>
               </button>
             )
           })}
         </div>
       )}
     </div>
+  )
+}
+
+// ── Reusable size field for package components ─────────────────────────────────
+function SizeField({
+  label,
+  sizes,
+  selected,
+  onSelect,
+}: {
+  label: string
+  sizes: SizeOption[]
+  selected?: string
+  onSelect: (size: string) => void
+}) {
+  return (
+    <SizeTiles label={label} sizes={sizes} selected={selected} onSelect={onSelect} />
   )
 }
