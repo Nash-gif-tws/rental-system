@@ -21,8 +21,6 @@ type Product = {
 }
 
 // ─── Package component definitions ───────────────────────────────────────────
-// Maps package slug → ordered list of size fields, each sourcing from one or
-// more inventory product slugs.
 type PackageComponent = {
   label: string
   productSlugs: string[]
@@ -34,11 +32,17 @@ const PACKAGE_COMPONENTS: Record<string, PackageComponent[]> = {
     { label: "Ski Length", productSlugs: ["adult-skis"] },
     { label: "Boot Size", productSlugs: ["mens-ski-boots", "womens-ski-boots"] },
     { label: "Pole Length", productSlugs: ["ski-poles"] },
+    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
+    { label: "Jacket Size", productSlugs: ["mens-jackets", "womens-jackets"], optional: true },
+    { label: "Pants Size", productSlugs: ["mens-pants", "womens-pants"], optional: true },
   ],
   "junior-ski-package": [
     { label: "Ski Length", productSlugs: ["kids-skis"] },
     { label: "Boot Size", productSlugs: ["kids-ski-boots"] },
     { label: "Pole Length", productSlugs: ["ski-poles"] },
+    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
+    { label: "Jacket Size", productSlugs: ["kids-boys-jackets", "kids-girls-jackets"], optional: true },
+    { label: "Pants Size", productSlugs: ["kids-pants", "kids-snowsuits"], optional: true },
   ],
   "adult-snowboard-package": [
     { label: "Board Length", productSlugs: ["mens-snowboards", "womens-snowboards"] },
@@ -51,20 +55,22 @@ const PACKAGE_COMPONENTS: Record<string, PackageComponent[]> = {
         "womens-stepon-boots",
       ],
     },
+    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
+    { label: "Jacket Size", productSlugs: ["mens-jackets", "womens-jackets"], optional: true },
+    { label: "Pants Size", productSlugs: ["mens-pants", "womens-pants"], optional: true },
   ],
   "junior-snowboard-package": [
     { label: "Board Length", productSlugs: ["kids-snowboards"] },
     { label: "Boot Size", productSlugs: ["kids-snowboard-boots"] },
+    { label: "Helmet Size", productSlugs: ["helmets"], optional: true },
+    { label: "Jacket Size", productSlugs: ["kids-boys-jackets", "kids-girls-jackets"], optional: true },
+    { label: "Pants Size", productSlugs: ["kids-pants", "kids-snowsuits"], optional: true },
   ],
 }
 
 const CATEGORY_ORDER = ["snowboards", "skis", "boots", "clothing", "accessories"]
 const CATEGORY_EMOJI: Record<string, string> = {
-  snowboards: "🏂",
-  skis: "🎿",
-  boots: "🥾",
-  clothing: "🧥",
-  accessories: "🪖",
+  snowboards: "🏂", skis: "🎿", boots: "🥾", clothing: "🧥", accessories: "🪖",
 }
 
 function getBestPrice(tiers: PricingTier[], days: number): number {
@@ -73,16 +79,16 @@ function getBestPrice(tiers: PricingTier[], days: number): number {
   return sorted.find((t) => t.days <= days)?.price ?? tiers[0].price
 }
 
-// Merge + deduplicate + sort sizes from multiple products
-function mergeComponentSizes(productSlugs: string[], productsBySlug: Record<string, Product>): SizeOption[] {
+function mergeComponentSizes(
+  productSlugs: string[],
+  productsBySlug: Record<string, Product>
+): SizeOption[] {
   const merged: Record<string, SizeOption> = {}
   for (const slug of productSlugs) {
     const p = productsBySlug[slug]
     if (!p) continue
     for (const sz of p.sizes) {
-      if (!merged[sz.size]) {
-        merged[sz.size] = { size: sz.size, total: 0, available: 0 }
-      }
+      if (!merged[sz.size]) merged[sz.size] = { size: sz.size, total: 0, available: 0 }
       merged[sz.size].total += sz.total
       merged[sz.size].available += sz.available
     }
@@ -103,7 +109,6 @@ function sortSize(a: string, b: string): number {
   return a.localeCompare(b)
 }
 
-// Format package sizes as human-readable string
 function formatPackageSize(sizes: Record<string, string>): string {
   return Object.entries(sizes)
     .map(([label, size]) => `${label}: ${size}`)
@@ -111,10 +116,7 @@ function formatPackageSize(sizes: Record<string, string>): string {
 }
 
 export default function StepEquipment({
-  state,
-  onUpdate,
-  onNext,
-  onBack,
+  state, onUpdate, onNext, onBack,
 }: {
   state: BookingState
   onUpdate: (u: Partial<BookingState>) => void
@@ -124,19 +126,23 @@ export default function StepEquipment({
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [openProductId, setOpenProductId] = useState<string | null>(null)
-  // Package component selections: productId → { componentLabel → selectedSize }
   const [packageSizes, setPackageSizes] = useState<Record<string, Record<string, string>>>({})
 
   useEffect(() => {
     fetch(`/api/availability?start=${state.startDate}&end=${state.endDate}`)
       .then((r) => r.json())
-      .then((data) => {
-        setProducts(data)
+      .then((data: Product[]) => {
+        // Filter out dead seed products (no inventory, not a defined package)
+        const visible = data.filter((p) => {
+          if (PACKAGE_COMPONENTS[p.slug]) return true  // known package → always show
+          if (p.isPackage) return false                  // unknown package → hide
+          return p.totalUnits > 0                        // individual → only if has stock
+        })
+        setProducts(visible)
         setLoading(false)
       })
   }, [state.startDate, state.endDate])
 
-  // Build slug → product lookup
   const productsBySlug = products.reduce(
     (acc, p) => { acc[p.slug] = p; return acc },
     {} as Record<string, Product>
@@ -146,7 +152,7 @@ export default function StepEquipment({
     return state.items.find((i) => i.productId === productId)
   }
 
-  // ── Individual product size selection ──
+  // ── Individual product: select a size ──
   function selectSize(product: Product, size: string) {
     const price = getBestPrice(product.pricingTiers, state.rentalDays)
     const existing = state.items.find((i) => i.productId === product.id)
@@ -176,83 +182,67 @@ export default function StepEquipment({
   }
 
   function toggleProduct(product: Product) {
-    if (!product.hasSizes && !PACKAGE_COMPONENTS[product.slug] && product.available > 0) {
+    const isPackage = !!PACKAGE_COMPONENTS[product.slug]
+    if (!product.hasSizes && !isPackage && product.available > 0) {
       const exists = state.items.find((i) => i.productId === product.id)
       if (exists) {
         removeProduct(product.id)
       } else {
         const price = getBestPrice(product.pricingTiers, state.rentalDays)
-        onUpdate({
-          items: [...state.items, { productId: product.id, productName: product.name, category: product.category, size: "", quantity: 1, unitPrice: price }],
-        })
+        onUpdate({ items: [...state.items, { productId: product.id, productName: product.name, category: product.category, size: "", quantity: 1, unitPrice: price }] })
       }
       return
     }
     setOpenProductId((prev) => (prev === product.id ? null : product.id))
   }
 
-  // ── Package component selection ──
+  // ── Package: select a component size ──
   function selectPackageComponentSize(product: Product, componentLabel: string, size: string) {
     const current = packageSizes[product.id] ?? {}
     const isDeselect = current[componentLabel] === size
-
     const updated = isDeselect
       ? Object.fromEntries(Object.entries(current).filter(([k]) => k !== componentLabel))
       : { ...current, [componentLabel]: size }
 
     setPackageSizes((p) => ({ ...p, [product.id]: updated }))
 
-    // Check if all required components are now selected → update cart item
     const components = PACKAGE_COMPONENTS[product.slug] ?? []
     const required = components.filter((c) => !c.optional)
-    const allSelected = required.every((c) => updated[c.label])
-
+    const allRequired = required.every((c) => updated[c.label])
     const price = getBestPrice(product.pricingTiers, state.rentalDays)
     const existing = state.items.find((i) => i.productId === product.id)
 
-    if (allSelected) {
+    if (allRequired) {
       const sizeStr = formatPackageSize(updated)
       if (existing) {
         onUpdate({ items: state.items.map((i) => i.productId === product.id ? { ...i, size: sizeStr } : i) })
       } else {
-        onUpdate({
-          items: [...state.items, { productId: product.id, productName: product.name, category: product.category, size: sizeStr, quantity: 1, unitPrice: price }],
-        })
+        onUpdate({ items: [...state.items, { productId: product.id, productName: product.name, category: product.category, size: sizeStr, quantity: 1, unitPrice: price }] })
       }
-    } else {
-      // Remove from cart if incomplete
-      if (existing) {
-        onUpdate({ items: state.items.filter((i) => i.productId !== product.id) })
-      }
+    } else if (existing) {
+      onUpdate({ items: state.items.filter((i) => i.productId !== product.id) })
     }
   }
 
-  // Check if a package is fully configured
   function packageComplete(product: Product): boolean {
-    const components = PACKAGE_COMPONENTS[product.slug] ?? []
-    const required = components.filter((c) => !c.optional)
+    const required = (PACKAGE_COMPONENTS[product.slug] ?? []).filter((c) => !c.optional)
     const current = packageSizes[product.id] ?? {}
     return required.every((c) => current[c.label])
   }
 
-  // Determine if a package has any inventory at all
   function packageHasInventory(slug: string): boolean {
     const components = PACKAGE_COMPONENTS[slug]
     if (!components) return false
-    return components.every((comp) =>
-      comp.productSlugs.some((s) => (productsBySlug[s]?.available ?? 0) > 0)
-    )
+    return components
+      .filter((c) => !c.optional)
+      .every((comp) => comp.productSlugs.some((s) => (productsBySlug[s]?.available ?? 0) > 0))
   }
 
   const subtotal = state.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0)
   const itemCount = state.items.length
 
   const grouped = products.reduce(
-    (acc, p) => {
-      if (!acc[p.categorySlug]) acc[p.categorySlug] = []
-      acc[p.categorySlug].push(p)
-      return acc
-    },
+    (acc, p) => { if (!acc[p.categorySlug]) acc[p.categorySlug] = []; acc[p.categorySlug].push(p); return acc },
     {} as Record<string, Product[]>
   )
   const sortedCategories = CATEGORY_ORDER.filter((s) => grouped[s])
@@ -303,23 +293,21 @@ export default function StepEquipment({
               const price = getBestPrice(product.pricingTiers, state.rentalDays)
               const selected = getSelectedItem(product.id)
               const isOpen = openProductId === product.id
-              const isPackage = !!PACKAGE_COMPONENTS[product.slug]
-              const outOfStock = isPackage
+              const isPkg = !!PACKAGE_COMPONENTS[product.slug]
+              const outOfStock = isPkg
                 ? !packageHasInventory(product.slug)
-                : product.totalUnits > 0 && product.available === 0
+                : product.available === 0
 
               return (
                 <div
                   key={product.id}
                   className={`bg-[#1e1e1e] border rounded-xl transition-all duration-200 overflow-hidden ${
-                    selected
-                      ? "border-[#C8FF00]/50"
-                      : outOfStock
-                        ? "border-[#2e2e2e] opacity-50"
-                        : "border-[#2e2e2e] hover:border-[#444]"
+                    selected ? "border-[#C8FF00]/50"
+                    : outOfStock ? "border-[#2e2e2e] opacity-40"
+                    : "border-[#2e2e2e] hover:border-[#444]"
                   }`}
                 >
-                  {/* Product row */}
+                  {/* Row */}
                   <button
                     onClick={() => !outOfStock && toggleProduct(product)}
                     disabled={outOfStock}
@@ -339,7 +327,7 @@ export default function StepEquipment({
                           ${price.toFixed(2)}
                           <span className="text-[#B4B4B4] font-normal text-xs"> / rental</span>
                         </p>
-                        {selected?.size && !isPackage && (
+                        {selected?.size && !isPkg && (
                           <span className="text-xs bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 px-2 py-0.5 rounded-full">
                             {selected.size}
                           </span>
@@ -351,74 +339,72 @@ export default function StepEquipment({
                       <span className="text-xs text-red-400 font-semibold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg flex-shrink-0">
                         Unavailable
                       </span>
-                    ) : selected && (!isPackage || packageComplete(product)) ? (
+                    ) : selected && (!isPkg || packageComplete(product)) ? (
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs text-[#C8FF00] font-semibold bg-[#C8FF00]/10 border border-[#C8FF00]/20 px-3 py-1.5 rounded-lg">
                           ✓ Added
                         </span>
-                        <ChevronDown className={`h-4 w-4 text-[#B4B4B4] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                        {(product.hasSizes || isPkg) && (
+                          <ChevronDown className={`h-4 w-4 text-[#B4B4B4] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                        )}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs text-[#B4B4B4] bg-white/5 border border-[#2e2e2e] px-3 py-1.5 rounded-lg">
-                          {isPackage ? "Select sizes" : product.hasSizes ? "Select size" : "Add"}
+                          {isPkg ? "Select sizes" : product.hasSizes ? "Select size" : "Add"}
                         </span>
-                        {(product.hasSizes || isPackage) && (
+                        {(product.hasSizes || isPkg) && (
                           <ChevronDown className={`h-4 w-4 text-[#B4B4B4] transition-transform ${isOpen ? "rotate-180" : ""}`} />
                         )}
                       </div>
                     )}
                   </button>
 
-                  {/* ── Package multi-component size picker ── */}
-                  {isOpen && isPackage && (() => {
+                  {/* ── Package multi-component picker ── */}
+                  {isOpen && isPkg && (() => {
                     const components = PACKAGE_COMPONENTS[product.slug] ?? []
+                    const required = components.filter((c) => !c.optional)
+                    const optional = components.filter((c) => c.optional)
                     const current = packageSizes[product.id] ?? {}
+
                     return (
-                      <div className="px-4 pb-4 border-t border-[#2a2a2a] pt-4 space-y-5">
-                        {components.map((comp) => {
+                      <div className="border-t border-[#2a2a2a] px-4 pb-4 pt-4 space-y-5">
+                        {/* Required fields */}
+                        {required.map((comp) => {
                           const sizes = mergeComponentSizes(comp.productSlugs, productsBySlug)
                           return (
-                            <div key={comp.label}>
-                              <p className="text-xs font-semibold text-[#B4B4B4] uppercase tracking-wider mb-2">
-                                {comp.label}
-                                {comp.optional && (
-                                  <span className="ml-1.5 text-[#555] font-normal normal-case tracking-normal">
-                                    (optional)
-                                  </span>
-                                )}
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {sizes.length === 0 ? (
-                                  <p className="text-xs text-[#555]">No sizes available</p>
-                                ) : (
-                                  sizes.map((sz) => {
-                                    const isSelected = current[comp.label] === sz.size
-                                    const unavailable = sz.available === 0
-                                    return (
-                                      <button
-                                        key={sz.size}
-                                        onClick={() => !unavailable && selectPackageComponentSize(product, comp.label, sz.size)}
-                                        disabled={unavailable}
-                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                          isSelected
-                                            ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
-                                            : unavailable
-                                              ? "bg-white/[0.03] text-[#444] border-[#252525] line-through cursor-not-allowed"
-                                              : "bg-white/5 text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
-                                        }`}
-                                      >
-                                        {sz.size}
-                                      </button>
-                                    )
-                                  })
-                                )}
-                              </div>
-                            </div>
+                            <SizeField
+                              key={comp.label}
+                              label={comp.label}
+                              sizes={sizes}
+                              selected={current[comp.label]}
+                              onSelect={(size) => selectPackageComponentSize(product, comp.label, size)}
+                            />
                           )
                         })}
 
-                        {/* Summary when complete */}
+                        {/* Optional fields */}
+                        {optional.length > 0 && (
+                          <div className="border-t border-[#252525] pt-4 space-y-5">
+                            <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest">
+                              Optional add-ons
+                            </p>
+                            {optional.map((comp) => {
+                              const sizes = mergeComponentSizes(comp.productSlugs, productsBySlug)
+                              return (
+                                <SizeField
+                                  key={comp.label}
+                                  label={comp.label}
+                                  sizes={sizes}
+                                  selected={current[comp.label]}
+                                  onSelect={(size) => selectPackageComponentSize(product, comp.label, size)}
+                                />
+                              )
+                            })}
+                          </div>
+                        )}
+
+                        {/* Summary */}
                         {packageComplete(product) && (
                           <div className="bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-lg px-3 py-2.5 text-xs text-[#C8FF00]">
                             {formatPackageSize(current)}
@@ -437,10 +423,10 @@ export default function StepEquipment({
                     )
                   })()}
 
-                  {/* ── Individual product size picker ── */}
-                  {isOpen && !isPackage && product.hasSizes && (
-                    <div className="px-4 pb-4 border-t border-[#2a2a2a] pt-3">
-                      <p className="text-xs text-[#B4B4B4] mb-2 uppercase tracking-wider">Select your size</p>
+                  {/* ── Individual size picker ── */}
+                  {isOpen && !isPkg && product.hasSizes && (
+                    <div className="border-t border-[#2a2a2a] px-4 pb-4 pt-3">
+                      <p className="text-xs text-[#B4B4B4] mb-2.5 uppercase tracking-wider">Select your size</p>
                       <div className="flex flex-wrap gap-2">
                         {product.sizes.map((sz) => {
                           const isSelected = selected?.size === sz.size
@@ -454,12 +440,11 @@ export default function StepEquipment({
                                 isSelected
                                   ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
                                   : unavailable
-                                    ? "bg-white/[0.03] text-[#555] border-[#2a2a2a] line-through cursor-not-allowed"
+                                    ? "bg-white/[0.03] text-[#444] border-[#252525] line-through cursor-not-allowed"
                                     : "bg-white/5 text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
                               }`}
                             >
                               {sz.size}
-                              {unavailable && <span className="ml-1 text-[10px] opacity-60">×</span>}
                             </button>
                           )
                         })}
@@ -485,9 +470,7 @@ export default function StepEquipment({
       <div className={`sticky bottom-4 transition-all duration-300 ${subtotal > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
         <div className="bg-[#1a1a1a] border border-[#C8FF00]/30 rounded-xl p-4 flex items-center justify-between shadow-xl shadow-black/40">
           <div>
-            <p className="text-[#B4B4B4] text-xs">
-              {itemCount} item{itemCount !== 1 ? "s" : ""} selected
-            </p>
+            <p className="text-[#B4B4B4] text-xs">{itemCount} item{itemCount !== 1 ? "s" : ""} selected</p>
             <p className="text-white font-bold text-lg">${subtotal.toFixed(2)}</p>
           </div>
           <button
@@ -504,17 +487,59 @@ export default function StepEquipment({
         </div>
         {!canProceed && itemCount > 0 && (
           <p className="text-center text-xs text-[#B4B4B4] mt-2">
-            Please complete all size selections
+            Please complete all required size selections
           </p>
         )}
       </div>
 
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors"
-      >
+      <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#B4B4B4] hover:text-white transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back to dates
       </button>
+    </div>
+  )
+}
+
+// ── Reusable size field component ──────────────────────────────────────────────
+function SizeField({
+  label,
+  sizes,
+  selected,
+  onSelect,
+}: {
+  label: string
+  sizes: SizeOption[]
+  selected?: string
+  onSelect: (size: string) => void
+}) {
+  return (
+    <div>
+      <p className="text-xs font-semibold text-[#B4B4B4] uppercase tracking-wider mb-2">{label}</p>
+      {sizes.length === 0 ? (
+        <p className="text-xs text-[#555]">No sizes available</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {sizes.map((sz) => {
+            const isSelected = selected === sz.size
+            const unavailable = sz.available === 0
+            return (
+              <button
+                key={sz.size}
+                onClick={() => !unavailable && onSelect(sz.size)}
+                disabled={unavailable}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                  isSelected
+                    ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
+                    : unavailable
+                      ? "bg-white/[0.03] text-[#444] border-[#252525] line-through cursor-not-allowed"
+                      : "bg-white/5 text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
+                }`}
+              >
+                {sz.size}
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
