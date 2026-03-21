@@ -177,6 +177,22 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
         </div>
       </div>
 
+      {/* Reassurance strip */}
+      <div className="bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl p-4 space-y-2.5">
+        <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.2em] mb-3">Our guarantee</p>
+        {[
+          { icon: "✓", text: "Free cancellation — change of plans? No problem." },
+          { icon: "✓", text: "Gear doesn't fit? We'll swap it same-day at no extra cost." },
+          { icon: "✓", text: "Normal wear & tear is on us — no hidden damage charges." },
+          { icon: "✓", text: "Expert staff on hand — questions before or during your rental, just call." },
+        ].map(({ icon, text }) => (
+          <div key={text} className="flex items-start gap-2.5">
+            <span className="text-[#C8FF00] font-bold text-sm leading-none mt-0.5">{icon}</span>
+            <p className="text-xs text-[#B4B4B4] leading-relaxed">{text}</p>
+          </div>
+        ))}
+      </div>
+
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-red-400">{error}</div>
       )}

@@ -2,7 +2,71 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChevronDown } from "lucide-react"
+
+const FAQS = [
+  {
+    q: "Do I need to pay online?",
+    a: "No payment required to book. Pay by cash, card, or EFTPOS when you pick up in store.",
+  },
+  {
+    q: "What if the gear doesn't fit?",
+    a: "No problem — we swap it same-day at no extra cost. Our staff are experienced fitters and we'll get you sorted before you leave.",
+  },
+  {
+    q: "Can I cancel my booking?",
+    a: "Yes, free cancellation any time before pickup. Just give us a call on (02) 9597 3422 and we'll sort it.",
+  },
+  {
+    q: "What's included in a ski/snowboard package?",
+    a: "Ski packages include skis, boots, and poles. Snowboard packages include a board and boots. Outerwear is sold separately unless you book an outerwear package.",
+  },
+  {
+    q: "Do you have kids' gear?",
+    a: "Yes — we stock a full range of kids' skis, snowboards, boots, and outerwear. Book a Kids Ski Package or Kids Snowboard Package from the equipment step.",
+  },
+  {
+    q: "What if I damage the equipment?",
+    a: "Normal wear and tear is on us. Accidental damage is discussed case-by-case — we're reasonable about it. No surprises.",
+  },
+  {
+    q: "Where are you located?",
+    a: "Princes Highway, Rockdale NSW — right on the way to Thredbo and Perisher. Open 7 days during snow season.",
+  },
+]
+
+function FAQ() {
+  const [open, setOpen] = useState<number | null>(null)
+  return (
+    <div className="max-w-2xl mx-auto px-5 pb-16">
+      <div className="border-t border-white/[0.06] pt-10">
+        <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-[0.3em] mb-6">Common questions</p>
+        <div className="space-y-1">
+          {FAQS.map(({ q, a }, i) => (
+            <div key={i} className="border border-[#2e2e2e] rounded-xl overflow-hidden">
+              <button
+                onClick={() => setOpen(open === i ? null : i)}
+                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors gap-3"
+              >
+                <p className="text-sm font-semibold text-white">{q}</p>
+                <ChevronDown className={`h-4 w-4 text-[#B4B4B4] flex-shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
+              </button>
+              {open === i && (
+                <div className="px-5 pb-4 border-t border-[#2e2e2e]">
+                  <p className="text-sm text-[#B4B4B4] leading-relaxed pt-3">{a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-[#555] mt-6 text-center">
+          Still got questions? Call us on{" "}
+          <a href="tel:0295973422" className="text-[#C8FF00] hover:text-white transition-colors">(02) 9597 3422</a>
+        </p>
+      </div>
+    </div>
+  )
+}
 
 const navLinks = [
   { label: "Packages", href: "/#packages" },
@@ -100,6 +164,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
       <Nav />
 
       <main>{children}</main>
+      <FAQ />
 
       {/* Footer */}
       <footer className="border-t border-white/[0.06]">

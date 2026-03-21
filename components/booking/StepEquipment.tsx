@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowRight, ArrowLeft, ChevronDown } from "lucide-react"
+import { ArrowRight, ArrowLeft, ChevronDown, ChevronRight } from "lucide-react"
 import type { BookingState, BookingItem } from "./BookingWizard"
 
 type PricingTier = { id: string; label: string; days: number; price: number }
@@ -147,6 +147,9 @@ export default function StepEquipment({
   const [loading, setLoading] = useState(true)
   const [openProductId, setOpenProductId] = useState<string | null>(null)
   const [packageSizes, setPackageSizes] = useState<Record<string, Record<string, string>>>({})
+  const [guideOpen, setGuideOpen] = useState(false)
+  const [guideActivity, setGuideActivity] = useState<"ski" | "snowboard" | null>(null)
+  const [guideLevel, setGuideLevel] = useState<"first" | "some" | "regular" | null>(null)
 
   useEffect(() => {
     fetch(`/api/availability?start=${state.startDate}&end=${state.endDate}`)
@@ -300,6 +303,104 @@ export default function StepEquipment({
         </p>
       </div>
 
+      {/* Guidance panel */}
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
+        <button
+          onClick={() => setGuideOpen((o) => !o)}
+          className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-lg">🤔</span>
+            <div>
+              <p className="text-sm font-semibold text-white">Not sure what to hire?</p>
+              <p className="text-xs text-[#B4B4B4] mt-0.5">Answer 2 quick questions for a recommendation</p>
+            </div>
+          </div>
+          <ChevronDown className={`h-4 w-4 text-[#B4B4B4] transition-transform flex-shrink-0 ${guideOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        {guideOpen && (
+          <div className="border-t border-[#2e2e2e] px-5 pb-5 pt-4 space-y-5">
+            {/* Q1 */}
+            <div>
+              <p className="text-xs font-bold text-[#B4B4B4] uppercase tracking-[0.2em] mb-3">What do you want to ride?</p>
+              <div className="grid grid-cols-2 gap-2">
+                {([["ski", "🎿", "Skiing"], ["snowboard", "🏂", "Snowboarding"]] as const).map(([val, emoji, label]) => (
+                  <button
+                    key={val}
+                    onClick={() => setGuideActivity(guideActivity === val ? null : val)}
+                    className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border text-sm font-semibold transition-colors ${
+                      guideActivity === val
+                        ? "bg-[#C8FF00]/10 border-[#C8FF00] text-[#C8FF00]"
+                        : "bg-[#121212] border-[#333] text-[#B4B4B4] hover:border-[#555]"
+                    }`}
+                  >
+                    <span>{emoji}</span> {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Q2 */}
+            <div>
+              <p className="text-xs font-bold text-[#B4B4B4] uppercase tracking-[0.2em] mb-3">How experienced are you?</p>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  ["first", "First timer"],
+                  ["some",  "Some experience"],
+                  ["regular", "Confident"],
+                ] as const).map(([val, label]) => (
+                  <button
+                    key={val}
+                    onClick={() => setGuideLevel(guideLevel === val ? null : val)}
+                    className={`px-3 py-2.5 rounded-lg border text-xs font-semibold transition-colors ${
+                      guideLevel === val
+                        ? "bg-[#C8FF00]/10 border-[#C8FF00] text-[#C8FF00]"
+                        : "bg-[#121212] border-[#333] text-[#B4B4B4] hover:border-[#555]"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Recommendation */}
+            {guideActivity && guideLevel && (() => {
+              const pkgSlug = guideActivity === "ski"
+                ? (guideLevel === "first" || guideLevel === "some" ? "mens-ski-package" : "adult-skis")
+                : (guideLevel === "first" || guideLevel === "some" ? "mens-snowboard-package" : "mens-burton-stepon-package")
+
+              const pkg = guideActivity === "ski"
+                ? { name: guideLevel === "first" || guideLevel === "some" ? "Ski Package" : "Skis only (+ boots separately)", desc: guideLevel === "first" ? "Includes skis, boots & poles — everything fitted in store." : guideLevel === "some" ? "Skis, boots & poles. Staff will help dial in the right setup." : "Skis included. Add boots and poles separately if needed." }
+                : { name: guideLevel === "first" || guideLevel === "some" ? "Snowboard Package" : "Burton Step-On Package", desc: guideLevel === "first" ? "Board & boots together — easiest way to get started." : guideLevel === "some" ? "Board and boots. Great all-mountain setup." : "Our premium Step-On binding system — fastest in/out on the hill." }
+
+              const product = products.find((p) => p.slug === pkgSlug) ?? products.find((p) => p.slug.includes(guideActivity))
+
+              return (
+                <div className="bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-xl p-4">
+                  <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-[0.2em] mb-2">We recommend</p>
+                  <p className="text-sm font-bold text-white">{pkg.name}</p>
+                  <p className="text-xs text-[#B4B4B4] mt-1 leading-relaxed">{pkg.desc}</p>
+                  {product && (
+                    <button
+                      onClick={() => {
+                        setGuideOpen(false)
+                        setOpenProductId(product.id)
+                        document.getElementById(`product-${product.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })
+                      }}
+                      className="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#C8FF00] hover:text-white transition-colors"
+                    >
+                      Select this <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              )
+            })()}
+          </div>
+        )}
+      </div>
+
       {sortedCategories.map((slug) => (
         <div key={slug}>
           <div className="flex items-center gap-2 mb-3">
@@ -322,6 +423,7 @@ export default function StepEquipment({
               return (
                 <div
                   key={product.id}
+                  id={`product-${product.id}`}
                   className={`bg-[#1e1e1e] border rounded-xl transition-all duration-200 overflow-hidden ${
                     selected ? "border-[#C8FF00]/50"
                     : outOfStock ? "border-[#2e2e2e] opacity-40"
