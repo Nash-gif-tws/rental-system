@@ -401,7 +401,7 @@ export default function POSClient({ products }: { products: Product[] }) {
           <div className="flex gap-3 justify-center pt-4">
             <button
               onClick={() => { setCart([]); setCustomer(null); setCustomerForm({ firstName: "", lastName: "", email: "", phone: "" }); setDiscount(""); setDone(null); setRightPanel("order") }}
-              className="bg-[#C4A04A] text-[#121212] font-semibold px-6 py-3 rounded-lg text-sm hover:bg-[#b3e600] transition-colors"
+              className="bg-[#C4A04A] text-[#121212] font-semibold px-6 py-3 rounded-lg text-sm hover:bg-[#d4b565] transition-colors"
             >
               New Order
             </button>
@@ -522,7 +522,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                 <button
                   onClick={() => allRequired && setPackagePicker(null)}
                   disabled={!allRequired}
-                  className="px-5 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-5 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#d4b565] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {allRequired ? "Done" : "Select required sizes"}
                 </button>
@@ -688,7 +688,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                               <span className="font-bold text-white text-sm">{cartItem.qty}</span>
                               <button
                                 onClick={() => incrementCart(product)}
-                                className="w-7 h-7 rounded-lg bg-[#C4A04A] hover:bg-[#b3e600] flex items-center justify-center transition-colors"
+                                className="w-7 h-7 rounded-lg bg-[#C4A04A] hover:bg-[#d4b565] flex items-center justify-center transition-colors"
                               >
                                 <Plus className="h-3 w-3 text-[#121212]" />
                               </button>
@@ -794,7 +794,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                             <span className="text-white text-sm font-medium w-4 text-center">{item.qty}</span>
                             <button
                               onClick={() => product && incrementCart(product)}
-                              className="w-6 h-6 rounded bg-[#C4A04A] hover:bg-[#b3e600] flex items-center justify-center"
+                              className="w-6 h-6 rounded bg-[#C4A04A] hover:bg-[#d4b565] flex items-center justify-center"
                             >
                               <Plus className="h-3 w-3 text-[#121212]" />
                             </button>
@@ -882,7 +882,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                 <button
                   onClick={handleSubmit}
                   disabled={submitting || !cart.length}
-                  className="w-full bg-[#C4A04A] hover:bg-[#b3e600] text-[#121212] font-bold py-3 rounded-lg text-sm tracking-widest uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-[#C4A04A] hover:bg-[#d4b565] text-[#121212] font-bold py-3 rounded-lg text-sm tracking-widest uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? "Creating..." : mode === "book" ? "Book Now" : "Reserve"}
                   {!submitting && <ArrowRight className="h-4 w-4" />}
@@ -990,7 +990,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                       setRightPanel("order")
                     }}
                     disabled={!customerForm.firstName || !customerForm.email}
-                    className="w-full bg-[#C4A04A] hover:bg-[#b3e600] text-[#121212] font-bold py-2.5 rounded-lg text-sm tracking-wide disabled:opacity-40 transition-colors"
+                    className="w-full bg-[#C4A04A] hover:bg-[#d4b565] text-[#121212] font-bold py-2.5 rounded-lg text-sm tracking-wide disabled:opacity-40 transition-colors"
                   >
                     Confirm Customer
                   </button>

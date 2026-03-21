@@ -207,7 +207,7 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
         <button
           onClick={handleConfirm}
           disabled={loading}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#b3e600] disabled:opacity-50 text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#d4b565] disabled:opacity-50 text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
         >
           {loading ? (
             <><div className="w-4 h-4 border-2 border-[#121212] border-t-transparent rounded-full animate-spin" /> Confirming...</>

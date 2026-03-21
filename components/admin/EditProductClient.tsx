@@ -195,7 +195,7 @@ export default function EditProductClient({
           <button
             onClick={saveDetails}
             disabled={saving}
-            className="bg-[#C4A04A] text-[#121212] px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+            className="bg-[#C4A04A] text-[#121212] px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#d4b565] disabled:opacity-50 transition-colors"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
@@ -292,7 +292,7 @@ export default function EditProductClient({
             <button
               onClick={addPricingTier}
               disabled={addingTier || !newTier.label || !newTier.days || !newTier.price}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#d4b565] disabled:opacity-40 transition-colors"
             >
               <Plus className="h-4 w-4" /> Add
             </button>
@@ -389,7 +389,7 @@ export default function EditProductClient({
             <button
               onClick={addUnit}
               disabled={addingUnit || (!newUnit.size && !newUnit.serialNumber)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#d4b565] disabled:opacity-40 transition-colors"
             >
               <Plus className="h-4 w-4" /> Add Unit
             </button>

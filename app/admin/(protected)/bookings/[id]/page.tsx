@@ -58,7 +58,15 @@ export default async function BookingDetailPage({
           </div>
           <p className="text-sm text-[#B4B4B4] mt-1">Created {formatDateTime(booking.createdAt)}</p>
         </div>
-        <BookingActions booking={booking} />
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/bookings/${booking.id}/edit`}
+            className="px-4 py-2 text-sm font-semibold bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white hover:border-[#C4A04A]/40 rounded-lg transition-colors"
+          >
+            Edit
+          </Link>
+          <BookingActions booking={booking} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -179,7 +187,7 @@ export default async function BookingDetailPage({
             <div className="space-y-2">
               <Link
                 href="/admin/customers"
-                className="block font-medium text-[#C4A04A] hover:text-[#b3e600] transition-colors"
+                className="block font-medium text-[#C4A04A] hover:text-[#d4b565] transition-colors"
               >
                 {booking.customer.firstName} {booking.customer.lastName}
               </Link>

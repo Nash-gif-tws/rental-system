@@ -104,7 +104,7 @@ export default function ScannerClient() {
           <button
             onClick={() => handleScan(query)}
             disabled={!query.trim() || loading}
-            className="flex items-center gap-2 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-semibold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-semibold hover:bg-[#d4b565] disabled:opacity-50 transition-colors"
           >
             <Scan className="h-4 w-4" />
             Look Up
@@ -217,7 +217,7 @@ export default function ScannerClient() {
               <button
                 onClick={() => updateStatus(booking.id, "RETURNED")}
                 disabled={actionLoading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#d4b565] disabled:opacity-50 transition-colors"
               >
                 <RotateCcw className="h-4 w-4" />
                 Mark Returned
@@ -227,7 +227,7 @@ export default function ScannerClient() {
               <button
                 onClick={() => updateStatus(booking.id, "CONFIRMED")}
                 disabled={actionLoading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#d4b565] disabled:opacity-50 transition-colors"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Confirm Booking

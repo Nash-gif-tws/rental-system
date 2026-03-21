@@ -41,7 +41,7 @@ export default function BookingActions({ booking }: { booking: any }) {
           className={`px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-colors disabled:opacity-50 ${
             next === "CANCELLED" || next === "NO_SHOW"
               ? "border border-[#2e2e2e] text-[#B4B4B4] hover:bg-white/5"
-              : "bg-[#C4A04A] text-[#121212] hover:bg-[#b3e600]"
+              : "bg-[#C4A04A] text-[#121212] hover:bg-[#d4b565]"
           }`}
         >
           {loading ? "..." : label}

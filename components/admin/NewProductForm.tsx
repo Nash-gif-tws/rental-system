@@ -131,7 +131,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-[#C4A04A] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+          className="flex-1 bg-[#C4A04A] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#d4b565] disabled:opacity-50 transition-colors"
         >
           {loading ? "Creating..." : "Create Product →"}
         </button>

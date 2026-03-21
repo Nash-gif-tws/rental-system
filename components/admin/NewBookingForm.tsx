@@ -190,7 +190,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white tracking-wide">Equipment</h2>
-          <button type="button" onClick={addItem} className="text-sm text-[#C4A04A] hover:text-[#b3e600] font-medium transition-colors">
+          <button type="button" onClick={addItem} className="text-sm text-[#C4A04A] hover:text-[#d4b565] font-medium transition-colors">
             + Add Item
           </button>
         </div>
@@ -265,7 +265,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#C4A04A] text-[#121212] px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b3e600] transition-colors disabled:opacity-50"
+          className="bg-[#C4A04A] text-[#121212] px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#d4b565] transition-colors disabled:opacity-50"
         >
           {loading ? "Creating..." : "Create Booking"}
         </button>

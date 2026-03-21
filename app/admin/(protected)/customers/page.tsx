@@ -68,8 +68,8 @@ export default async function CustomersPage({
                 <tr key={customer.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
                     <Link
-                      href={`/customers/${customer.id}`}
-                      className="font-medium text-[#C4A04A] hover:text-[#b3e600] transition-colors"
+                      href={`/admin/customers/${customer.id}`}
+                      className="font-medium text-[#C4A04A] hover:text-[#d4b565] transition-colors"
                     >
                       {customer.firstName} {customer.lastName}
                     </Link>

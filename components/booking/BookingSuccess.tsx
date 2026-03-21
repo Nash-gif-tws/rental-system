@@ -79,11 +79,11 @@ export default function BookingSuccess({ booking }: { booking: any }) {
       <div className="text-center space-y-2 text-sm">
         <p className="text-[#B4B4B4]">Need to change something?</p>
         <div className="flex justify-center gap-4">
-          <a href="tel:0295973422" className="font-semibold text-[#C4A04A] hover:text-[#b3e600] transition-colors">
+          <a href="tel:0295973422" className="font-semibold text-[#C4A04A] hover:text-[#d4b565] transition-colors">
             (02) 9597 3422
           </a>
           <span className="text-[#2e2e2e]">·</span>
-          <a href="mailto:info@snowskierswarehouse.com.au" className="font-semibold text-[#C4A04A] hover:text-[#b3e600] transition-colors">
+          <a href="mailto:info@snowskierswarehouse.com.au" className="font-semibold text-[#C4A04A] hover:text-[#d4b565] transition-colors">
             Email us
           </a>
         </div>

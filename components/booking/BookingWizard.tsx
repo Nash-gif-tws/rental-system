@@ -7,6 +7,48 @@ import StepEquipment from "./StepEquipment"
 import StepDetails from "./StepDetails"
 import StepConfirm from "./StepConfirm"
 import BookingSuccess from "./BookingSuccess"
+import { ChevronDown, Phone } from "lucide-react"
+
+const BOOKING_FAQS = [
+  { q: "Do I need to pay online?", a: "No payment required to book. Pay by cash, card or EFTPOS when you pick up in store." },
+  { q: "What if the gear doesn't fit?", a: "No problem — we swap it same-day at no extra cost. Our staff are experienced fitters." },
+  { q: "Can I cancel my booking?", a: "Yes, free cancellation any time before pickup. Just call us on (02) 9597 3422." },
+  { q: "What's included in a package?", a: "Ski packages include skis, boots & poles. Snowboard packages include a board & boots. Outerwear is separate." },
+  { q: "Do you have kids' gear?", a: "Yes — full range of kids' skis, snowboards, boots and outerwear. Select a Kids Package in Step 2." },
+]
+
+function BookingFAQ() {
+  const [open, setOpen] = useState<number | null>(null)
+  return (
+    <div className="max-w-2xl mx-auto px-5 pb-10 pt-2">
+      <div className="border-t border-white/[0.06] pt-8">
+        <p className="text-[10px] font-bold text-[#C4A04A] uppercase tracking-[0.3em] mb-4">Common questions</p>
+        <div className="space-y-1">
+          {BOOKING_FAQS.map(({ q, a }, i) => (
+            <div key={i} className="border border-[#2e2e2e] rounded-xl overflow-hidden">
+              <button
+                onClick={() => setOpen(open === i ? null : i)}
+                className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-white/[0.02] transition-colors gap-3"
+              >
+                <p className="text-sm font-medium text-white/70">{q}</p>
+                <ChevronDown className={`h-4 w-4 text-[#555] flex-shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
+              </button>
+              {open === i && (
+                <div className="px-4 pb-4 border-t border-[#2e2e2e]">
+                  <p className="text-sm text-[#B4B4B4]/70 leading-relaxed pt-3">{a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-[#444] mt-5 text-center">
+          Still got questions?{" "}
+          <a href="tel:0295973422" className="text-[#C4A04A] hover:text-white transition-colors">(02) 9597 3422</a>
+        </p>
+      </div>
+    </div>
+  )
+}
 
 export type BookingItem = {
   productId: string
@@ -125,6 +167,7 @@ export default function BookingWizard() {
       )}
       {step === 2 && <StepDetails state={state} onUpdate={updateState} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
       {step === 3 && <StepConfirm state={state} onBack={() => setStep(2)} onConfirmed={setConfirmedBooking} />}
+      <BookingFAQ />
     </div>
   )
 }

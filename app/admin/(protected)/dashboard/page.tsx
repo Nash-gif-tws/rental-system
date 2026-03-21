@@ -168,7 +168,7 @@ export default async function DashboardPage() {
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
           <h2 className="font-semibold text-white text-sm tracking-wide">Recent Bookings</h2>
-          <Link href="/admin/bookings" className="text-xs text-[#C4A04A] hover:text-[#b3e600] font-medium transition-colors">
+          <Link href="/admin/bookings" className="text-xs text-[#C4A04A] hover:text-[#d4b565] font-medium transition-colors">
             View all →
           </Link>
         </div>

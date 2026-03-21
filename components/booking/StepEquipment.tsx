@@ -588,7 +588,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack, quizAns
             <p className="text-white font-bold text-lg">${subtotal.toFixed(2)}</p>
           </div>
           <button onClick={onNext} disabled={!canProceed}
-            className={`flex items-center gap-2 font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase ${canProceed ? "bg-[#C4A04A] hover:bg-[#b3e600] text-[#121212]" : "bg-white/10 text-[#555] cursor-not-allowed"}`}>
+            className={`flex items-center gap-2 font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase ${canProceed ? "bg-[#C4A04A] hover:bg-[#d4b565] text-[#121212]" : "bg-white/10 text-[#555] cursor-not-allowed"}`}>
             Continue <ArrowRight className="h-4 w-4" />
           </button>
         </div>
