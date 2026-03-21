@@ -12,7 +12,7 @@ export default function HomePage() {
         {/* Hero photo */}
         <div className="absolute inset-0">
           <Image
-            src="/hero.jpg"
+            src="/hero.png"
             alt="Snowboarder performing an inverted trick above the mountain"
             fill
             className="object-cover object-[60%_top]"
