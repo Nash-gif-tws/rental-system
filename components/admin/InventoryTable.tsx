@@ -78,7 +78,7 @@ export default function InventoryTable({
     <div className="relative">
       {/* Bulk action bar */}
       {selected.size > 0 && (
-        <div className="sticky top-4 z-10 mb-3 flex items-center gap-3 bg-[#1a1a1a] border border-[#C8FF00]/30 rounded-xl px-4 py-3 shadow-xl shadow-black/40">
+        <div className="sticky top-4 z-10 mb-3 flex items-center gap-3 bg-[#1a1a1a] border border-[#C4A04A]/30 rounded-xl px-4 py-3 shadow-xl shadow-black/40">
           <span className="text-sm font-semibold text-white">
             {selected.size} selected
           </span>
@@ -86,7 +86,7 @@ export default function InventoryTable({
             <button
               onClick={() => bulkUpdate({ isActive: true })}
               disabled={bulkLoading}
-              className="px-3 py-1.5 text-xs font-bold bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 rounded-lg hover:bg-[#C8FF00]/20 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 text-xs font-bold bg-[#C4A04A]/10 text-[#C4A04A] border border-[#C4A04A]/20 rounded-lg hover:bg-[#C4A04A]/20 transition-colors disabled:opacity-50"
             >
               Activate
             </button>
@@ -145,10 +145,10 @@ export default function InventoryTable({
                   onClick={toggleAll}
                   className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                     allSelected
-                      ? "bg-[#C8FF00] border-[#C8FF00]"
+                      ? "bg-[#C4A04A] border-[#C4A04A]"
                       : someSelected
-                        ? "bg-[#C8FF00]/40 border-[#C8FF00]/40"
-                        : "border-[#444] hover:border-[#C8FF00]/50"
+                        ? "bg-[#C4A04A]/40 border-[#C4A04A]/40"
+                        : "border-[#444] hover:border-[#C4A04A]/50"
                   }`}
                 >
                   {(allSelected || someSelected) && (
@@ -178,18 +178,18 @@ export default function InventoryTable({
                 ? { label: "Inactive", dot: "bg-[#444]", text: "text-[#666]" }
                 : inUse
                   ? { label: "In Use", dot: "bg-orange-400", text: "text-orange-400" }
-                  : { label: "Active", dot: "bg-[#C8FF00]", text: "text-[#C8FF00]" }
+                  : { label: "Active", dot: "bg-[#C4A04A]", text: "text-[#C4A04A]" }
 
               return (
                 <tr
                   key={unit.id}
-                  className={`hover:bg-white/[0.025] transition-colors group ${isSelected ? "bg-[#C8FF00]/[0.03]" : ""}`}
+                  className={`hover:bg-white/[0.025] transition-colors group ${isSelected ? "bg-[#C4A04A]/[0.03]" : ""}`}
                 >
                   <td className="px-4 py-3">
                     <button
                       onClick={() => toggleOne(unit.id)}
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                        isSelected ? "bg-[#C8FF00] border-[#C8FF00]" : "border-[#444] hover:border-[#C8FF00]/50"
+                        isSelected ? "bg-[#C4A04A] border-[#C4A04A]" : "border-[#444] hover:border-[#C4A04A]/50"
                       }`}
                     >
                       {isSelected && <span className="text-[#121212] text-[8px] font-black leading-none">✓</span>}
@@ -233,7 +233,7 @@ export default function InventoryTable({
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/admin/inventory/${unit.id}`}
-                      className="text-xs text-[#555] group-hover:text-[#C8FF00] transition-colors"
+                      className="text-xs text-[#555] group-hover:text-[#C4A04A] transition-colors"
                     >
                       Edit
                     </Link>
@@ -246,7 +246,7 @@ export default function InventoryTable({
 
         <div className="px-4 py-3 border-t border-[#2e2e2e] text-xs text-[#555]">
           {units.length.toLocaleString()} unit{units.length !== 1 ? "s" : ""}
-          {selected.size > 0 && <span className="ml-2 text-[#C8FF00]">· {selected.size} selected</span>}
+          {selected.size > 0 && <span className="ml-2 text-[#C4A04A]">· {selected.size} selected</span>}
         </div>
       </div>
     </div>

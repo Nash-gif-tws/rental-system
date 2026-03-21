@@ -40,7 +40,7 @@ export default async function CustomersPage({
             name="q"
             defaultValue={params.q}
             placeholder="Search by name or email..."
-            className="w-full max-w-sm px-4 py-2 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00] transition-colors"
+            className="w-full max-w-sm px-4 py-2 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] focus:ring-1 focus:ring-[#C4A04A] transition-colors"
           />
         </form>
       </div>
@@ -69,7 +69,7 @@ export default async function CustomersPage({
                   <td className="px-6 py-4">
                     <Link
                       href={`/customers/${customer.id}`}
-                      className="font-medium text-[#C8FF00] hover:text-[#b3e600] transition-colors"
+                      className="font-medium text-[#C4A04A] hover:text-[#b3e600] transition-colors"
                     >
                       {customer.firstName} {customer.lastName}
                     </Link>

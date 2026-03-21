@@ -70,7 +70,7 @@ export default async function ProductsPage() {
                   <td className="px-5 py-3.5 text-[#E6E6E6]">{product._count.units}</td>
                   <td className="px-5 py-3.5">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      product.isActive ? "bg-[#C8FF00]/20 text-[#C8FF00]" : "bg-zinc-500/20 text-zinc-400"
+                      product.isActive ? "bg-[#C4A04A]/20 text-[#C4A04A]" : "bg-zinc-500/20 text-zinc-400"
                     }`}>
                       {product.isActive ? "Active" : "Inactive"}
                     </span>
@@ -78,7 +78,7 @@ export default async function ProductsPage() {
                   <td className="px-5 py-3.5 text-right">
                     <Link
                       href={`/admin/products/${product.id}/edit`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C8FF00]/10 text-[#C8FF00] text-xs font-medium hover:bg-[#C8FF00]/20 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C4A04A]/10 text-[#C4A04A] text-xs font-medium hover:bg-[#C4A04A]/20 transition-colors"
                     >
                       <Edit className="h-3.5 w-3.5" />
                       Edit
@@ -102,7 +102,7 @@ export default async function ProductsPage() {
         </div>
         <Link
           href="/admin/products/new"
-          className="flex items-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
+          className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
         >
           <Plus className="h-4 w-4" />
           New Product

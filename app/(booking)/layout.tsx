@@ -40,7 +40,7 @@ function FAQ() {
   return (
     <div className="max-w-2xl mx-auto px-5 pb-16">
       <div className="border-t border-white/[0.06] pt-10">
-        <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-[0.3em] mb-6">Common questions</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-6" style={{ color: "#C4A04A" }}>Common questions</p>
         <div className="space-y-1">
           {FAQS.map(({ q, a }, i) => (
             <div key={i} className="border border-[#2e2e2e] rounded-xl overflow-hidden">
@@ -49,7 +49,7 @@ function FAQ() {
                 className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors gap-3"
               >
                 <p className="text-sm font-semibold text-white">{q}</p>
-                <ChevronDown className={`h-4 w-4 text-[#B4B4B4] flex-shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-4 w-4 flex-shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} style={{ color: "#9a9a9a" }} />
               </button>
               {open === i && (
                 <div className="px-5 pb-4 border-t border-[#2e2e2e]">
@@ -61,7 +61,7 @@ function FAQ() {
         </div>
         <p className="text-xs text-[#555] mt-6 text-center">
           Still got questions? Call us on{" "}
-          <a href="tel:0295973422" className="text-[#C8FF00] hover:text-white transition-colors">(02) 9597 3422</a>
+          <a href="tel:0295973422" className="text-[#C4A04A] hover:text-white transition-colors">(02) 9597 3422</a>
         </p>
       </div>
     </div>
@@ -117,7 +117,7 @@ function Nav() {
           </a>
           <Link
             href="/book"
-            className="font-body text-xs tracking-[0.15em] uppercase bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-semibold px-5 py-2.5 transition-colors duration-200"
+            className="font-body text-xs tracking-[0.15em] uppercase font-semibold px-5 py-2.5 transition-colors duration-200" style={{ background: "#C4A04A", color: "#0C0D11" }}
           >
             Book Now
           </Link>
@@ -178,14 +178,14 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
                 Sydney's most trusted ski & snowboard rental store. Over 35 years fitting Australians for the mountain.
               </p>
               <div className="flex items-center gap-2 mt-6">
-                <span className="w-6 h-px bg-[#C8FF00]" />
-                <span className="font-body text-[10px] text-[#C8FF00] tracking-[0.25em] uppercase">Trojan Wake Ski Snow</span>
+                <span className="w-6 h-px bg-[#C4A04A]" />
+                <span className="font-body text-[10px] text-[#C4A04A] tracking-[0.25em] uppercase">Trojan Wake Ski Snow</span>
               </div>
             </div>
 
             {/* Nav links */}
             <div>
-              <p className="font-body text-[10px] tracking-[0.25em] uppercase text-[#C8FF00] mb-5">Explore</p>
+              <p className="font-body text-[10px] tracking-[0.25em] uppercase text-[#C4A04A] mb-5">Explore</p>
               <div className="space-y-3">
                 {navLinks.map((l) => (
                   <a key={l.href} href={l.href} className="block font-body text-sm text-[#B4B4B4] hover:text-white transition-colors">
@@ -200,7 +200,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
             {/* Contact */}
             <div>
-              <p className="font-body text-[10px] tracking-[0.25em] uppercase text-[#C8FF00] mb-5">Contact</p>
+              <p className="font-body text-[10px] tracking-[0.25em] uppercase text-[#C4A04A] mb-5">Contact</p>
               <div className="space-y-3 font-body text-sm text-[#B4B4B4]">
                 <p>
                   <a href="tel:0295973422" className="hover:text-white transition-colors">(02) 9597 3422</a>

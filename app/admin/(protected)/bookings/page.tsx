@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
 
 const STATUS_COLORS: Record<BookingStatus, string> = {
   PENDING: "bg-yellow-500/20 text-yellow-300",
-  CONFIRMED: "bg-[#C8FF00]/20 text-[#C8FF00]",
+  CONFIRMED: "bg-[#C4A04A]/20 text-[#C4A04A]",
   CHECKED_OUT: "bg-purple-500/20 text-purple-300",
   RETURNED: "bg-emerald-500/20 text-emerald-300",
   CANCELLED: "bg-red-500/20 text-red-300",
@@ -72,7 +72,7 @@ export default async function BookingsPage({
         <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Bookings</h1>
         <Link
           href="/admin/bookings/new"
-          className="flex items-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
+          className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
         >
           <Plus className="h-4 w-4" />
           New Booking
@@ -89,7 +89,7 @@ export default async function BookingsPage({
                 name="q"
                 defaultValue={params.q}
                 placeholder="Search booking # or customer..."
-                className="w-full pl-9 pr-4 py-2 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00] transition-colors"
+                className="w-full pl-9 pr-4 py-2 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] focus:ring-1 focus:ring-[#C4A04A] transition-colors"
               />
             </div>
           </form>
@@ -100,7 +100,7 @@ export default async function BookingsPage({
                 href={s ? `/admin/bookings?status=${s}` : "/admin/bookings"}
                 className={`px-3 py-2 rounded-lg text-xs font-medium tracking-wide transition-colors ${
                   (params.status ?? "") === s
-                    ? "bg-[#C8FF00] text-[#121212]"
+                    ? "bg-[#C4A04A] text-[#121212]"
                     : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
                 }`}
               >
@@ -135,7 +135,7 @@ export default async function BookingsPage({
               bookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
-                    <Link href={`/admin/bookings/${booking.id}`} className="text-[#C8FF00] hover:text-[#b3e600] font-medium transition-colors">
+                    <Link href={`/admin/bookings/${booking.id}`} className="text-[#C4A04A] hover:text-[#b3e600] font-medium transition-colors">
                       {booking.bookingNumber}
                     </Link>
                   </td>

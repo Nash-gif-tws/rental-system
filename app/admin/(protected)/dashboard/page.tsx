@@ -78,7 +78,7 @@ export default async function DashboardPage() {
 
   const STATUS_COLORS: Record<string, string> = {
     PENDING: "bg-yellow-500/20 text-yellow-300",
-    CONFIRMED: "bg-[#C8FF00]/20 text-[#C8FF00]",
+    CONFIRMED: "bg-[#C4A04A]/20 text-[#C4A04A]",
     CHECKED_OUT: "bg-purple-500/20 text-purple-300",
     RETURNED: "bg-emerald-500/20 text-emerald-300",
     CANCELLED: "bg-red-500/20 text-red-300",
@@ -104,12 +104,12 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs tracking-widest uppercase text-[#B4B4B4]">{label}</p>
-                <p className={`text-2xl font-bold mt-1.5 ${accent ? "text-[#C8FF00]" : warn ? "text-red-400" : "text-white"}`}>
+                <p className={`text-2xl font-bold mt-1.5 ${accent ? "text-[#C4A04A]" : warn ? "text-red-400" : "text-white"}`}>
                   {value}
                 </p>
               </div>
-              <div className={`p-3 rounded-xl ${accent ? "bg-[#C8FF00]/10" : warn ? "bg-red-500/10" : "bg-white/5"}`}>
-                <Icon className={`h-5 w-5 ${accent ? "text-[#C8FF00]" : warn ? "text-red-400" : "text-[#B4B4B4]"}`} />
+              <div className={`p-3 rounded-xl ${accent ? "bg-[#C4A04A]/10" : warn ? "bg-red-500/10" : "bg-white/5"}`}>
+                <Icon className={`h-5 w-5 ${accent ? "text-[#C4A04A]" : warn ? "text-red-400" : "text-[#B4B4B4]"}`} />
               </div>
             </div>
           </div>
@@ -120,11 +120,11 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/admin/bookings?filter=pickup-today"
-          className="bg-[#1e1e1e] border border-[#2e2e2e] hover:border-[#C8FF00]/40 rounded-xl p-6 transition-colors group"
+          className="bg-[#1e1e1e] border border-[#2e2e2e] hover:border-[#C4A04A]/40 rounded-xl p-6 transition-colors group"
         >
           <div className="flex items-center gap-4">
-            <div className="bg-[#C8FF00]/10 p-3 rounded-xl">
-              <Clock className="h-5 w-5 text-[#C8FF00]" />
+            <div className="bg-[#C4A04A]/10 p-3 rounded-xl">
+              <Clock className="h-5 w-5 text-[#C4A04A]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{checkoutsToday}</p>
@@ -168,7 +168,7 @@ export default async function DashboardPage() {
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
           <h2 className="font-semibold text-white text-sm tracking-wide">Recent Bookings</h2>
-          <Link href="/admin/bookings" className="text-xs text-[#C8FF00] hover:text-[#b3e600] font-medium transition-colors">
+          <Link href="/admin/bookings" className="text-xs text-[#C4A04A] hover:text-[#b3e600] font-medium transition-colors">
             View all →
           </Link>
         </div>

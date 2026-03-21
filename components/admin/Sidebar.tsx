@@ -55,7 +55,7 @@ export default function Sidebar({ user }: { user: any }) {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                 active
-                  ? "bg-[#C8FF00] text-[#121212]"
+                  ? "bg-[#C4A04A] text-[#121212]"
                   : "text-[#B4B4B4] hover:bg-white/5 hover:text-white"
               )}
             >

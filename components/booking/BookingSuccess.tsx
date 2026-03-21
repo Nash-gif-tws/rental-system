@@ -5,14 +5,14 @@ export default function BookingSuccess({ booking }: { booking: any }) {
     <div className="max-w-lg mx-auto px-5 pt-28 pb-16 space-y-6">
       {/* Hero */}
       <div className="text-center space-y-4 py-6">
-        <div className="w-20 h-20 bg-[#C8FF00]/10 border-2 border-[#C8FF00]/30 rounded-full flex items-center justify-center text-4xl mx-auto">
+        <div className="w-20 h-20 bg-[#C4A04A]/10 border-2 border-[#C4A04A]/30 rounded-full flex items-center justify-center text-4xl mx-auto">
           🎿
         </div>
         <div>
           <div className="flex items-center justify-center gap-3 mb-3">
-            <span className="w-8 h-px bg-[#C8FF00]" />
-            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Booking confirmed</span>
-            <span className="w-8 h-px bg-[#C8FF00]" />
+            <span className="w-8 h-px bg-[#C4A04A]" />
+            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C4A04A]">Booking confirmed</span>
+            <span className="w-8 h-px bg-[#C4A04A]" />
           </div>
           <h1 className="font-display text-3xl font-bold text-white">You're all set!</h1>
           <p className="text-[#B4B4B4] text-sm mt-2">
@@ -22,9 +22,9 @@ export default function BookingSuccess({ booking }: { booking: any }) {
       </div>
 
       {/* Booking ref */}
-      <div className="bg-[#1e1e1e] border border-[#C8FF00]/30 rounded-xl p-6 text-center">
+      <div className="bg-[#1e1e1e] border border-[#C4A04A]/30 rounded-xl p-6 text-center">
         <p className="text-[#B4B4B4] text-[10px] font-bold uppercase tracking-[0.3em] mb-2">Booking Reference</p>
-        <p className="text-3xl font-bold text-[#C8FF00] font-mono tracking-wider">{booking.bookingNumber}</p>
+        <p className="text-3xl font-bold text-[#C4A04A] font-mono tracking-wider">{booking.bookingNumber}</p>
         <p className="text-[#B4B4B4]/50 text-xs mt-2">Screenshot this · Bring it when you pick up</p>
       </div>
 
@@ -58,7 +58,7 @@ export default function BookingSuccess({ booking }: { booking: any }) {
 
       {/* Next steps */}
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-5">
-        <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-[0.25em] mb-4">What happens next</p>
+        <p className="text-[10px] font-bold text-[#C4A04A] uppercase tracking-[0.25em] mb-4">What happens next</p>
         <div className="space-y-3">
           {[
             "Our team prepares your gear based on your fitting details",
@@ -66,7 +66,7 @@ export default function BookingSuccess({ booking }: { booking: any }) {
             "We'll fit you, take payment, and you're off to the mountain 🏔️",
           ].map((step, i) => (
             <div key={i} className="flex items-start gap-3 text-sm text-[#B4B4B4]">
-              <div className="w-5 h-5 bg-[#C8FF00] text-[#121212] rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+              <div className="w-5 h-5 bg-[#C4A04A] text-[#121212] rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                 {i + 1}
               </div>
               {step}
@@ -79,11 +79,11 @@ export default function BookingSuccess({ booking }: { booking: any }) {
       <div className="text-center space-y-2 text-sm">
         <p className="text-[#B4B4B4]">Need to change something?</p>
         <div className="flex justify-center gap-4">
-          <a href="tel:0295973422" className="font-semibold text-[#C8FF00] hover:text-[#b3e600] transition-colors">
+          <a href="tel:0295973422" className="font-semibold text-[#C4A04A] hover:text-[#b3e600] transition-colors">
             (02) 9597 3422
           </a>
           <span className="text-[#2e2e2e]">·</span>
-          <a href="mailto:info@snowskierswarehouse.com.au" className="font-semibold text-[#C8FF00] hover:text-[#b3e600] transition-colors">
+          <a href="mailto:info@snowskierswarehouse.com.au" className="font-semibold text-[#C4A04A] hover:text-[#b3e600] transition-colors">
             Email us
           </a>
         </div>

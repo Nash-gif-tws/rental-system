@@ -42,7 +42,7 @@ export default function AddUnitForm({
   }
 
   const inputClass =
-    "w-full px-3 py-2.5 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+    "w-full px-3 py-2.5 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
   const labelClass = "block text-xs font-medium text-[#B4B4B4] uppercase tracking-wider mb-1.5"
 
   return (
@@ -136,7 +136,7 @@ export default function AddUnitForm({
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-[#C8FF00] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+          className="flex-1 bg-[#C4A04A] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
         >
           {loading ? "Adding..." : "Add Unit"}
         </button>

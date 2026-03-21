@@ -264,7 +264,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <div className="w-10 h-10 border-2 border-[#C8FF00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#C4A04A] border-t-transparent rounded-full animate-spin" />
         <p className="text-sm text-[#B4B4B4]">Checking availability...</p>
       </div>
     )
@@ -277,8 +277,8 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-3">
-          <span className="w-5 h-px bg-[#C8FF00]" />
-          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 2</span>
+          <span className="w-5 h-px bg-[#C4A04A]" />
+          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C4A04A]">Step 2</span>
         </div>
         {activeCategory ? (
           <div className="flex items-start gap-3">
@@ -318,12 +318,12 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
               <button
                 key={slug}
                 onClick={() => setActiveCategory(slug)}
-                className={`relative text-left bg-[#1e1e1e] border rounded-xl p-5 hover:border-[#C8FF00]/40 transition-all group ${
-                  selected > 0 ? "border-[#C8FF00]/40" : "border-[#2e2e2e]"
+                className={`relative text-left bg-[#1e1e1e] border rounded-xl p-5 hover:border-[#C4A04A]/40 transition-all group ${
+                  selected > 0 ? "border-[#C4A04A]/40" : "border-[#2e2e2e]"
                 }`}
               >
                 {selected > 0 && (
-                  <span className="absolute top-3 right-3 bg-[#C8FF00] text-[#121212] text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  <span className="absolute top-3 right-3 bg-[#C4A04A] text-[#121212] text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
                     {selected}
                   </span>
                 )}
@@ -331,7 +331,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                 <p className="font-bold text-white text-sm">{label}</p>
                 <p className="text-[#B4B4B4] text-xs mt-0.5 leading-snug">{desc}</p>
                 {from !== null && (
-                  <p className="text-[#C8FF00] text-xs font-semibold mt-2">From ${from}</p>
+                  <p className="text-[#C4A04A] text-xs font-semibold mt-2">From ${from}</p>
                 )}
                 <div className="mt-3 flex items-center gap-1 text-[#555] group-hover:text-[#B4B4B4] transition-colors">
                   <span className="text-xs">{prods.length} option{prods.length !== 1 ? "s" : ""}</span>
@@ -370,7 +370,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                     <div className="grid grid-cols-2 gap-2">
                       {([["ski", "🎿", "Skiing"], ["snowboard", "🏂", "Snowboarding"]] as const).map(([val, emoji, label]) => (
                         <button key={val} onClick={() => setGuideActivity(guideActivity === val ? null : val)}
-                          className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border text-sm font-semibold transition-colors ${guideActivity === val ? "bg-[#C8FF00]/10 border-[#C8FF00] text-[#C8FF00]" : "bg-[#121212] border-[#333] text-[#B4B4B4] hover:border-[#555]"}`}>
+                          className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border text-sm font-semibold transition-colors ${guideActivity === val ? "bg-[#C4A04A]/10 border-[#C4A04A] text-[#C4A04A]" : "bg-[#121212] border-[#333] text-[#B4B4B4] hover:border-[#555]"}`}>
                           <span>{emoji}</span>{label}
                         </button>
                       ))}
@@ -381,7 +381,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                     <div className="grid grid-cols-3 gap-2">
                       {([["first", "First timer"], ["some", "Some experience"], ["regular", "Confident"]] as const).map(([val, label]) => (
                         <button key={val} onClick={() => setGuideLevel(guideLevel === val ? null : val)}
-                          className={`px-3 py-2.5 rounded-lg border text-xs font-semibold transition-colors ${guideLevel === val ? "bg-[#C8FF00]/10 border-[#C8FF00] text-[#C8FF00]" : "bg-[#121212] border-[#333] text-[#B4B4B4] hover:border-[#555]"}`}>
+                          className={`px-3 py-2.5 rounded-lg border text-xs font-semibold transition-colors ${guideLevel === val ? "bg-[#C4A04A]/10 border-[#C4A04A] text-[#C4A04A]" : "bg-[#121212] border-[#333] text-[#B4B4B4] hover:border-[#555]"}`}>
                           {label}
                         </button>
                       ))}
@@ -396,13 +396,13 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                       : { name: guideLevel === "regular" ? "Burton Step-On Package" : "Snowboard Package", desc: guideLevel === "first" ? "Board & boots — easiest way to get started." : guideLevel === "some" ? "Board and boots. Great all-mountain setup." : "Our premium Step-On system — fastest in/out on the hill." }
                     const product = products.find((p) => p.slug === pkgSlug) ?? products.find((p) => p.slug.includes(guideActivity))
                     return (
-                      <div className="bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-xl p-4">
-                        <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-[0.2em] mb-2">We recommend</p>
+                      <div className="bg-[#C4A04A]/5 border border-[#C4A04A]/20 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-[#C4A04A] uppercase tracking-[0.2em] mb-2">We recommend</p>
                         <p className="text-sm font-bold text-white">{pkg.name}</p>
                         <p className="text-xs text-[#B4B4B4] mt-1 leading-relaxed">{pkg.desc}</p>
                         {product && (
                           <button onClick={() => { setGuideOpen(false); setOpenProductId(product.id); setTimeout(() => document.getElementById(`product-${product.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 50) }}
-                            className="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#C8FF00] hover:text-white transition-colors">
+                            className="mt-3 flex items-center gap-1.5 text-xs font-bold text-[#C4A04A] hover:text-white transition-colors">
                             Select this <ChevronRight className="h-3.5 w-3.5" />
                           </button>
                         )}
@@ -426,7 +426,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
 
               return (
                 <div key={product.id} id={`product-${product.id}`}
-                  className={`bg-[#1e1e1e] border rounded-xl transition-all duration-200 overflow-hidden ${selected ? "border-[#C8FF00]/50" : outOfStock ? "border-[#2e2e2e] opacity-40" : "border-[#2e2e2e] hover:border-[#444]"}`}
+                  className={`bg-[#1e1e1e] border rounded-xl transition-all duration-200 overflow-hidden ${selected ? "border-[#C4A04A]/50" : outOfStock ? "border-[#2e2e2e] opacity-40" : "border-[#2e2e2e] hover:border-[#444]"}`}
                 >
                   <button onClick={() => !outOfStock && toggleProduct(product)} disabled={outOfStock}
                     className="w-full flex items-center justify-between p-4 gap-4 text-left"
@@ -435,16 +435,16 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-semibold text-white text-sm">{product.name}</p>
                         {product.isPackage && (
-                          <span className="text-[9px] bg-[#C8FF00]/10 text-[#C8FF00] font-bold px-2 py-0.5 rounded border border-[#C8FF00]/20 tracking-wider uppercase">Package</span>
+                          <span className="text-[9px] bg-[#C4A04A]/10 text-[#C4A04A] font-bold px-2 py-0.5 rounded border border-[#C4A04A]/20 tracking-wider uppercase">Package</span>
                         )}
                       </div>
                       <div className="flex items-center gap-3 mt-1 flex-wrap">
-                        <p className="text-[#C8FF00] font-bold text-sm">
+                        <p className="text-[#C4A04A] font-bold text-sm">
                           ${price.toFixed(2)}
                           {activeTier && <span className="text-[#B4B4B4] font-normal text-xs"> / {activeTier.label.toLowerCase()}</span>}
                         </p>
                         {selected?.size && !isPkg && (
-                          <span className="text-xs bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 px-2 py-0.5 rounded-full">{selected.size}</span>
+                          <span className="text-xs bg-[#C4A04A]/10 text-[#C4A04A] border border-[#C4A04A]/20 px-2 py-0.5 rounded-full">{selected.size}</span>
                         )}
                       </div>
                       {product.pricingTiers.length > 0 && (
@@ -452,7 +452,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                           {[...product.pricingTiers].sort((a, b) => a.days - b.days).map((tier) => {
                             const isActive = activeTier?.id === tier.id
                             return (
-                              <span key={tier.id} className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${isActive ? "bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30" : "bg-white/[0.04] text-[#555] border border-transparent"}`}>
+                              <span key={tier.id} className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${isActive ? "bg-[#C4A04A]/15 text-[#C4A04A] border border-[#C4A04A]/30" : "bg-white/[0.04] text-[#555] border border-transparent"}`}>
                                 {tier.label} ${tier.price}
                               </span>
                             )
@@ -464,7 +464,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                       <span className="text-xs text-red-400 font-semibold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg flex-shrink-0">Unavailable</span>
                     ) : selected && (!isPkg || packageComplete(product)) ? (
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-xs text-[#C8FF00] font-semibold bg-[#C8FF00]/10 border border-[#C8FF00]/20 px-3 py-1.5 rounded-lg">✓ Added</span>
+                        <span className="text-xs text-[#C4A04A] font-semibold bg-[#C4A04A]/10 border border-[#C4A04A]/20 px-3 py-1.5 rounded-lg">✓ Added</span>
                         {(product.hasSizes || isPkg) && <ChevronDown className={`h-4 w-4 text-[#B4B4B4] transition-transform ${isOpen ? "rotate-180" : ""}`} />}
                       </div>
                     ) : (
@@ -501,7 +501,7 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
                           </div>
                         )}
                         {packageComplete(product) && (
-                          <div className="bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-lg px-3 py-2.5 text-xs text-[#C8FF00]">{formatPackageSize(current)}</div>
+                          <div className="bg-[#C4A04A]/5 border border-[#C4A04A]/20 rounded-lg px-3 py-2.5 text-xs text-[#C4A04A]">{formatPackageSize(current)}</div>
                         )}
                         {selected && <button onClick={() => removeProduct(product.id)} className="text-xs text-red-400 hover:text-red-300 transition-colors">Remove from cart</button>}
                       </div>
@@ -532,13 +532,13 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
 
       {/* Sticky cart bar */}
       <div className={`sticky bottom-4 transition-all duration-300 ${subtotal > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
-        <div className="bg-[#1a1a1a] border border-[#C8FF00]/30 rounded-xl p-4 flex items-center justify-between shadow-xl shadow-black/40">
+        <div className="bg-[#1a1a1a] border border-[#C4A04A]/30 rounded-xl p-4 flex items-center justify-between shadow-xl shadow-black/40">
           <div>
             <p className="text-[#B4B4B4] text-xs">{itemCount} item{itemCount !== 1 ? "s" : ""} selected</p>
             <p className="text-white font-bold text-lg">${subtotal.toFixed(2)}</p>
           </div>
           <button onClick={onNext} disabled={!canProceed}
-            className={`flex items-center gap-2 font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase ${canProceed ? "bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212]" : "bg-white/10 text-[#555] cursor-not-allowed"}`}>
+            className={`flex items-center gap-2 font-bold px-5 py-3 rounded-lg transition-colors text-sm tracking-widest uppercase ${canProceed ? "bg-[#C4A04A] hover:bg-[#b3e600] text-[#121212]" : "bg-white/10 text-[#555] cursor-not-allowed"}`}>
             Continue <ArrowRight className="h-4 w-4" />
           </button>
         </div>
@@ -570,7 +570,7 @@ function SizeTiles({ label, sizes, selected, onSelect }: {
             const unavailable = sz.available === 0
             return (
               <button key={sz.size} onClick={() => !unavailable && onSelect(sz.size)} disabled={unavailable}
-                className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl border transition-all ${isSelected ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]" : unavailable ? "bg-white/[0.02] text-[#3a3a3a] border-[#222] cursor-not-allowed" : "bg-[#252525] text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"}`}
+                className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl border transition-all ${isSelected ? "bg-[#C4A04A] text-[#121212] border-[#C4A04A]" : unavailable ? "bg-white/[0.02] text-[#3a3a3a] border-[#222] cursor-not-allowed" : "bg-[#252525] text-white border-[#2e2e2e] hover:border-[#C4A04A]/50 hover:text-[#C4A04A]"}`}
               >
                 <span className="text-sm font-bold leading-tight">{sz.size}</span>
                 <span className={`text-[10px] mt-0.5 font-medium ${isSelected ? "text-[#121212]/60" : unavailable ? "text-[#3a3a3a]" : "text-[#555]"}`}>

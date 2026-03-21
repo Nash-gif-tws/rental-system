@@ -141,10 +141,10 @@ function SizeTiles({
             disabled={unavailable}
             className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl border transition-all ${
               isSelected
-                ? "bg-[#C8FF00] text-[#121212] border-[#C8FF00]"
+                ? "bg-[#C4A04A] text-[#121212] border-[#C4A04A]"
                 : unavailable
                   ? "bg-white/[0.02] text-[#3a3a3a] border-[#222] cursor-not-allowed"
-                  : "bg-[#252525] text-white border-[#2e2e2e] hover:border-[#C8FF00]/50 hover:text-[#C8FF00]"
+                  : "bg-[#252525] text-white border-[#2e2e2e] hover:border-[#C4A04A]/50 hover:text-[#C4A04A]"
             }`}
           >
             <span className="text-sm font-bold leading-tight">{sz.size}</span>
@@ -394,14 +394,14 @@ export default function POSClient({ products }: { products: Product[] }) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
-          <CheckCircle2 className="h-16 w-16 text-[#C8FF00] mx-auto" />
+          <CheckCircle2 className="h-16 w-16 text-[#C4A04A] mx-auto" />
           <h2 className="font-display text-3xl font-bold text-white tracking-wide">BOOKING CREATED</h2>
           <p className="text-[#B4B4B4]">Booking number: <span className="text-white font-semibold">{done}</span></p>
           <p className="text-sm text-[#B4B4B4]">Status: {mode === "book" ? "Confirmed" : "Pending (reserved)"}</p>
           <div className="flex gap-3 justify-center pt-4">
             <button
               onClick={() => { setCart([]); setCustomer(null); setCustomerForm({ firstName: "", lastName: "", email: "", phone: "" }); setDiscount(""); setDone(null); setRightPanel("order") }}
-              className="bg-[#C8FF00] text-[#121212] font-semibold px-6 py-3 rounded-lg text-sm hover:bg-[#b3e600] transition-colors"
+              className="bg-[#C4A04A] text-[#121212] font-semibold px-6 py-3 rounded-lg text-sm hover:bg-[#b3e600] transition-colors"
             >
               New Order
             </button>
@@ -443,7 +443,7 @@ export default function POSClient({ products }: { products: Product[] }) {
             />
             <p className="text-center text-xs text-[#555]">
               {sizePicker.product.pricingTiers.length > 0 && (
-                <span className="text-[#C8FF00] font-bold">
+                <span className="text-[#C4A04A] font-bold">
                   {formatCurrency(getBestPrice(sizePicker.product.pricingTiers, durationDays))}
                 </span>
               )}{" "}
@@ -515,14 +515,14 @@ export default function POSClient({ products }: { products: Product[] }) {
               )}
 
               <div className="flex items-center justify-between pt-2 border-t border-[#2e2e2e]">
-                <span className="text-[#C8FF00] font-bold">
+                <span className="text-[#C4A04A] font-bold">
                   {formatCurrency(getBestPrice(packagePicker.product.pricingTiers, durationDays))}
                   <span className="text-[#B4B4B4] font-normal text-xs"> / {durationDays}d</span>
                 </span>
                 <button
                   onClick={() => allRequired && setPackagePicker(null)}
                   disabled={!allRequired}
-                  className="px-5 py-2 bg-[#C8FF00] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-5 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {allRequired ? "Done" : "Select required sizes"}
                 </button>
@@ -540,7 +540,7 @@ export default function POSClient({ products }: { products: Product[] }) {
           <button
             onClick={() => setMode("book")}
             className={`px-5 py-2 rounded-md text-xs font-semibold tracking-widest uppercase transition-all ${
-              mode === "book" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4] hover:text-white"
+              mode === "book" ? "bg-[#C4A04A] text-[#121212]" : "text-[#B4B4B4] hover:text-white"
             }`}
           >
             Book Now
@@ -548,7 +548,7 @@ export default function POSClient({ products }: { products: Product[] }) {
           <button
             onClick={() => setMode("reserve")}
             className={`px-5 py-2 rounded-md text-xs font-semibold tracking-widest uppercase transition-all ${
-              mode === "reserve" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4] hover:text-white"
+              mode === "reserve" ? "bg-[#C4A04A] text-[#121212]" : "text-[#B4B4B4] hover:text-white"
             }`}
           >
             Reserve
@@ -559,7 +559,7 @@ export default function POSClient({ products }: { products: Product[] }) {
         <div className="relative">
           <button
             onClick={() => setShowDurationPicker(!showDurationPicker)}
-            className="flex items-center gap-2 bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg px-4 py-2.5 text-sm text-white hover:border-[#C8FF00]/40 transition-colors"
+            className="flex items-center gap-2 bg-[#1e1e1e] border border-[#2e2e2e] rounded-lg px-4 py-2.5 text-sm text-white hover:border-[#C4A04A]/40 transition-colors"
           >
             <span className="font-medium">{durationDays} day{durationDays !== 1 ? "s" : ""}</span>
             <span className="text-[#B4B4B4] text-xs">
@@ -575,7 +575,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                     key={d.days}
                     onClick={() => { setDurationDays(d.days); setShowDurationPicker(false) }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      durationDays === d.days ? "bg-[#C8FF00] text-[#121212]" : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
+                      durationDays === d.days ? "bg-[#C4A04A] text-[#121212]" : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     {d.label}
@@ -588,7 +588,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors"
+                  className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors"
                 />
               </div>
             </div>
@@ -614,7 +614,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                 onClick={() => setCategoryFilter(cat)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-colors capitalize ${
                   categoryFilter === cat
-                    ? "bg-[#C8FF00] text-[#121212]"
+                    ? "bg-[#C4A04A] text-[#121212]"
                     : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
                 }`}
               >
@@ -646,7 +646,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                           key={product.id}
                           className={`relative rounded-xl border transition-all duration-150 overflow-hidden ${
                             inCart
-                              ? "border-[#C8FF00]/60 bg-[#C8FF00]/5"
+                              ? "border-[#C4A04A]/60 bg-[#C4A04A]/5"
                               : "border-[#2e2e2e] bg-[#1e1e1e] hover:border-[#444]"
                           }`}
                         >
@@ -658,7 +658,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                             <p className="font-medium text-white text-sm leading-tight">{product.name}</p>
                             <p className="text-xs text-[#B4B4B4] mt-0.5">{product.category.name}</p>
                             {price > 0 ? (
-                              <p className="text-[#C8FF00] font-bold text-sm mt-2">
+                              <p className="text-[#C4A04A] font-bold text-sm mt-2">
                                 {formatCurrency(price)}
                                 <span className="text-[#B4B4B4] font-normal text-xs"> / {durationDays}d</span>
                               </p>
@@ -666,7 +666,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                               <p className="text-[#B4B4B4] text-xs mt-2">No pricing set</p>
                             )}
                             {inCart && cartItem.size && (
-                              <span className="inline-block mt-1.5 text-[10px] font-bold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 px-2 py-0.5 rounded">
+                              <span className="inline-block mt-1.5 text-[10px] font-bold bg-[#C4A04A]/15 text-[#C4A04A] border border-[#C4A04A]/30 px-2 py-0.5 rounded">
                                 {cartItem.size}
                               </span>
                             )}
@@ -678,7 +678,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                           </button>
 
                           {inCart && (
-                            <div className="flex items-center justify-between border-t border-[#C8FF00]/20 px-3 py-2 bg-[#C8FF00]/5">
+                            <div className="flex items-center justify-between border-t border-[#C4A04A]/20 px-3 py-2 bg-[#C4A04A]/5">
                               <button
                                 onClick={() => decrementCart(product.id)}
                                 className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
@@ -688,7 +688,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                               <span className="font-bold text-white text-sm">{cartItem.qty}</span>
                               <button
                                 onClick={() => incrementCart(product)}
-                                className="w-7 h-7 rounded-lg bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center transition-colors"
+                                className="w-7 h-7 rounded-lg bg-[#C4A04A] hover:bg-[#b3e600] flex items-center justify-center transition-colors"
                               >
                                 <Plus className="h-3 w-3 text-[#121212]" />
                               </button>
@@ -761,7 +761,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                               <div className="flex items-center gap-2">
                                 {item.size ? (
                                   <>
-                                    <span className="text-xs font-bold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 px-2 py-0.5 rounded">
+                                    <span className="text-xs font-bold bg-[#C4A04A]/15 text-[#C4A04A] border border-[#C4A04A]/30 px-2 py-0.5 rounded">
                                       {item.size}
                                     </span>
                                     <button
@@ -794,12 +794,12 @@ export default function POSClient({ products }: { products: Product[] }) {
                             <span className="text-white text-sm font-medium w-4 text-center">{item.qty}</span>
                             <button
                               onClick={() => product && incrementCart(product)}
-                              className="w-6 h-6 rounded bg-[#C8FF00] hover:bg-[#b3e600] flex items-center justify-center"
+                              className="w-6 h-6 rounded bg-[#C4A04A] hover:bg-[#b3e600] flex items-center justify-center"
                             >
                               <Plus className="h-3 w-3 text-[#121212]" />
                             </button>
                           </div>
-                          <span className="text-[#C8FF00] font-bold text-sm">
+                          <span className="text-[#C4A04A] font-bold text-sm">
                             {formatCurrency(item.unitPrice * item.qty)}
                           </span>
                         </div>
@@ -814,8 +814,8 @@ export default function POSClient({ products }: { products: Product[] }) {
                 {customer ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[#C8FF00]/20 flex items-center justify-center">
-                        <User className="h-3.5 w-3.5 text-[#C8FF00]" />
+                      <div className="w-7 h-7 rounded-full bg-[#C4A04A]/20 flex items-center justify-center">
+                        <User className="h-3.5 w-3.5 text-[#C4A04A]" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-white">{customer.firstName} {customer.lastName}</p>
@@ -829,7 +829,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                 ) : (
                   <button
                     onClick={() => setRightPanel("customer")}
-                    className="w-full flex items-center gap-2 border border-dashed border-[#333] hover:border-[#C8FF00]/40 rounded-lg px-3 py-2.5 text-sm text-[#B4B4B4] hover:text-white transition-colors"
+                    className="w-full flex items-center gap-2 border border-dashed border-[#333] hover:border-[#C4A04A]/40 rounded-lg px-3 py-2.5 text-sm text-[#B4B4B4] hover:text-white transition-colors"
                   >
                     <User className="h-4 w-4" />
                     Add Customer
@@ -847,7 +847,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
                       placeholder="0"
-                      className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-[#C4A04A] transition-colors"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B4B4B4] text-xs">%</span>
                   </div>
@@ -866,7 +866,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                   )}
                   <div className="flex justify-between text-white font-bold text-base pt-1 border-t border-[#2e2e2e]">
                     <span>Total</span>
-                    <span className="text-[#C8FF00]">{formatCurrency(total)}</span>
+                    <span className="text-[#C4A04A]">{formatCurrency(total)}</span>
                   </div>
                 </div>
 
@@ -882,7 +882,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                 <button
                   onClick={handleSubmit}
                   disabled={submitting || !cart.length}
-                  className="w-full bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-bold py-3 rounded-lg text-sm tracking-widest uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-[#C4A04A] hover:bg-[#b3e600] text-[#121212] font-bold py-3 rounded-lg text-sm tracking-widest uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? "Creating..." : mode === "book" ? "Book Now" : "Reserve"}
                   {!submitting && <ArrowRight className="h-4 w-4" />}
@@ -904,7 +904,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                   <button
                     onClick={() => setCustomerMode("search")}
                     className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                      customerMode === "search" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4]"
+                      customerMode === "search" ? "bg-[#C4A04A] text-[#121212]" : "text-[#B4B4B4]"
                     }`}
                   >
                     Find Existing
@@ -912,7 +912,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                   <button
                     onClick={() => setCustomerMode("new")}
                     className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                      customerMode === "new" ? "bg-[#C8FF00] text-[#121212]" : "text-[#B4B4B4]"
+                      customerMode === "new" ? "bg-[#C4A04A] text-[#121212]" : "text-[#B4B4B4]"
                     }`}
                   >
                     New Customer
@@ -927,7 +927,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                       value={customerSearch}
                       onChange={(e) => setCustomerSearch(e.target.value)}
                       placeholder="Search name, email or phone..."
-                      className="w-full bg-[#121212] border border-[#333] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+                      className="w-full bg-[#121212] border border-[#333] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
                     />
                   </div>
                 )}
@@ -945,8 +945,8 @@ export default function POSClient({ products }: { products: Product[] }) {
                         onClick={() => { setCustomer(c); setRightPanel("order"); setCustomerSearch(""); setCustomerResults([]) }}
                         className="w-full text-left flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors mb-1"
                       >
-                        <div className="w-9 h-9 rounded-full bg-[#C8FF00]/10 flex items-center justify-center flex-shrink-0">
-                          <User className="h-4 w-4 text-[#C8FF00]" />
+                        <div className="w-9 h-9 rounded-full bg-[#C4A04A]/10 flex items-center justify-center flex-shrink-0">
+                          <User className="h-4 w-4 text-[#C4A04A]" />
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-white">{c.firstName} {c.lastName}</p>
@@ -973,7 +973,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                           type={type}
                           value={(customerForm as any)[key]}
                           onChange={(e) => setCustomerForm((f) => ({ ...f, [key]: e.target.value }))}
-                          className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors"
+                          className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors"
                         />
                       </div>
                     ))}
@@ -990,7 +990,7 @@ export default function POSClient({ products }: { products: Product[] }) {
                       setRightPanel("order")
                     }}
                     disabled={!customerForm.firstName || !customerForm.email}
-                    className="w-full bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-bold py-2.5 rounded-lg text-sm tracking-wide disabled:opacity-40 transition-colors"
+                    className="w-full bg-[#C4A04A] hover:bg-[#b3e600] text-[#121212] font-bold py-2.5 rounded-lg text-sm tracking-wide disabled:opacity-40 transition-colors"
                   >
                     Confirm Customer
                   </button>

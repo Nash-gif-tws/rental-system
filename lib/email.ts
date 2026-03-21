@@ -81,14 +81,14 @@ function buildCustomerEmailHtml(b: BookingEmailData): string {
     <!-- Header -->
     <div style="margin-bottom:32px">
       <p style="margin:0;font-size:22px;font-weight:900;letter-spacing:0.1em;color:#ffffff;text-transform:uppercase">
-        SNOWSKIERS<span style="color:#C8FF00">.</span>
+        SNOWSKIERS<span style="color:#C4A04A">.</span>
       </p>
       <p style="margin:4px 0 0;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#b4b4b4">Warehouse</p>
     </div>
 
     <!-- Hero -->
     <div style="background:#1e1e1e;border:1px solid #2e2e2e;border-radius:12px;padding:28px;margin-bottom:20px">
-      <p style="margin:0 0 4px;font-size:12px;letter-spacing:0.3em;text-transform:uppercase;color:#C8FF00;font-weight:700">Booking Confirmed</p>
+      <p style="margin:0 0 4px;font-size:12px;letter-spacing:0.3em;text-transform:uppercase;color:#C4A04A;font-weight:700">Booking Confirmed</p>
       <p style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:0.05em">${b.bookingNumber}</p>
       <p style="margin:8px 0 0;font-size:14px;color:#b4b4b4">
         Hi ${b.customer.firstName}, your rental is confirmed! We'll have everything ready for your arrival.
@@ -118,14 +118,14 @@ function buildCustomerEmailHtml(b: BookingEmailData): string {
         ${
           b.discountAmount && b.discountAmount > 0
             ? `<tr>
-            <td style="padding:8px 0;color:#C8FF00;font-size:13px">Discount (${b.discountCode ?? "code"})</td>
-            <td style="padding:8px 0;color:#C8FF00;text-align:right;font-size:13px">−${formatCurrency(b.discountAmount)}</td>
+            <td style="padding:8px 0;color:#C4A04A;font-size:13px">Discount (${b.discountCode ?? "code"})</td>
+            <td style="padding:8px 0;color:#C4A04A;text-align:right;font-size:13px">−${formatCurrency(b.discountAmount)}</td>
           </tr>`
             : ""
         }
         <tr>
           <td style="padding:12px 0 0;font-size:16px;font-weight:700;color:#ffffff">Total Due in Store</td>
-          <td style="padding:12px 0 0;font-size:16px;font-weight:700;color:#C8FF00;text-align:right">${formatCurrency(total)}</td>
+          <td style="padding:12px 0 0;font-size:16px;font-weight:700;color:#C4A04A;text-align:right">${formatCurrency(total)}</td>
         </tr>
       </table>
     </div>
@@ -137,13 +137,13 @@ function buildCustomerEmailHtml(b: BookingEmailData): string {
         <li>Photo ID</li>
         <li>Payment (cash, card or EFTPOS)</li>
         ${b.customer.phone ? "" : "<li>Your phone number</li>"}
-        <li style="color:#C8FF00">Under 18? Parent or guardian must be present to sign the waiver.</li>
+        <li style="color:#C4A04A">Under 18? Parent or guardian must be present to sign the waiver.</li>
       </ul>
     </div>
 
     <!-- Footer -->
     <div style="text-align:center;padding-top:24px;border-top:1px solid #2e2e2e">
-      <p style="margin:0;font-size:13px;color:#555">Questions? Call us on <a href="tel:0295973422" style="color:#C8FF00;text-decoration:none">(02) 9597 3422</a></p>
+      <p style="margin:0;font-size:13px;color:#555">Questions? Call us on <a href="tel:0295973422" style="color:#C4A04A;text-decoration:none">(02) 9597 3422</a></p>
       <p style="margin:6px 0 0;font-size:12px;color:#555">Snowskiers Warehouse · Cronulla, NSW · snowskiers.com.au</p>
     </div>
 

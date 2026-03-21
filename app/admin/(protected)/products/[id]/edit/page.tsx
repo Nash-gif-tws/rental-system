@@ -39,7 +39,7 @@ export default async function EditProductPage({
         </Link>
         <div className="flex items-center gap-3">
           <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">{product.name}</h1>
-          <span className={`text-xs px-2 py-0.5 rounded font-bold ${product.isActive ? "bg-[#C8FF00]/15 text-[#C8FF00]" : "bg-white/5 text-[#555]"}`}>
+          <span className={`text-xs px-2 py-0.5 rounded font-bold ${product.isActive ? "bg-[#C4A04A]/15 text-[#C4A04A]" : "bg-white/5 text-[#555]"}`}>
             {product.isActive ? "Active" : "Inactive"}
           </span>
           {product.isPackage && (

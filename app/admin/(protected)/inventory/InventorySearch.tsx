@@ -32,7 +32,7 @@ export default function InventorySearch({ defaultValue }: { defaultValue?: strin
         placeholder="Search by product, size, or ID..."
         defaultValue={defaultValue}
         onChange={handleChange}
-        className="w-full pl-8 pr-4 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+        className="w-full pl-8 pr-4 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
       />
     </div>
   )

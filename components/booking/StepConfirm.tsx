@@ -50,8 +50,8 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
 
   const SectionHeader = ({ icon: Icon, label }: { icon: any; label: string }) => (
     <div className="flex items-center gap-2 mb-4">
-      <div className="w-7 h-7 bg-[#C8FF00]/10 rounded-lg flex items-center justify-center">
-        <Icon className="h-4 w-4 text-[#C8FF00]" />
+      <div className="w-7 h-7 bg-[#C4A04A]/10 rounded-lg flex items-center justify-center">
+        <Icon className="h-4 w-4 text-[#C4A04A]" />
       </div>
       <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.25em]">{label}</p>
     </div>
@@ -61,8 +61,8 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
     <div className="space-y-5">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <span className="w-5 h-px bg-[#C8FF00]" />
-          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 4</span>
+          <span className="w-5 h-px bg-[#C4A04A]" />
+          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C4A04A]">Step 4</span>
         </div>
         <h1 className="font-display text-3xl font-bold text-white leading-tight">Review your<br />booking</h1>
         <p className="text-[#B4B4B4] text-sm mt-2">Looks good? Confirm and we'll prepare your gear.</p>
@@ -81,9 +81,9 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
             <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-wider">Return</p>
             <p className="font-bold text-white text-sm mt-0.5">{state.endDate ? format(new Date(state.endDate), "EEE d MMM") : "—"}</p>
           </div>
-          <div className="bg-[#C8FF00]/10 border border-[#C8FF00]/20 rounded-lg px-3 py-3 text-center">
-            <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-wider">Days</p>
-            <p className="font-bold text-[#C8FF00] text-sm mt-0.5">{state.rentalDays}</p>
+          <div className="bg-[#C4A04A]/10 border border-[#C4A04A]/20 rounded-lg px-3 py-3 text-center">
+            <p className="text-[10px] font-bold text-[#C4A04A] uppercase tracking-wider">Days</p>
+            <p className="font-bold text-[#C4A04A] text-sm mt-0.5">{state.rentalDays}</p>
           </div>
         </div>
       </div>
@@ -125,10 +125,10 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
               value={discountCode}
               onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
               placeholder="Enter code"
-              className="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white font-mono focus:outline-none focus:border-[#C8FF00] transition-colors"
+              className="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white font-mono focus:outline-none focus:border-[#C4A04A] transition-colors"
             />
             {discountCode && previewPct > 0 && (
-              <p className="text-xs text-[#C8FF00] font-semibold mt-1.5">✓ {previewPct}% discount applied</p>
+              <p className="text-xs text-[#C4A04A] font-semibold mt-1.5">✓ {previewPct}% discount applied</p>
             )}
             {discountCode && previewPct === 0 && (
               <p className="text-xs text-red-400 mt-1.5">Invalid discount code</p>
@@ -141,14 +141,14 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
               <span>${subtotal.toFixed(2)}</span>
             </div>
             {previewDiscount > 0 && (
-              <div className="flex justify-between text-sm text-[#C8FF00] font-semibold">
+              <div className="flex justify-between text-sm text-[#C4A04A] font-semibold">
                 <span>Discount ({discountCode})</span>
                 <span>−${previewDiscount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between font-bold text-base pt-1 border-t border-[#2e2e2e]">
               <span className="text-white">Est. Total</span>
-              <span className="text-[#C8FF00]">${total.toFixed(2)}</span>
+              <span className="text-[#C4A04A]">${total.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -171,8 +171,8 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
           <p className="font-semibold text-white mb-0.5">💳 Pay in store</p>
           <p className="text-[#B4B4B4] text-xs">Cash, card or EFTPOS at pickup. No payment needed to book.</p>
         </div>
-        <div className="flex-1 bg-[#1e1e1e] border border-[#C8FF00]/20 rounded-xl p-4">
-          <p className="font-semibold text-[#C8FF00] mb-0.5">👨‍👩‍👧 Under 18?</p>
+        <div className="flex-1 bg-[#1e1e1e] border border-[#C4A04A]/20 rounded-xl p-4">
+          <p className="font-semibold text-[#C4A04A] mb-0.5">👨‍👩‍👧 Under 18?</p>
           <p className="text-[#B4B4B4] text-xs">Parent or guardian must be present at pickup to sign.</p>
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
           { icon: "✓", text: "Expert staff on hand — questions before or during your rental, just call." },
         ].map(({ icon, text }) => (
           <div key={text} className="flex items-start gap-2.5">
-            <span className="text-[#C8FF00] font-bold text-sm leading-none mt-0.5">{icon}</span>
+            <span className="text-[#C4A04A] font-bold text-sm leading-none mt-0.5">{icon}</span>
             <p className="text-xs text-[#B4B4B4] leading-relaxed">{text}</p>
           </div>
         ))}
@@ -207,7 +207,7 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
         <button
           onClick={handleConfirm}
           disabled={loading}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#C8FF00] hover:bg-[#b3e600] disabled:opacity-50 text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#b3e600] disabled:opacity-50 text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
         >
           {loading ? (
             <><div className="w-4 h-4 border-2 border-[#121212] border-t-transparent rounded-full animate-spin" /> Confirming...</>

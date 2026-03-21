@@ -20,14 +20,14 @@ type ProductWithRelations = {
 
 const CONDITIONS = ["EXCELLENT", "GOOD", "FAIR", "NEEDS_SERVICE", "RETIRED"] as const
 const CONDITION_STYLE: Record<string, string> = {
-  EXCELLENT: "bg-[#C8FF00]/15 text-[#C8FF00] border-[#C8FF00]/30",
+  EXCELLENT: "bg-[#C4A04A]/15 text-[#C4A04A] border-[#C4A04A]/30",
   GOOD: "bg-blue-500/15 text-blue-400 border-blue-500/30",
   FAIR: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
   NEEDS_SERVICE: "bg-orange-500/15 text-orange-400 border-orange-500/30",
   RETIRED: "bg-white/5 text-[#555] border-white/10",
 }
 
-const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
 const labelCls = "block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1.5"
 
 function Card({ title, icon: Icon, children, action }: { title: string; icon: any; children: React.ReactNode; action?: React.ReactNode }) {
@@ -174,7 +174,7 @@ export default function EditProductClient({
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <div
                 onClick={() => setProduct((p) => ({ ...p, isActive: !p.isActive }))}
-                className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${product.isActive ? "bg-[#C8FF00]" : "bg-[#333]"}`}
+                className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${product.isActive ? "bg-[#C4A04A]" : "bg-[#333]"}`}
               >
                 <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#121212] transition-transform ${product.isActive ? "translate-x-4" : "translate-x-0.5"}`} />
               </div>
@@ -183,7 +183,7 @@ export default function EditProductClient({
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <div
                 onClick={() => setProduct((p) => ({ ...p, isPackage: !p.isPackage }))}
-                className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${product.isPackage ? "bg-[#C8FF00]" : "bg-[#333]"}`}
+                className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${product.isPackage ? "bg-[#C4A04A]" : "bg-[#333]"}`}
               >
                 <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#121212] transition-transform ${product.isPackage ? "translate-x-4" : "translate-x-0.5"}`} />
               </div>
@@ -195,11 +195,11 @@ export default function EditProductClient({
           <button
             onClick={saveDetails}
             disabled={saving}
-            className="bg-[#C8FF00] text-[#121212] px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+            className="bg-[#C4A04A] text-[#121212] px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
-          {saveMsg && <span className="text-sm text-[#C8FF00] font-medium">✓ {saveMsg}</span>}
+          {saveMsg && <span className="text-sm text-[#C4A04A] font-medium">✓ {saveMsg}</span>}
         </div>
       </Card>
 
@@ -211,9 +211,9 @@ export default function EditProductClient({
             {allProducts.map((p) => {
               const selected = product.packageItems.some((pi) => pi.productId === p.id)
               return (
-                <label key={p.id} className={`flex items-center gap-3 cursor-pointer p-2.5 rounded-lg transition-colors border ${selected ? "border-[#C8FF00]/30 bg-[#C8FF00]/5" : "border-transparent hover:bg-white/[0.03]"}`}>
+                <label key={p.id} className={`flex items-center gap-3 cursor-pointer p-2.5 rounded-lg transition-colors border ${selected ? "border-[#C4A04A]/30 bg-[#C4A04A]/5" : "border-transparent hover:bg-white/[0.03]"}`}>
                   <div
-                    className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${selected ? "bg-[#C8FF00] border-[#C8FF00]" : "border-[#444]"}`}
+                    className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${selected ? "bg-[#C4A04A] border-[#C4A04A]" : "border-[#444]"}`}
                     onClick={() => {
                       const ids = selected
                         ? product.packageItems.filter((pi) => pi.productId !== p.id).map((pi) => pi.productId)
@@ -232,7 +232,7 @@ export default function EditProductClient({
             })}
           </div>
           {product.packageItems.length > 0 && (
-            <div className="mt-4 bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-lg px-3 py-2.5 text-xs text-[#C8FF00]">
+            <div className="mt-4 bg-[#C4A04A]/5 border border-[#C4A04A]/20 rounded-lg px-3 py-2.5 text-xs text-[#C4A04A]">
               <span className="font-bold">Includes:</span> {product.packageItems.map((pi) => pi.product.name).join(", ")}
             </div>
           )}
@@ -260,7 +260,7 @@ export default function EditProductClient({
                   <tr key={tier.id}>
                     <td className="py-2.5 font-medium text-white">{tier.label}</td>
                     <td className="py-2.5 text-[#B4B4B4]">{tier.days} day{tier.days !== 1 ? "s" : ""}</td>
-                    <td className="py-2.5 text-[#C8FF00] font-bold">${tier.price.toFixed(2)}</td>
+                    <td className="py-2.5 text-[#C4A04A] font-bold">${tier.price.toFixed(2)}</td>
                     <td className="py-2.5 text-[#555] text-xs text-right">${(tier.price / tier.days).toFixed(2)}/d</td>
                     <td className="py-2.5 text-right">
                       <button onClick={() => deleteTier(tier.id)} className="p-1.5 rounded hover:bg-red-500/10 text-[#444] hover:text-red-400 transition-colors">
@@ -292,7 +292,7 @@ export default function EditProductClient({
             <button
               onClick={addPricingTier}
               disabled={addingTier || !newTier.label || !newTier.days || !newTier.price}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#C8FF00] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 transition-colors"
             >
               <Plus className="h-4 w-4" /> Add
             </button>
@@ -341,8 +341,8 @@ export default function EditProductClient({
                         onClick={() => updateUnit(unit.id, { isActive: !unit.isActive })}
                         className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-colors ${
                           unit.isActive
-                            ? "bg-[#C8FF00]/10 text-[#C8FF00] border-[#C8FF00]/20 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
-                            : "bg-white/5 text-[#555] border-white/10 hover:bg-[#C8FF00]/10 hover:text-[#C8FF00] hover:border-[#C8FF00]/20"
+                            ? "bg-[#C4A04A]/10 text-[#C4A04A] border-[#C4A04A]/20 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
+                            : "bg-white/5 text-[#555] border-white/10 hover:bg-[#C4A04A]/10 hover:text-[#C4A04A] hover:border-[#C4A04A]/20"
                         }`}
                       >
                         {unit.isActive ? "Active" : "Inactive"}
@@ -389,7 +389,7 @@ export default function EditProductClient({
             <button
               onClick={addUnit}
               disabled={addingUnit || (!newUnit.size && !newUnit.serialNumber)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#C8FF00] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-40 transition-colors"
             >
               <Plus className="h-4 w-4" /> Add Unit
             </button>

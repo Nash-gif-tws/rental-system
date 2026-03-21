@@ -48,7 +48,7 @@ export default function LoginPage() {
               name="email"
               type="email"
               required
-              className="w-full px-4 py-2.5 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00] transition-colors"
+              className="w-full px-4 py-2.5 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] focus:ring-1 focus:ring-[#C4A04A] transition-colors"
             />
           </div>
           <div>
@@ -59,7 +59,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
-              className="w-full px-4 py-2.5 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00] transition-colors"
+              className="w-full px-4 py-2.5 bg-[#121212] border border-[#333] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] focus:ring-1 focus:ring-[#C4A04A] transition-colors"
             />
           </div>
           {error && (
@@ -70,7 +70,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#C8FF00] text-[#121212] py-2.5 rounded-lg font-semibold text-sm tracking-wide hover:bg-[#b3e600] transition-colors disabled:opacity-50"
+            className="w-full bg-[#C4A04A] text-[#121212] py-2.5 rounded-lg font-semibold text-sm tracking-wide hover:bg-[#b3e600] transition-colors disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>

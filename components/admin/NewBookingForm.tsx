@@ -111,7 +111,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
     router.push(`/admin/bookings/${booking.id}`)
   }
 
-  const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+  const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
   const labelCls = "block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1.5"
 
   return (
@@ -153,7 +153,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
           </div>
         </div>
         {rentalDays > 0 && (
-          <p className="text-sm text-[#C8FF00] font-medium">{rentalDays} day{rentalDays !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-[#C4A04A] font-medium">{rentalDays} day{rentalDays !== 1 ? "s" : ""}</p>
         )}
       </div>
 
@@ -190,7 +190,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white tracking-wide">Equipment</h2>
-          <button type="button" onClick={addItem} className="text-sm text-[#C8FF00] hover:text-[#b3e600] font-medium transition-colors">
+          <button type="button" onClick={addItem} className="text-sm text-[#C4A04A] hover:text-[#b3e600] font-medium transition-colors">
             + Add Item
           </button>
         </div>
@@ -233,7 +233,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
                 />
               </div>
               {price > 0 && (
-                <div className="text-sm font-medium text-[#C8FF00] pb-2 whitespace-nowrap">
+                <div className="text-sm font-medium text-[#C4A04A] pb-2 whitespace-nowrap">
                   ${(price * item.quantity).toFixed(2)}
                 </div>
               )}
@@ -246,7 +246,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
 
         {subtotal > 0 && (
           <div className="flex justify-end border-t border-[#2e2e2e] pt-3">
-            <p className="font-semibold text-[#C8FF00]">Total: ${subtotal.toFixed(2)}</p>
+            <p className="font-semibold text-[#C4A04A]">Total: ${subtotal.toFixed(2)}</p>
           </div>
         )}
       </div>
@@ -265,7 +265,7 @@ export default function NewBookingForm({ products }: { products: Product[] }) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#C8FF00] text-[#121212] px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b3e600] transition-colors disabled:opacity-50"
+          className="bg-[#C4A04A] text-[#121212] px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b3e600] transition-colors disabled:opacity-50"
         >
           {loading ? "Creating..." : "Create Booking"}
         </button>

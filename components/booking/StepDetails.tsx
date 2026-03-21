@@ -3,7 +3,7 @@
 import { ArrowRight, ArrowLeft } from "lucide-react"
 import type { BookingState } from "./BookingWizard"
 
-const inputClass = "w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+const inputClass = "w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -27,8 +27,8 @@ export default function StepDetails({ state, onUpdate, onNext, onBack }: {
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-3 mb-3">
-          <span className="w-5 h-px bg-[#C8FF00]" />
-          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 3</span>
+          <span className="w-5 h-px bg-[#C4A04A]" />
+          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C4A04A]">Step 3</span>
         </div>
         <h1 className="font-display text-3xl font-bold text-white leading-tight">Your details</h1>
         <p className="text-[#B4B4B4] text-sm mt-2">We use this to prepare your gear before you arrive.</p>
@@ -104,7 +104,7 @@ export default function StepDetails({ state, onUpdate, onNext, onBack }: {
         <button
           onClick={onNext}
           disabled={!valid}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#C8FF00] hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
         >
           Review Booking <ArrowRight className="h-4 w-4" />
         </button>

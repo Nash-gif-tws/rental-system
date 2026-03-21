@@ -76,7 +76,7 @@ export default async function InventoryPage({
         </h1>
         <Link
           href="/admin/inventory/new"
-          className="flex items-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
+          className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#b3e600] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Unit
@@ -98,7 +98,7 @@ export default async function InventoryPage({
               href={buildUrl(params, { status: key })}
               className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                 params.status === key
-                  ? "border-[#C8FF00] text-white"
+                  ? "border-[#C4A04A] text-white"
                   : "border-transparent text-[#B4B4B4] hover:text-white"
               }`}
             >
@@ -106,7 +106,7 @@ export default async function InventoryPage({
               <span
                 className={`text-[11px] px-1.5 py-0.5 rounded font-bold ${
                   params.status === key
-                    ? "bg-[#C8FF00]/15 text-[#C8FF00]"
+                    ? "bg-[#C4A04A]/15 text-[#C4A04A]"
                     : "bg-white/5 text-[#555]"
                 }`}
               >
@@ -126,7 +126,7 @@ export default async function InventoryPage({
               href={buildUrl(params, { category: undefined })}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 !params.category
-                  ? "bg-[#C8FF00] text-[#121212]"
+                  ? "bg-[#C4A04A] text-[#121212]"
                   : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
               }`}
             >
@@ -138,7 +138,7 @@ export default async function InventoryPage({
                 href={buildUrl(params, { category: c.id })}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   params.category === c.id
-                    ? "bg-[#C8FF00] text-[#121212]"
+                    ? "bg-[#C4A04A] text-[#121212]"
                     : "bg-white/5 text-[#B4B4B4] hover:bg-white/10 hover:text-white"
                 }`}
               >

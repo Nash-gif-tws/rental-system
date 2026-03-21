@@ -13,7 +13,7 @@ type ScanResult =
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "bg-yellow-500/20 text-yellow-300",
-  CONFIRMED: "bg-[#C8FF00]/20 text-[#C8FF00]",
+  CONFIRMED: "bg-[#C4A04A]/20 text-[#C4A04A]",
   CHECKED_OUT: "bg-purple-500/20 text-purple-300",
   RETURNED: "bg-emerald-500/20 text-emerald-300",
   CANCELLED: "bg-red-500/20 text-red-300",
@@ -72,8 +72,8 @@ export default function ScannerClient() {
       {/* Scanner input */}
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-[#C8FF00]/10 rounded-xl flex items-center justify-center">
-            <Scan className="h-5 w-5 text-[#C8FF00]" />
+          <div className="w-10 h-10 bg-[#C4A04A]/10 rounded-xl flex items-center justify-center">
+            <Scan className="h-5 w-5 text-[#C4A04A]" />
           </div>
           <div>
             <p className="font-semibold text-white text-sm">Ready to scan</p>
@@ -90,12 +90,12 @@ export default function ScannerClient() {
               if (e.key === "Enter") handleScan(query)
             }}
             placeholder="Scan or type booking number / serial..."
-            className="w-full px-4 py-3 bg-[#121212] border-2 border-[#333] rounded-xl text-sm font-mono text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+            className="w-full px-4 py-3 bg-[#121212] border-2 border-[#333] rounded-xl text-sm font-mono text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
             autoComplete="off"
           />
           {loading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <Loader2 className="h-4 w-4 animate-spin text-[#C8FF00]" />
+              <Loader2 className="h-4 w-4 animate-spin text-[#C4A04A]" />
             </div>
           )}
         </div>
@@ -104,7 +104,7 @@ export default function ScannerClient() {
           <button
             onClick={() => handleScan(query)}
             disabled={!query.trim() || loading}
-            className="flex items-center gap-2 px-4 py-2 bg-[#C8FF00] text-[#121212] rounded-lg text-sm font-semibold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#C4A04A] text-[#121212] rounded-lg text-sm font-semibold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
           >
             <Scan className="h-4 w-4" />
             Look Up
@@ -162,8 +162,8 @@ export default function ScannerClient() {
           {/* Booking header */}
           <div className="px-5 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#C8FF00]/10 rounded-xl flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-[#C8FF00]" />
+              <div className="w-10 h-10 bg-[#C4A04A]/10 rounded-xl flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-[#C4A04A]" />
               </div>
               <div>
                 <p className="font-bold text-white">{booking.bookingNumber}</p>
@@ -217,7 +217,7 @@ export default function ScannerClient() {
               <button
                 onClick={() => updateStatus(booking.id, "RETURNED")}
                 disabled={actionLoading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
               >
                 <RotateCcw className="h-4 w-4" />
                 Mark Returned
@@ -227,7 +227,7 @@ export default function ScannerClient() {
               <button
                 onClick={() => updateStatus(booking.id, "CONFIRMED")}
                 disabled={actionLoading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#C8FF00] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Confirm Booking
@@ -254,19 +254,19 @@ export default function ScannerClient() {
           <p className="text-xs font-semibold text-[#B4B4B4] uppercase tracking-widest">How to use</p>
           <div className="space-y-2 text-sm text-[#E6E6E6]">
             <div className="flex items-start gap-2">
-              <span className="text-[#C8FF00] font-bold mt-0.5">1</span>
+              <span className="text-[#C4A04A] font-bold mt-0.5">1</span>
               <p>For USB barcode scanners — just scan. The scanner types the code and presses Enter automatically.</p>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-[#C8FF00] font-bold mt-0.5">2</span>
+              <span className="text-[#C4A04A] font-bold mt-0.5">2</span>
               <p>Scan a <strong className="text-white">booking confirmation barcode</strong> (SSW-XXXXX) to pull up a customer's booking.</p>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-[#C8FF00] font-bold mt-0.5">3</span>
+              <span className="text-[#C4A04A] font-bold mt-0.5">3</span>
               <p>Scan an <strong className="text-white">equipment serial number</strong> to find which booking that piece is assigned to.</p>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-[#C8FF00] font-bold mt-0.5">4</span>
+              <span className="text-[#C4A04A] font-bold mt-0.5">4</span>
               <p>Use <strong className="text-white">Check Out</strong> when gear leaves the store, <strong className="text-white">Mark Returned</strong> when it comes back.</p>
             </div>
           </div>

@@ -28,7 +28,7 @@ export default async function BookingDetailPage({
 
   const STATUS_COLORS: Record<string, string> = {
     PENDING: "bg-yellow-500/20 text-yellow-300",
-    CONFIRMED: "bg-[#C8FF00]/20 text-[#C8FF00]",
+    CONFIRMED: "bg-[#C4A04A]/20 text-[#C4A04A]",
     CHECKED_OUT: "bg-purple-500/20 text-purple-300",
     RETURNED: "bg-emerald-500/20 text-emerald-300",
     CANCELLED: "bg-red-500/20 text-red-300",
@@ -37,7 +37,7 @@ export default async function BookingDetailPage({
 
   const SectionHeader = ({ icon: Icon, label }: { icon: any; label: string }) => (
     <div className="flex items-center gap-2 mb-4">
-      <Icon className="h-4 w-4 text-[#C8FF00]" />
+      <Icon className="h-4 w-4 text-[#C4A04A]" />
       <h2 className="font-semibold text-white text-sm tracking-wide">{label}</h2>
     </div>
   )
@@ -179,7 +179,7 @@ export default async function BookingDetailPage({
             <div className="space-y-2">
               <Link
                 href="/admin/customers"
-                className="block font-medium text-[#C8FF00] hover:text-[#b3e600] transition-colors"
+                className="block font-medium text-[#C4A04A] hover:text-[#b3e600] transition-colors"
               >
                 {booking.customer.firstName} {booking.customer.lastName}
               </Link>
@@ -204,7 +204,7 @@ export default async function BookingDetailPage({
               </div>
               <div className="border-t border-[#2e2e2e] pt-2 flex justify-between text-sm font-semibold">
                 <span className="text-[#B4B4B4]">Total Paid</span>
-                <span className="text-[#C8FF00]">{formatCurrency(booking.totalPaid)}</span>
+                <span className="text-[#C4A04A]">{formatCurrency(booking.totalPaid)}</span>
               </div>
             </div>
             {booking.waiverSigned && (

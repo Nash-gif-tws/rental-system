@@ -43,8 +43,8 @@ export default function StepDates({ state, onUpdate, onNext }: {
     <div className="space-y-6">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <span className="w-5 h-px bg-[#C8FF00]" />
-          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Step 1</span>
+          <span className="w-5 h-px bg-[#C4A04A]" />
+          <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C4A04A]">Step 1</span>
         </div>
         <h1 className="font-display text-3xl font-bold text-white leading-tight">When do you<br />need gear?</h1>
         <p className="text-[#B4B4B4] text-sm mt-2">Select your pickup and return dates to see availability and pricing.</p>
@@ -59,7 +59,7 @@ export default function StepDates({ state, onUpdate, onNext }: {
               min={today}
               value={state.startDate}
               onChange={(e) => onUpdate({ startDate: e.target.value, endDate: "" })}
-              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors"
+              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors"
             />
           </div>
           <div>
@@ -70,20 +70,20 @@ export default function StepDates({ state, onUpdate, onNext }: {
               value={state.endDate}
               onChange={(e) => onUpdate({ endDate: e.target.value })}
               disabled={!state.startDate}
-              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C8FF00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             />
           </div>
         </div>
 
         {rentalDays > 0 && (
-          <div className="flex items-center gap-3 bg-[#C8FF00]/5 border border-[#C8FF00]/20 rounded-lg px-4 py-3">
-            <div className="w-9 h-9 bg-[#C8FF00] rounded-lg flex items-center justify-center text-[#121212] text-sm font-bold flex-shrink-0">
+          <div className="flex items-center gap-3 bg-[#C4A04A]/5 border border-[#C4A04A]/20 rounded-lg px-4 py-3">
+            <div className="w-9 h-9 bg-[#C4A04A] rounded-lg flex items-center justify-center text-[#121212] text-sm font-bold flex-shrink-0">
               {rentalDays}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white">{rentalDays}-day rental · {tierLabel}</p>
               {discountNote && (
-                <p className="text-xs text-[#C8FF00]/70 mt-0.5">{discountNote}</p>
+                <p className="text-xs text-[#C4A04A]/70 mt-0.5">{discountNote}</p>
               )}
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function StepDates({ state, onUpdate, onNext }: {
             <div className="border-t border-[#2e2e2e] px-5 pb-5 pt-4 space-y-5">
               {pricingGroups.map(({ group, items }) => (
                 <div key={group}>
-                  <p className="text-[10px] font-bold text-[#C8FF00] uppercase tracking-[0.2em] mb-2.5">{group}</p>
+                  <p className="text-[10px] font-bold text-[#C4A04A] uppercase tracking-[0.2em] mb-2.5">{group}</p>
                   <div className="space-y-1.5">
                     {items.map(({ slug, label, price }) => (
                       <div key={slug} className="flex items-center justify-between">
@@ -128,7 +128,7 @@ export default function StepDates({ state, onUpdate, onNext }: {
       )}
 
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl px-4 py-3.5 flex gap-3">
-        <MapPin className="h-4 w-4 text-[#C8FF00] flex-shrink-0 mt-0.5" />
+        <MapPin className="h-4 w-4 text-[#C4A04A] flex-shrink-0 mt-0.5" />
         <div className="text-sm">
           <p className="font-semibold text-white">Pickup & return in store</p>
           <p className="text-[#B4B4B4] mt-0.5 text-xs">Princes Highway, Rockdale — open 7 days during snow season.</p>
@@ -138,7 +138,7 @@ export default function StepDates({ state, onUpdate, onNext }: {
       <button
         onClick={() => { onUpdate({ rentalDays }); onNext() }}
         disabled={!valid}
-        className="w-full flex items-center justify-center gap-2 bg-[#C8FF00] hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
+        className="w-full flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
       >
         See Available Gear
         <ArrowRight className="h-4 w-4" />

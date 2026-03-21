@@ -44,7 +44,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
     router.push(`/admin/products/${product.id}/edit`)
   }
 
-  const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C8FF00] transition-colors"
+  const inputCls = "w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#C4A04A] transition-colors"
   const labelCls = "block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1.5"
 
   return (
@@ -101,7 +101,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         <label className="flex items-center gap-2.5 cursor-pointer select-none">
           <div
             onClick={() => setForm((f) => ({ ...f, isPackage: !f.isPackage }))}
-            className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${form.isPackage ? "bg-[#C8FF00]" : "bg-[#333]"}`}
+            className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${form.isPackage ? "bg-[#C4A04A]" : "bg-[#333]"}`}
           >
             <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#121212] transition-transform ${form.isPackage ? "translate-x-4" : "translate-x-0.5"}`} />
           </div>
@@ -110,7 +110,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         <label className="flex items-center gap-2.5 cursor-pointer select-none">
           <div
             onClick={() => setForm((f) => ({ ...f, isActive: !f.isActive }))}
-            className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#C8FF00]" : "bg-[#333]"}`}
+            className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#C4A04A]" : "bg-[#333]"}`}
           >
             <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#121212] transition-transform ${form.isActive ? "translate-x-4" : "translate-x-0.5"}`} />
           </div>
@@ -131,7 +131,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-[#C8FF00] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
+          className="flex-1 bg-[#C4A04A] text-[#121212] px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[#b3e600] disabled:opacity-50 transition-colors"
         >
           {loading ? "Creating..." : "Create Product →"}
         </button>
