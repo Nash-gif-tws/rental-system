@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { generateBookingNumber } from "@/lib/utils"
+import { sendBookingConfirmation } from "@/lib/email"
 import { z } from "zod"
 import { differenceInDays } from "date-fns"
+
+// ── Discount codes ────────────────────────────────────────────────────────────
+// Key = code (uppercase), Value = percentage (0–100)
+const DISCOUNT_CODES: Record<string, number> = {
+  ONLINE15: 15,
+}
+
+function applyDiscount(subtotal: number, code: string | undefined): { discountAmount: number; discountPercent: number } {
+  if (!code) return { discountAmount: 0, discountPercent: 0 }
+  const pct = DISCOUNT_CODES[code.toUpperCase().trim()]
+  if (!pct) return { discountAmount: 0, discountPercent: 0 }
+  return { discountAmount: Math.round(subtotal * (pct / 100) * 100) / 100, discountPercent: pct }
+}
 
 // unitPrice is NOT accepted from client — calculated server-side to prevent manipulation
 const Schema = z.object({
@@ -26,6 +40,7 @@ const Schema = z.object({
   bootSize: z.number().optional(),
   skillLevel: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]).optional(),
   notes: z.string().optional(),
+  discountCode: z.string().optional(),
 })
 
 function getBestPrice(
@@ -34,8 +49,9 @@ function getBestPrice(
 ): number {
   const active = tiers.filter((t) => t.isActive)
   if (!active.length) return 0
-  const sorted = [...active].sort((a, b) => b.days - a.days)
-  return sorted.find((t) => t.days <= rentalDays)?.price ?? sorted[sorted.length - 1].price
+  // Sort ASC — find smallest tier that covers the rental duration (same logic as UI/POS)
+  const sorted = [...active].sort((a, b) => a.days - b.days)
+  return sorted.find((t) => t.days >= rentalDays)?.price ?? sorted[sorted.length - 1].price
 }
 
 export async function POST(req: NextRequest) {
@@ -95,6 +111,7 @@ export async function POST(req: NextRequest) {
   }
 
   const subtotal = itemsWithPrices.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)
+  const { discountAmount, discountPercent } = applyDiscount(subtotal, data.discountCode)
 
   const booking = await prisma.booking.create({
     data: {
@@ -104,6 +121,8 @@ export async function POST(req: NextRequest) {
       startDate: start,
       endDate: end,
       subtotal,
+      discountCode: discountPercent > 0 ? data.discountCode?.toUpperCase().trim() : null,
+      discountAmount,
       height: data.height,
       weight: data.weight,
       bootSize: data.bootSize,
@@ -116,5 +135,23 @@ export async function POST(req: NextRequest) {
     include: { customer: true, items: { include: { product: true } } },
   })
 
-  return NextResponse.json(booking, { status: 201 })
+  // Send confirmation email (non-blocking — never throws)
+  await sendBookingConfirmation({
+    bookingNumber: booking.bookingNumber,
+    customer: booking.customer,
+    startDate: booking.startDate,
+    endDate: booking.endDate,
+    items: booking.items.map((i) => ({
+      productName: i.product.name,
+      size: i.size,
+      quantity: i.quantity,
+      unitPrice: i.unitPrice,
+    })),
+    subtotal: booking.subtotal,
+    discountCode: booking.discountCode,
+    discountAmount: booking.discountAmount,
+    notes: booking.notes,
+  })
+
+  return NextResponse.json({ ...booking, discountApplied: discountPercent > 0, discountPercent }, { status: 201 })
 }

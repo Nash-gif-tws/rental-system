@@ -10,11 +10,15 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [discountCode, setDiscountCode] = useState("ONLINE15")
+  const [discountCode, setDiscountCode] = useState("")
+  const [discountInfo, setDiscountInfo] = useState<{ valid: boolean; percent: number } | null>(null)
 
   const subtotal = state.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0)
-  const discount = discountCode.toUpperCase() === "ONLINE15" ? subtotal * 0.15 : 0
-  const total = subtotal - discount
+  // Preview discount locally for UX (server validates for real on submit)
+  const PREVIEW_CODES: Record<string, number> = { ONLINE15: 15 }
+  const previewPct = discountCode ? (PREVIEW_CODES[discountCode.toUpperCase().trim()] ?? 0) : 0
+  const previewDiscount = Math.round(subtotal * (previewPct / 100) * 100) / 100
+  const total = subtotal - previewDiscount
 
   async function handleConfirm() {
     setLoading(true)
@@ -31,6 +35,7 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
         bootSize: state.bootSize ? parseFloat(state.bootSize) : undefined,
         skillLevel: state.skillLevel || undefined,
         notes: state.notes || undefined,
+        discountCode: discountCode || undefined,
       }),
     })
     if (!res.ok) {
@@ -38,7 +43,9 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
       setLoading(false)
       return
     }
-    onConfirmed(await res.json())
+    const data = await res.json()
+    setDiscountInfo({ valid: data.discountApplied, percent: data.discountPercent ?? 0 })
+    onConfirmed(data)
   }
 
   const SectionHeader = ({ icon: Icon, label }: { icon: any; label: string }) => (
@@ -120,8 +127,11 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
               placeholder="Enter code"
               className="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white font-mono focus:outline-none focus:border-[#C8FF00] transition-colors"
             />
-            {discount > 0 && (
-              <p className="text-xs text-[#C8FF00] font-semibold mt-1.5">✓ 15% discount applied (collected in store)</p>
+            {discountCode && previewPct > 0 && (
+              <p className="text-xs text-[#C8FF00] font-semibold mt-1.5">✓ {previewPct}% discount applied</p>
+            )}
+            {discountCode && previewPct === 0 && (
+              <p className="text-xs text-red-400 mt-1.5">Invalid discount code</p>
             )}
           </div>
 
@@ -130,10 +140,10 @@ export default function StepConfirm({ state, onBack, onConfirmed }: {
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
-            {discount > 0 && (
+            {previewDiscount > 0 && (
               <div className="flex justify-between text-sm text-[#C8FF00] font-semibold">
-                <span>Discount (ONLINE15)</span>
-                <span>−${discount.toFixed(2)}</span>
+                <span>Discount ({discountCode})</span>
+                <span>−${previewDiscount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between font-bold text-base pt-1 border-t border-[#2e2e2e]">

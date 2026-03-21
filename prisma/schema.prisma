@@ -178,6 +178,8 @@ model Booking {
   pickupDate            DateTime?
   returnDate            DateTime?
   subtotal              Float
+  discountCode          String?
+  discountAmount        Float         @default(0)
   depositAmount         Float         @default(0)
   totalPaid             Float         @default(0)
   notes                 String?
