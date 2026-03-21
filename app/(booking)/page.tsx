@@ -1,254 +1,176 @@
 import Link from "next/link"
-import { ArrowRight, MapPin, Zap, Shield, Star, Phone, ChevronRight } from "lucide-react"
+import { ArrowRight, MapPin, Zap, Shield, Star, Phone, Check } from "lucide-react"
 
 export default function HomePage() {
   return (
-    <main className="bg-[#121212] text-white overflow-x-hidden">
+    <main className="overflow-x-hidden">
 
-      {/* ── GRAIN OVERLAY ─────────────────────────────────────────── */}
-      <div
-        className="fixed inset-0 pointer-events-none z-40 opacity-[0.025]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "180px 180px",
-          mixBlendMode: "overlay",
-        }}
-      />
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      {/* Dark alpine section — sets the scene */}
+      <section className="relative min-h-screen flex flex-col justify-end pb-20 pt-28 overflow-hidden bg-[#0e0e12]">
 
-      {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-end pb-20 pt-28 overflow-hidden">
-
-        {/* Neon accent glow — top left */}
-        <div
-          className="absolute top-0 left-0 w-[600px] h-[600px] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at top left, rgba(200,255,0,0.07) 0%, transparent 60%)",
-          }}
-        />
-
-        {/* Subtle grid */}
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
+        {/* Mountain silhouette — CSS gradient layers */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Sky gradient */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #0e0f1a 0%, #141520 40%, #0e0e12 100%)" }} />
+          {/* Purple/blue atmospheric haze */}
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 60% 0%, rgba(80,60,180,0.18) 0%, transparent 70%)" }} />
+          {/* Lime glow bottom-left — light source */}
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 40% at -5% 100%, rgba(200,255,0,0.12) 0%, transparent 60%)" }} />
+          {/* Mountain ridge — stylised CSS shape */}
+          <svg className="absolute bottom-0 left-0 right-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: "45%" }}>
+            <path d="M0,320 L0,220 L180,90 L320,180 L480,60 L640,150 L800,40 L960,140 L1120,80 L1280,160 L1440,100 L1440,320 Z" fill="rgba(8,8,14,0.85)" />
+            <path d="M0,320 L0,260 L120,160 L240,220 L380,120 L520,200 L680,100 L840,190 L1000,120 L1160,200 L1300,140 L1440,180 L1440,320 Z" fill="rgba(8,8,14,0.95)" />
+          </svg>
+          {/* Stars */}
+          {stars.map((s, i) => (
+            <div key={i} className="absolute rounded-full bg-white" style={{ width: s.size, height: s.size, left: s.left, top: s.top, opacity: s.opacity }} />
+          ))}
+        </div>
 
         {/* Snow particles */}
         {snowParticles.map((p, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white/50 pointer-events-none"
-            style={{
-              width: p.size,
-              height: p.size,
-              left: p.left,
-              top: "-8px",
-              animation: `snowFall ${p.duration}s linear ${p.delay}s infinite`,
-            }}
-          />
+          <div key={i} className="absolute rounded-full bg-white/40 pointer-events-none" style={{ width: p.size, height: p.size, left: p.left, top: "-8px", animation: `snowFall ${p.duration}s linear ${p.delay}s infinite` }} />
         ))}
 
-        {/* Diagonal accent bar */}
-        <div
-          className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-[#C8FF00]/20 to-transparent hidden lg:block"
-          style={{ right: "25%" }}
-        />
+        {/* Lime vertical stripe — right side design detail */}
+        <div className="absolute top-0 right-0 h-full w-1.5 bg-gradient-to-b from-transparent via-[#C8FF00]/60 to-transparent hidden lg:block" style={{ right: "8%" }} />
 
         {/* Discount badge */}
-        <div className="absolute top-24 right-6 md:right-16 z-10 hidden sm:block">
-          <div
-            className="border border-[#C8FF00]/40 text-[#C8FF00] bg-[#C8FF00]/5 px-4 py-2.5 font-body text-[10px] tracking-[0.2em] uppercase"
-            style={{ transform: "rotate(2.5deg)" }}
-          >
+        <div className="absolute top-24 right-6 md:right-[10%] z-10 hidden sm:block">
+          <div className="border border-[#C8FF00]/50 text-[#C8FF00] bg-[#C8FF00]/8 backdrop-blur-sm px-4 py-2.5 font-body text-[10px] tracking-[0.2em] uppercase" style={{ transform: "rotate(2deg)" }}>
             Online: 15% off · Code ONLINE15
           </div>
         </div>
 
-        {/* Main headline */}
+        {/* Content */}
         <div className="relative z-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
-
-          {/* Eyebrow */}
-          <div className="flex items-center gap-3 mb-6 animate-fade-up">
+          <div className="flex items-center gap-3 mb-5">
             <span className="w-8 h-px bg-[#C8FF00]" />
-            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">
-              Est. 1984 · Rockdale, Sydney
-            </span>
+            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Est. 1984 · Rockdale, Sydney</span>
           </div>
 
-          <div className="animate-fade-up mb-4">
-            <span
-              className="block font-display font-bold leading-none tracking-tight"
-              style={{
-                fontSize: "clamp(3.5rem, 13vw, 13rem)",
-                WebkitTextStroke: "1px rgba(255,255,255,0.12)",
-                color: "transparent",
-              }}
-            >
-              SNOWSKIERS
-            </span>
-            <span
-              className="block font-display font-bold leading-none tracking-tight text-white"
-              style={{ fontSize: "clamp(3.5rem, 13vw, 13rem)" }}
-            >
-              WAREHOUSE
-            </span>
-          </div>
+          <h1 className="font-display font-black text-white leading-none tracking-tight mb-6" style={{ fontSize: "clamp(3.5rem, 12vw, 12rem)" }}>
+            <span className="block" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.15)", color: "transparent" }}>SNOWSKIERS</span>
+            <span className="block text-white">WAREHOUSE</span>
+          </h1>
 
-          {/* Neon rule */}
-          <div className="w-16 h-0.5 bg-[#C8FF00] mb-8 mt-4 animate-fade-up-delay-1" />
+          <div className="w-16 h-0.5 bg-[#C8FF00] mb-8" />
 
-          <div className="flex flex-col lg:flex-row lg:items-end gap-10 animate-fade-up-delay-2">
-            <div className="max-w-lg">
-              <p className="font-body text-[#B4B4B4] leading-relaxed"
-                style={{ fontSize: "clamp(1rem, 1.6vw, 1.25rem)" }}>
-                Sydney's finest ski & snowboard hire since 1984.
-                Atomic skis, Burton boards, retail-quality outerwear —
-                pick up in Rockdale, ride the mountain.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 lg:ml-auto">
-              <Link
-                href="/book"
-                className="group inline-flex items-center gap-3 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-semibold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200"
-              >
+          <div className="flex flex-col lg:flex-row lg:items-end gap-10">
+            <p className="font-body text-white/60 leading-relaxed max-w-lg" style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)" }}>
+              Sydney's finest ski & snowboard hire since 1984.
+              Atomic skis, Burton boards, retail-quality outerwear —
+              pick up in Rockdale, ride the mountain.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 lg:ml-auto">
+              <Link href="/book" className="group inline-flex items-center gap-3 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#0e0e12] font-bold px-8 py-4 font-body text-xs tracking-[0.2em] uppercase transition-all duration-200">
                 Book Your Gear
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a
-                href="#packages"
-                className="inline-flex items-center gap-3 border border-white/20 hover:border-[#C8FF00]/50 hover:text-[#C8FF00] text-white px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200"
-              >
+              <a href="#packages" className="inline-flex items-center gap-3 border border-white/20 hover:border-[#C8FF00]/60 text-white hover:text-[#C8FF00] px-8 py-4 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200">
                 View Packages
               </a>
             </div>
           </div>
         </div>
-
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#121212] to-transparent pointer-events-none" />
       </section>
 
-      {/* ── TRUST BAR ────────────────────────────────────────────── */}
-      <section className="border-t border-b border-white/[0.06] py-7 bg-[#0d0d0d]">
+      {/* ── TRUST BAR — LIME ─────────────────────────────────────────────── */}
+      {/* First contrast hit — bold lime on dark creates visual pop */}
+      <section className="bg-[#C8FF00] py-6">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex flex-wrap gap-8 md:gap-0 md:justify-between items-center">
+          <div className="flex flex-wrap gap-6 md:gap-0 md:justify-between items-center">
             {trustItems.map((item, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="font-display font-bold text-[#C8FF00]" style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)" }}>
-                  {item.value}
-                </span>
-                <span className="font-body text-[#B4B4B4] text-xs tracking-[0.18em] uppercase">{item.label}</span>
+                <span className="font-display font-black text-[#0e0e12]" style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)" }}>{item.value}</span>
+                <span className="font-body text-[#0e0e12]/60 text-xs tracking-[0.15em] uppercase">{item.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── PACKAGES ─────────────────────────────────────────────── */}
-      <section id="packages" className="py-24 md:py-32">
+      {/* ── PACKAGES — WHITE ─────────────────────────────────────────────── */}
+      {/* Light section — packages breathe on white background */}
+      <section id="packages" className="py-24 md:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-
           <div className="flex items-end justify-between mb-16">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-6 h-px bg-[#C8FF00]" />
                 <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">What we hire</span>
               </div>
-              <h2
-                className="font-display font-bold text-white leading-none"
-                style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
-              >
+              <h2 className="font-display font-black text-[#0e0e12] leading-none" style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}>
                 THE PACKAGES
               </h2>
             </div>
-            <span
-              className="hidden md:block font-display font-bold text-white/[0.04] leading-none select-none"
-              style={{ fontSize: "clamp(4rem, 9vw, 9rem)" }}
-            >
-              01
-            </span>
+            <span className="hidden md:block font-display font-black text-[#0e0e12]/[0.04] leading-none select-none" style={{ fontSize: "clamp(4rem, 9vw, 9rem)" }}>01</span>
           </div>
 
-          {/* Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {packages.map((pkg, i) => (
-              <Link
-                key={i}
-                href="/book"
-                className="group bg-[#121212] hover:bg-[#1a1a1a] p-8 transition-colors duration-300 block"
+              <Link key={i} href="/book"
+                className="group bg-[#f8f8f5] hover:bg-[#0e0e12] border border-[#e8e8e2] hover:border-[#0e0e12] p-8 rounded-2xl transition-all duration-300 block"
               >
                 <div className="text-3xl mb-5">{pkg.icon}</div>
-                <h3 className="font-display font-bold text-white text-2xl mb-2 leading-tight">{pkg.name}</h3>
-                <p className="font-body text-[#B4B4B4] text-sm leading-relaxed mb-8">{pkg.description}</p>
-                <div className="flex items-end justify-between mt-auto">
+                <h3 className="font-display font-bold text-[#0e0e12] group-hover:text-white text-xl mb-2 leading-tight transition-colors">{pkg.name}</h3>
+                <p className="font-body text-[#0e0e12]/50 group-hover:text-white/50 text-sm leading-relaxed mb-8 transition-colors">{pkg.description}</p>
+                <div className="flex items-end justify-between">
                   <div className="flex items-baseline gap-1">
-                    <span className="font-display font-bold text-[#C8FF00] text-2xl">FROM ${pkg.from}</span>
-                    <span className="font-body text-[#B4B4B4] text-xs">/day</span>
+                    <span className="font-display font-black text-[#C8FF00] text-2xl">FROM ${pkg.from}</span>
+                    <span className="font-body text-[#0e0e12]/40 group-hover:text-white/40 text-xs transition-colors">/rental</span>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-white/10 group-hover:text-[#C8FF00] group-hover:translate-x-1 transition-all duration-200" />
+                  <div className="w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ArrowRight className="w-3.5 h-3.5 text-[#0e0e12]" />
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
 
           <div className="mt-10 flex justify-end">
-            <Link
-              href="/book"
-              className="group inline-flex items-center gap-3 font-body text-xs tracking-[0.18em] uppercase text-[#B4B4B4] hover:text-[#C8FF00] transition-colors"
-            >
+            <Link href="/book" className="group inline-flex items-center gap-3 font-body text-xs tracking-[0.18em] uppercase text-[#0e0e12]/40 hover:text-[#0e0e12] transition-colors">
               Book any package online
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── FLEET ────────────────────────────────────────────────── */}
-      <section id="fleet" className="py-24 md:py-32 bg-[#0d0d0d]">
+      {/* ── FLEET — DARK ─────────────────────────────────────────────────── */}
+      {/* Back to dark — premium gear deserves drama */}
+      <section id="fleet" className="py-24 md:py-32 bg-[#111118]">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid md:grid-cols-2 gap-16 lg:gap-24 items-center">
-
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-6 h-px bg-[#C8FF00]" />
                 <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">The fleet</span>
               </div>
-              <h2
-                className="font-display font-bold text-white leading-none mb-8"
-                style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
-              >
+              <h2 className="font-display font-black text-white leading-none mb-8" style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}>
                 PREMIUM<br />GEAR ONLY
               </h2>
-              <p className="font-body text-[#B4B4B4] leading-relaxed mb-4"
-                style={{ fontSize: "clamp(1rem, 1.5vw, 1.15rem)" }}>
+              <p className="font-body text-white/50 leading-relaxed mb-4" style={{ fontSize: "clamp(1rem, 1.5vw, 1.15rem)" }}>
                 We don't do "whatever's lying around." Our fleet is regularly refreshed with the best in the industry — so you hit the mountain in gear that actually performs.
               </p>
-              <p className="font-body text-[#B4B4B4]/60 text-sm leading-relaxed mb-10">
-                Atomic skis refreshed 2023. Burton snowboards brand new 2024. Outerwear upgraded 2025. Properly maintained after every hire.
+              <p className="font-body text-white/30 text-sm leading-relaxed mb-10">
+                Atomic skis refreshed 2023. Burton snowboards brand new 2024. Outerwear upgraded 2025.
               </p>
-              <Link
-                href="/book"
-                className="group inline-flex items-center gap-3 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-semibold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200"
-              >
+              <Link href="/book" className="group inline-flex items-center gap-3 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#0e0e12] font-bold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200">
                 Browse & Book
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="space-y-px">
+            <div className="space-y-2">
               {fleetItems.map((item, i) => (
-                <div
-                  key={i}
-                  className="group bg-[#1a1a1a] hover:bg-[#1e1e1e] border-l-2 border-transparent hover:border-[#C8FF00] p-6 flex items-center justify-between transition-all duration-200"
-                >
+                <div key={i} className="group bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] hover:border-[#C8FF00]/40 p-6 flex items-center justify-between rounded-xl transition-all duration-200">
                   <div>
-                    <h4 className="font-display font-bold text-white text-xl leading-tight mb-1">{item.name}</h4>
-                    <p className="font-body text-[#B4B4B4] text-sm">{item.detail}</p>
+                    <h4 className="font-display font-bold text-white text-lg leading-tight mb-1">{item.name}</h4>
+                    <p className="font-body text-white/40 text-sm">{item.detail}</p>
                   </div>
-                  <span className="font-body text-[9px] tracking-[0.18em] uppercase bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 px-3 py-1.5 flex-shrink-0 ml-4">
+                  <span className="font-body text-[9px] tracking-[0.18em] uppercase bg-[#C8FF00]/10 text-[#C8FF00] border border-[#C8FF00]/20 px-3 py-1.5 rounded-full flex-shrink-0 ml-4">
                     {item.badge}
                   </span>
                 </div>
@@ -258,201 +180,170 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── SEASON RENTALS ───────────────────────────────────────── */}
-      <section className="py-24 md:py-32 relative overflow-hidden">
-        {/* Accent glow */}
-        <div
-          className="absolute top-0 right-0 w-[700px] h-[700px] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at top right, rgba(200,255,0,0.05) 0%, transparent 60%)",
-          }}
-        />
-
-        {/* Decorative rings */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full border border-[#C8FF00]/[0.06] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-        <div className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full border border-[#C8FF00]/[0.04] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+      {/* ── SEASON RENTALS — LIME ────────────────────────────────────────── */}
+      {/* Bold lime section — high contrast, high energy */}
+      <section className="py-24 md:py-32 bg-[#C8FF00] relative overflow-hidden">
+        {/* Decorative large circle */}
+        <div className="absolute -right-32 -top-32 w-[500px] h-[500px] rounded-full border-2 border-[#0e0e12]/10 pointer-events-none" />
+        <div className="absolute -right-16 -top-16 w-[300px] h-[300px] rounded-full border-2 border-[#0e0e12]/8 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
-          <div className="max-w-2xl">
-            <div className="inline-block border border-[#C8FF00]/30 text-[#C8FF00] bg-[#C8FF00]/5 font-body text-[10px] tracking-[0.25em] uppercase px-4 py-1.5 mb-8">
-              New for 2025
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="inline-block bg-[#0e0e12] text-[#C8FF00] font-body text-[10px] tracking-[0.25em] uppercase px-4 py-1.5 mb-8 rounded-full">
+                New for 2025
+              </div>
+              <h2 className="font-display font-black text-[#0e0e12] leading-none mb-6" style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}>
+                SEASON<br />RENTALS
+              </h2>
+              <p className="font-body text-[#0e0e12]/70 leading-relaxed mb-10" style={{ fontSize: "clamp(1rem, 1.5vw, 1.15rem)" }}>
+                Planning to ski all season? Lock in a 3–4 month rental with monthly billing. Includes a free mid-season tune.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/book" className="group inline-flex items-center gap-3 bg-[#0e0e12] hover:bg-[#1e1e24] text-white font-bold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200 rounded-none">
+                  Book a Season Rental
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <a href="tel:0295973422" className="inline-flex items-center gap-3 border-2 border-[#0e0e12]/30 hover:border-[#0e0e12] text-[#0e0e12] px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200">
+                  <Phone className="w-4 h-4" /> Call to Discuss
+                </a>
+              </div>
             </div>
-            <h2
-              className="font-display font-bold text-white leading-none mb-8"
-              style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
-            >
-              SEASON<br />RENTALS
-            </h2>
-            <p className="font-body text-[#B4B4B4] leading-relaxed mb-4"
-              style={{ fontSize: "clamp(1rem, 1.5vw, 1.15rem)" }}>
-              Planning to ski all season? Lock in a 3–4 month rental with monthly billing. Includes a free mid-season tune.
-            </p>
-            <p className="font-body text-[#B4B4B4]/50 text-sm leading-relaxed mb-10">
-              Perfect for regular weekend warriors and families heading up to Perisher or Thredbo multiple times. Ask us about custom packages for groups and schools.
-            </p>
 
-            {/* Feature pills */}
-            <div className="flex flex-wrap gap-3 mb-10">
-              {["3–4 month season", "Monthly billing", "Free tune-up", "Best value"].map((f) => (
-                <span key={f} className="font-body text-[10px] tracking-[0.12em] uppercase border border-white/10 text-[#B4B4B4] px-4 py-2 hover:border-[#C8FF00]/40 hover:text-[#C8FF00] transition-colors cursor-default">
-                  {f}
-                </span>
+            {/* Feature list */}
+            <div className="space-y-4">
+              {[
+                { title: "3–4 month season", desc: "Full season coverage for regular skiers and families." },
+                { title: "Monthly billing", desc: "Spread the cost — 4 payments, first month upfront." },
+                { title: "Free mid-season tune", desc: "Sharp edges keep you safer and more in control." },
+                { title: "Best value per day", desc: "Significantly cheaper than repeated weekly hires." },
+              ].map(({ title, desc }) => (
+                <div key={title} className="bg-[#0e0e12]/8 rounded-2xl p-5 flex gap-4 items-start">
+                  <div className="w-6 h-6 bg-[#0e0e12] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Check className="w-3 h-3 text-[#C8FF00]" />
+                  </div>
+                  <div>
+                    <p className="font-display font-bold text-[#0e0e12] text-base">{title}</p>
+                    <p className="font-body text-[#0e0e12]/60 text-sm mt-0.5">{desc}</p>
+                  </div>
+                </div>
               ))}
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/book"
-                className="group inline-flex items-center gap-3 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-semibold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200"
-              >
-                Book a Season Rental
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-              </Link>
-              <a
-                href="tel:0295973422"
-                className="inline-flex items-center gap-3 border border-white/15 hover:border-white/30 text-white px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200"
-              >
-                <Phone className="w-4 h-4" />
-                Call to Discuss
-              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────── */}
-      <section id="how" className="py-24 md:py-32 border-t border-white/[0.06] bg-[#0d0d0d]">
+      {/* ── HOW IT WORKS — WHITE ─────────────────────────────────────────── */}
+      <section id="how" className="py-24 md:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-
           <div className="flex items-end justify-between mb-16">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-6 h-px bg-[#C8FF00]" />
                 <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">The process</span>
               </div>
-              <h2
-                className="font-display font-bold text-white leading-none"
-                style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
-              >
+              <h2 className="font-display font-black text-[#0e0e12] leading-none" style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}>
                 HOW IT<br />WORKS
               </h2>
             </div>
-            <span
-              className="hidden md:block font-display font-bold text-white/[0.04] leading-none select-none"
-              style={{ fontSize: "clamp(4rem, 9vw, 9rem)" }}
-            >
-              03
-            </span>
+            <span className="hidden md:block font-display font-black text-[#0e0e12]/[0.04] leading-none select-none" style={{ fontSize: "clamp(4rem, 9vw, 9rem)" }}>03</span>
           </div>
 
-          <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
+          <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step, i) => (
-              <div key={i} className="relative p-8 md:p-10">
-                <span
-                  className="absolute top-6 right-8 font-display font-bold text-white/[0.04] leading-none select-none"
-                  style={{ fontSize: "5rem" }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="text-[#C8FF00] mb-5">{step.icon}</div>
-                <h3 className="font-display font-bold text-white text-2xl mb-3 leading-tight">{step.title}</h3>
-                <p className="font-body text-[#B4B4B4] text-sm leading-relaxed">{step.description}</p>
+              <div key={i} className="relative">
+                {/* Step number */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-[#C8FF00] rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <span className="font-display font-black text-[#0e0e12] text-lg">{String(i + 1).padStart(2, "0")}</span>
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div className="hidden md:block flex-1 h-px bg-[#0e0e12]/10" />
+                  )}
+                </div>
+                <div className="text-[#0e0e12]/40 mb-4">{step.icon}</div>
+                <h3 className="font-display font-bold text-[#0e0e12] text-xl mb-3 leading-tight">{step.title}</h3>
+                <p className="font-body text-[#0e0e12]/50 text-sm leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-14 border-t border-white/[0.06] pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="font-body text-[#B4B4B4] text-sm">
-              Use code{" "}
-              <span className="text-[#C8FF00] tracking-wider font-semibold">ONLINE15</span>{" "}
-              at checkout to save 15%
+          <div className="mt-14 border-t border-[#0e0e12]/8 pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <p className="font-body text-[#0e0e12]/50 text-sm">
+              Use code <span className="text-[#0e0e12] font-bold tracking-wider">ONLINE15</span> at checkout to save 15%
             </p>
-            <Link
-              href="/book"
-              className="group inline-flex items-center gap-3 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-semibold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200"
-            >
+            <Link href="/book" className="group inline-flex items-center gap-3 bg-[#0e0e12] hover:bg-[#1e1e24] text-white font-bold px-8 py-4 font-body text-xs tracking-[0.18em] uppercase transition-colors duration-200">
               Start Booking
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── REVIEWS ──────────────────────────────────────────────── */}
-      <section id="reviews" className="py-24 md:py-32">
+      {/* ── REVIEWS — WARM GREY ──────────────────────────────────────────── */}
+      <section id="reviews" className="py-24 md:py-32 bg-[#f5f5f0]">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-
-          <div className="mb-14">
+          <div className="mb-12">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-6 h-px bg-[#C8FF00]" />
               <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Social proof</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5 flex-wrap">
               <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-[#C8FF00] text-[#C8FF00]" />
-                ))}
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-[#C8FF00] text-[#C8FF00]" />)}
               </div>
-              <span className="font-display font-bold text-white text-3xl">4.8</span>
-              <span className="font-body text-[#B4B4B4] text-xs tracking-wider uppercase">480+ Google reviews</span>
+              <span className="font-display font-black text-[#0e0e12] text-4xl">4.8</span>
+              <span className="font-body text-[#0e0e12]/40 text-xs tracking-wider uppercase">480+ Google reviews</span>
             </div>
           </div>
 
           {/* Feature quote */}
-          <blockquote className="border-l-2 border-[#C8FF00] pl-8 mb-16 max-w-3xl">
-            <p className="font-body text-white/80 leading-relaxed mb-5"
-              style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)" }}>
+          <blockquote className="bg-[#0e0e12] rounded-2xl p-10 md:p-14 mb-10 max-w-4xl">
+            <p className="font-body text-white/80 leading-relaxed mb-6" style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)" }}>
               "Best gear hire in Sydney. Picked up our ski packages the night before, everything fitted perfectly, and the staff actually knew what they were talking about. Will never go anywhere else."
             </p>
-            <cite className="font-body text-[#B4B4B4] text-xs tracking-[0.2em] uppercase not-italic">
-              — Sarah M., Perisher regular
-            </cite>
+            <cite className="font-body text-[#C8FF00] text-xs tracking-[0.2em] uppercase not-italic">— Sarah M., Perisher regular</cite>
           </blockquote>
 
-          <div className="grid md:grid-cols-3 gap-px bg-white/[0.05]">
+          <div className="grid md:grid-cols-3 gap-5">
             {reviews.map((r, i) => (
-              <div key={i} className="bg-[#121212] hover:bg-[#1a1a1a] p-8 transition-colors duration-200 group">
+              <div key={i} className="bg-white rounded-2xl p-8 shadow-sm border border-[#0e0e12]/5">
                 <div className="flex gap-1 mb-5">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-3 h-3 fill-[#C8FF00] text-[#C8FF00]" />
-                  ))}
+                  {[...Array(5)].map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-[#C8FF00] text-[#C8FF00]" />)}
                 </div>
-                <p className="font-body text-[#B4B4B4] text-sm leading-relaxed mb-5">"{r.text}"</p>
-                <span className="font-body text-[#B4B4B4]/40 text-xs tracking-[0.18em] uppercase">— {r.author}</span>
+                <p className="font-body text-[#0e0e12]/60 text-sm leading-relaxed mb-5">"{r.text}"</p>
+                <span className="font-body text-[#0e0e12]/30 text-xs tracking-[0.18em] uppercase">— {r.author}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────── */}
-      <section id="faq" className="py-24 md:py-32 border-t border-white/[0.06] bg-[#0d0d0d]">
+      {/* ── FAQ — DARK ───────────────────────────────────────────────────── */}
+      <section id="faq" className="py-24 md:py-32 bg-[#111118]">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid md:grid-cols-[1fr_2fr] gap-16 lg:gap-24">
-
             <div className="md:sticky md:top-32 md:self-start">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-6 h-px bg-[#C8FF00]" />
                 <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Got questions</span>
               </div>
-              <h2
-                className="font-display font-bold text-white leading-none"
-                style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)" }}
-              >
+              <h2 className="font-display font-black text-white leading-none mb-8" style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)" }}>
                 COMMON<br />QUESTIONS
               </h2>
+              <a href="tel:0295973422" className="group inline-flex items-center gap-3 border border-white/15 hover:border-[#C8FF00]/50 text-white/60 hover:text-[#C8FF00] px-6 py-3 font-body text-xs tracking-[0.15em] uppercase transition-colors">
+                <Phone className="w-4 h-4" /> (02) 9597 3422
+              </a>
             </div>
 
             <div className="divide-y divide-white/[0.06]">
               {faqs.map((faq, i) => (
                 <details key={i} className="group py-7 cursor-pointer">
-                  <summary className="flex items-center justify-between font-body font-medium text-sm text-[#B4B4B4] hover:text-white transition-colors duration-200 list-none">
+                  <summary className="flex items-center justify-between font-body font-medium text-sm text-white/50 hover:text-white transition-colors duration-200 list-none">
                     {faq.question}
-                    <span className="font-display font-bold text-white/20 group-open:rotate-45 transition-transform duration-300 ml-6 flex-shrink-0 text-2xl leading-none">
-                      +
-                    </span>
+                    <span className="font-display font-bold text-white/20 group-open:rotate-45 group-open:text-[#C8FF00] transition-all duration-300 ml-6 flex-shrink-0 text-2xl leading-none">+</span>
                   </summary>
-                  <p className="mt-4 font-body text-sm text-[#B4B4B4]/60 leading-relaxed">{faq.answer}</p>
+                  <p className="mt-4 font-body text-sm text-white/30 leading-relaxed">{faq.answer}</p>
                 </details>
               ))}
             </div>
@@ -460,85 +351,69 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ────────────────────────────────────────────── */}
-      <section className="py-24 md:py-36 relative overflow-hidden border-t border-white/[0.06]">
-        {/* Neon glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(200,255,0,0.06) 0%, transparent 70%)",
-          }}
-        />
-
-        {/* Watermark */}
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
-          aria-hidden
-        >
-          <span
-            className="font-display font-bold text-white/[0.025] whitespace-nowrap"
-            style={{ fontSize: "clamp(6rem, 18vw, 18rem)" }}
-          >
+      {/* ── FINAL CTA — LIME ─────────────────────────────────────────────── */}
+      {/* End on energy — lime sends them to book */}
+      <section className="py-24 md:py-36 bg-[#C8FF00] relative overflow-hidden">
+        {/* Big watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden" aria-hidden>
+          <span className="font-display font-black text-[#0e0e12]/[0.06] whitespace-nowrap" style={{ fontSize: "clamp(6rem, 18vw, 18rem)" }}>
             BOOK NOW
           </span>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <span className="w-8 h-px bg-[#C8FF00]" />
-            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#C8FF00]">Rockdale, Sydney</span>
-            <span className="w-8 h-px bg-[#C8FF00]" />
+            <span className="w-8 h-px bg-[#0e0e12]/30" />
+            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-[#0e0e12]/50">Rockdale, Sydney</span>
+            <span className="w-8 h-px bg-[#0e0e12]/30" />
           </div>
-          <h2
-            className="font-display font-bold text-white leading-none mb-8"
-            style={{ fontSize: "clamp(3rem, 9vw, 9rem)" }}
-          >
+          <h2 className="font-display font-black text-[#0e0e12] leading-none mb-8" style={{ fontSize: "clamp(3rem, 9vw, 9rem)" }}>
             READY TO<br />RIDE?
           </h2>
-          <p className="font-body text-[#B4B4B4] max-w-xl mx-auto mb-10"
-            style={{ fontSize: "clamp(1rem, 1.5vw, 1.15rem)" }}>
+          <p className="font-body text-[#0e0e12]/60 max-w-xl mx-auto mb-10" style={{ fontSize: "clamp(1rem, 1.5vw, 1.1rem)" }}>
             35+ years outfitting Sydney's mountain community. Book online and save 15% with code{" "}
-            <span className="text-[#C8FF00] font-semibold">ONLINE15</span>.
+            <span className="text-[#0e0e12] font-bold">ONLINE15</span>.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/book"
-              className="group inline-flex items-center justify-center gap-3 bg-[#C8FF00] hover:bg-[#b3e600] text-[#121212] font-semibold px-10 py-5 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200"
-            >
+            <Link href="/book" className="group inline-flex items-center justify-center gap-3 bg-[#0e0e12] hover:bg-[#1e1e24] text-white font-bold px-10 py-5 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200">
               Book Your Gear
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <a
-              href="tel:0295973422"
-              className="inline-flex items-center justify-center gap-3 border border-white/15 hover:border-[#C8FF00]/40 hover:text-[#C8FF00] text-white px-10 py-5 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200"
-            >
-              <Phone className="w-4 h-4" />
-              (02) 9597 3422
+            <a href="tel:0295973422" className="inline-flex items-center justify-center gap-3 border-2 border-[#0e0e12]/25 hover:border-[#0e0e12] text-[#0e0e12] px-10 py-5 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200">
+              <Phone className="w-4 h-4" /> (02) 9597 3422
             </a>
           </div>
         </div>
       </section>
 
+      <style>{`
+        @keyframes snowFall {
+          0% { transform: translateY(-8px) translateX(0); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 0.4; }
+          100% { transform: translateY(100vh) translateX(30px); opacity: 0; }
+        }
+      `}</style>
     </main>
   )
 }
 
-// ── DATA ──────────────────────────────────────────────────────────────────────
+// ── DATA ───────────────────────────────────────────────────────────────────────
 
 const trustItems = [
   { value: "35+", label: "Years in business" },
   { value: "4.8★", label: "480+ Google reviews" },
   { value: "Atomic · Burton", label: "Premium fleet only" },
-  { value: "Rockdale NSW", label: "Perfect stop for Jindabyne" },
+  { value: "Rockdale NSW", label: "On the way to Jindabyne" },
 ]
 
 const packages = [
-  { icon: "🎿", name: "Adult Ski Package", description: "Atomic skis, ski boots & poles. Refreshed fleet, sharp edges, fitted by our experts.", from: 55 },
-  { icon: "🏂", name: "Adult Snowboard", description: "Burton boards & boots, brand new 2024 fleet. Beginner through to advanced.", from: 60 },
-  { icon: "👶", name: "Junior Package", description: "Properly fitted kids ski & snowboard packages, sized for every age.", from: 40 },
-  { icon: "🥾", name: "Boots Only", description: "Ski or snowboard boots individually. Perfect if you have your own gear.", from: 20 },
-  { icon: "🧥", name: "Snow Clothing", description: "Retail-quality Burton jackets & pants. 70%+ of our 2025 range freshly upgraded.", from: 20 },
-  { icon: "⛑", name: "Helmets & Goggles", description: "Safety-rated helmets and anti-fog goggles to complete your kit.", from: 10 },
+  { icon: "🎿", name: "Adult Ski Package", description: "Atomic skis, ski boots & poles. Refreshed fleet, sharp edges, fitted by our experts.", from: 135 },
+  { icon: "🏂", name: "Adult Snowboard", description: "Burton boards & boots, brand new 2024 fleet. Beginner through to advanced.", from: 130 },
+  { icon: "❄️", name: "Burton Step-On", description: "Our premium Step-On binding system. Fastest entry/exit on the mountain.", from: 170 },
+  { icon: "👶", name: "Junior Package", description: "Properly fitted kids ski & snowboard packages, sized for every age.", from: 70 },
+  { icon: "🧥", name: "Outerwear Package", description: "Retail-quality jacket & pants bundle. 2025 range freshly upgraded.", from: 80 },
+  { icon: "⛑️", name: "Helmets & More", description: "Safety-rated helmets, goggles, bags and accessories to complete your kit.", from: 25 },
 ]
 
 const fleetItems = [
@@ -572,12 +447,18 @@ const reviews = [
   { text: "Booked online, picked up, done. Staff were brilliant with our kids and made sure they were safe and comfortable.", author: "Priya K." },
 ]
 
-// Deterministic snow particles — no random() to avoid hydration mismatch
 const snowParticles = Array.from({ length: 40 }, (_, i) => ({
   size: `${1.5 + (Math.sin(i * 2.3) + 1) * 2}px`,
   left: `${(i * 2.6) % 100}%`,
   duration: 10 + (i % 7) * 2,
   delay: -((i * 1.3) % 14),
+}))
+
+const stars = Array.from({ length: 60 }, (_, i) => ({
+  size: `${0.5 + (Math.sin(i * 1.7) + 1) * 1}px`,
+  left: `${(i * 1.618) % 100}%`,
+  top: `${(i * 2.1) % 55}%`,
+  opacity: 0.2 + (Math.sin(i * 3.1) + 1) * 0.3,
 }))
 
 const faqs = [
