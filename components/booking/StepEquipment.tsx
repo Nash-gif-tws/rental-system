@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { ArrowRight, ArrowLeft, ChevronDown, ChevronRight } from "lucide-react"
 import type { BookingState, BookingItem } from "./BookingWizard"
+import type { QuizAnswers } from "./StepQuiz"
 
 type PricingTier = { id: string; label: string; days: number; price: number }
 type SizeOption = { size: string; total: number; available: number }
@@ -126,11 +127,32 @@ function formatPackageSize(sizes: Record<string, string>): string {
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
+// ── Quiz → recommendation mapping ────────────────────────────────────────────
+function getRecommendation(quiz: QuizAnswers, products: Product[]): { slug: string; title: string; desc: string } | null {
+  const { sport, experience, group } = quiz
+  if (!sport || !experience) return null
+
+  if (group === "family") {
+    const slug = sport === "snowboard" ? "kids-snowboard-package" : "kids-ski-package"
+    return { slug, title: group === "family" ? "Kids Package" : "Junior Package", desc: "Properly fitted kids gear — sized right and safe." }
+  }
+  if (sport === "ski" || sport === "both") {
+    if (experience === "advanced") return { slug: "mens-ski-package", title: "Adult Ski Package", desc: "Sharp Atomic skis, fitted boots & poles. Perfect for experienced skiers." }
+    return { slug: "mens-ski-package", title: "Adult Ski Package", desc: "Our most popular rental. Skis, boots & poles — everything set up for you in store." }
+  }
+  if (sport === "snowboard") {
+    if (experience === "advanced") return { slug: "mens-burton-stepon-package", title: "Burton Step-On Package", desc: "Fastest in/out on the mountain. Our premium setup for confident riders." }
+    return { slug: "mens-snowboard-package", title: "Adult Snowboard Package", desc: "Burton board & boots, beginner through intermediate. Staff will dial in the fit." }
+  }
+  return null
+}
+
+export default function StepEquipment({ state, onUpdate, onNext, onBack, quizAnswers }: {
   state: BookingState
   onUpdate: (u: Partial<BookingState>) => void
   onNext: () => void
   onBack: () => void
+  quizAnswers?: QuizAnswers | null
 }) {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -346,6 +368,34 @@ export default function StepEquipment({ state, onUpdate, onNext, onBack }: {
       {/* ── Category product list ── */}
       {activeCategory && (
         <div className="space-y-4">
+
+          {/* Quiz recommendation banner — packages only */}
+          {activeCategory === "packages" && quizAnswers && (() => {
+            const rec = getRecommendation(quizAnswers, products)
+            if (!rec) return null
+            const product = products.find((p) => p.slug === rec.slug)
+            return (
+              <div className="bg-[#C4A04A]/8 border border-[#C4A04A]/30 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-base">✦</span>
+                  <p className="text-[10px] font-bold text-[#C4A04A] uppercase tracking-[0.2em]">Based on your answers</p>
+                </div>
+                <p className="text-sm font-bold text-white">{rec.title}</p>
+                <p className="text-xs text-[#B4B4B4] mt-1 leading-relaxed">{rec.desc}</p>
+                {product && (
+                  <button
+                    onClick={() => {
+                      setOpenProductId(product.id)
+                      setTimeout(() => document.getElementById(`product-${product.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 50)
+                    }}
+                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-[#C4A04A] hover:text-white transition-colors"
+                  >
+                    Jump to this package <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+            )
+          })()}
 
           {/* Guidance panel — packages only */}
           {activeCategory === "packages" && (

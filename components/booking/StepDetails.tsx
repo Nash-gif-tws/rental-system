@@ -94,6 +94,26 @@ export default function StepDetails({ state, onUpdate, onNext, onBack }: {
         </Field>
       </div>
 
+      {/* Reassurance strip */}
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-4">
+        <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.2em] mb-3">Before you continue</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {[
+            { icon: "💳", title: "Pay at pickup", body: "No card details needed to book. Pay by cash, card or EFTPOS in store." },
+            { icon: "🔄", title: "Free same-day swap", body: "Gear doesn't fit? We'll swap it at no extra cost before you leave." },
+            { icon: "✕", title: "Free cancellation", body: "Change of plans? Cancel any time before pickup — no fees, no questions." },
+          ].map(({ icon, title, body }) => (
+            <div key={title} className="flex gap-2.5 items-start">
+              <span className="text-base flex-shrink-0 mt-0.5">{icon}</span>
+              <div>
+                <p className="text-xs font-semibold text-white">{title}</p>
+                <p className="text-[11px] text-[#555] leading-relaxed mt-0.5">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex gap-3">
         <button
           onClick={onBack}
@@ -104,7 +124,7 @@ export default function StepDetails({ state, onUpdate, onNext, onBack }: {
         <button
           onClick={onNext}
           disabled={!valid}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#b3e600] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#C4A04A] hover:bg-[#d4b565] disabled:opacity-40 disabled:cursor-not-allowed text-[#121212] font-bold py-4 rounded-xl transition-colors text-sm tracking-widest uppercase"
         >
           Review Booking <ArrowRight className="h-4 w-4" />
         </button>
