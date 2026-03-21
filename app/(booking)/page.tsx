@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight, MapPin, Zap, Shield, Star, Phone, Check } from "lucide-react"
 
 export default function HomePage() {
@@ -6,58 +7,47 @@ export default function HomePage() {
     <main className="overflow-x-hidden">
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-end pb-24 pt-28 overflow-hidden" style={{ background: "#0C0D11" }}>
+      <section className="relative min-h-screen flex flex-col justify-end pb-24 pt-28 overflow-hidden bg-[#0C0D11]">
 
-        {/* Atmospheric layers */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Deep sky gradient */}
-          <div className="absolute inset-0" style={{ background: "linear-gradient(170deg, #0a0c18 0%, #0e1020 35%, #0C0D11 100%)" }} />
-          {/* Subtle blue atmospheric haze */}
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 50% at 65% 0%, rgba(60,80,160,0.14) 0%, transparent 65%)" }} />
-          {/* Gold horizon glow — warmth of a ski sunrise */}
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 30% at 30% 90%, rgba(196,160,74,0.08) 0%, transparent 55%)" }} />
-          {/* Mountain silhouette */}
-          <svg className="absolute bottom-0 left-0 right-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: "42%" }}>
-            <path d="M0,320 L0,220 L180,90 L320,180 L480,60 L640,150 L800,40 L960,140 L1120,80 L1280,160 L1440,100 L1440,320 Z" fill="rgba(6,7,10,0.80)" />
-            <path d="M0,320 L0,260 L120,160 L240,220 L380,120 L520,200 L680,100 L840,190 L1000,120 L1160,200 L1300,140 L1440,180 L1440,320 Z" fill="rgba(6,7,10,0.94)" />
-          </svg>
-          {/* Stars */}
-          {stars.map((s, i) => (
-            <div key={i} className="absolute rounded-full bg-white" style={{ width: s.size, height: s.size, left: s.left, top: s.top, opacity: s.opacity }} />
-          ))}
+        {/* Hero photo */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero.jpg"
+            alt="Snowboarder performing an inverted trick above the mountain"
+            fill
+            className="object-cover object-[60%_top]"
+            priority
+          />
+          {/* Left dark gradient — text readability */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(100deg, rgba(12,13,17,0.95) 0%, rgba(12,13,17,0.80) 38%, rgba(12,13,17,0.35) 65%, rgba(12,13,17,0.05) 100%)" }} />
+          {/* Bottom fade — blends to trust bar */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(12,13,17,0.85) 0%, transparent 40%)" }} />
+          {/* Top fade — nav legibility */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(12,13,17,0.55) 0%, transparent 22%)" }} />
         </div>
 
-        {/* Snow particles */}
-        {snowParticles.map((p, i) => (
-          <div key={i} className="absolute rounded-full bg-white/30 pointer-events-none" style={{ width: p.size, height: p.size, left: p.left, top: "-8px", animation: `snowFall ${p.duration}s linear ${p.delay}s infinite` }} />
-        ))}
-
-        {/* Gold vertical accent line */}
-        <div className="absolute top-0 h-full hidden lg:block" style={{ right: "8%", width: "1px", background: "linear-gradient(to bottom, transparent, rgba(196,160,74,0.4), transparent)" }} />
-
         {/* Discount badge */}
-        <div className="absolute top-24 right-6 md:right-[10%] z-10 hidden sm:block">
-          <div className="border font-body text-[10px] tracking-[0.18em] uppercase px-4 py-2.5" style={{ borderColor: "rgba(196,160,74,0.35)", color: "#C4A04A", background: "rgba(196,160,74,0.06)", transform: "rotate(1.5deg)", backdropFilter: "blur(8px)" }}>
+        <div className="absolute top-24 right-6 md:right-16 z-10 hidden sm:block">
+          <div className="font-body text-[10px] tracking-[0.18em] uppercase px-4 py-2.5" style={{ border: "1px solid rgba(196,160,74,0.4)", color: "#C4A04A", background: "rgba(12,13,17,0.5)", backdropFilter: "blur(12px)" }}>
             Online: 15% off · Code ONLINE15
           </div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-5">
             <span className="w-8 h-px" style={{ background: "#C4A04A" }} />
             <span className="font-body text-[10px] tracking-[0.3em] uppercase" style={{ color: "#C4A04A" }}>Est. 1984 · Rockdale, Sydney</span>
           </div>
 
-          <h1 className="font-display font-black text-white leading-none tracking-tight mb-6" style={{ fontSize: "clamp(3.5rem, 11vw, 11rem)" }}>
-            <span className="block" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.12)", color: "transparent" }}>SNOWSKIERS</span>
-            <span className="block text-white">WAREHOUSE</span>
+          <h1 className="font-display font-black text-white leading-[0.92] tracking-tight mb-6" style={{ fontSize: "clamp(3.2rem, 10vw, 10rem)" }}>
+            SNOWSKIERS<br />WAREHOUSE
           </h1>
 
-          <div className="w-16 h-px mb-8" style={{ background: "#C4A04A" }} />
+          <div className="w-14 h-px mb-7" style={{ background: "#C4A04A" }} />
 
-          <div className="flex flex-col lg:flex-row lg:items-end gap-10">
-            <p className="font-body leading-relaxed max-w-lg" style={{ color: "rgba(249,248,245,0.55)", fontSize: "clamp(1rem, 1.5vw, 1.18rem)" }}>
+          <div className="flex flex-col lg:flex-row lg:items-end gap-8">
+            <p className="font-body leading-relaxed max-w-md" style={{ color: "rgba(249,248,245,0.58)", fontSize: "clamp(0.95rem, 1.4vw, 1.12rem)" }}>
               Sydney's finest ski & snowboard hire since 1984.
               Atomic skis, Burton boards, retail-quality outerwear —
               pick up in Rockdale, ride the mountain.
@@ -93,17 +83,14 @@ export default function HomePage() {
       {/* ── PACKAGES — IVORY ──────────────────────────────────────────────── */}
       <section id="packages" className="py-24 md:py-32" style={{ background: "#F9F8F5" }}>
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex items-end justify-between mb-16">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-6 h-px" style={{ background: "#C4A04A" }} />
-                <span className="font-body text-[10px] tracking-[0.3em] uppercase" style={{ color: "#C4A04A" }}>What we hire</span>
-              </div>
-              <h2 className="font-display font-black leading-none" style={{ color: "#0C0D11", fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}>
-                THE PACKAGES
-              </h2>
+          <div className="mb-14">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-6 h-px" style={{ background: "#C4A04A" }} />
+              <span className="font-body text-[10px] tracking-[0.3em] uppercase" style={{ color: "#C4A04A" }}>What we hire</span>
             </div>
-            <span className="hidden md:block font-display font-black leading-none select-none" style={{ color: "rgba(12,13,17,0.04)", fontSize: "clamp(4rem, 9vw, 9rem)" }}>01</span>
+            <h2 className="font-display font-black leading-none" style={{ color: "#0C0D11", fontSize: "clamp(2.4rem, 5.5vw, 5rem)" }}>
+              The Packages
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -233,17 +220,14 @@ export default function HomePage() {
       {/* ── HOW IT WORKS — IVORY ─────────────────────────────────────────── */}
       <section id="how" className="py-24 md:py-32" style={{ background: "#F9F8F5" }}>
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex items-end justify-between mb-16">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-6 h-px" style={{ background: "#C4A04A" }} />
-                <span className="font-body text-[10px] tracking-[0.3em] uppercase" style={{ color: "#C4A04A" }}>The process</span>
-              </div>
-              <h2 className="font-display font-black leading-none" style={{ color: "#0C0D11", fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}>
-                HOW IT<br />WORKS
-              </h2>
+          <div className="mb-14">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-6 h-px" style={{ background: "#C4A04A" }} />
+              <span className="font-body text-[10px] tracking-[0.3em] uppercase" style={{ color: "#C4A04A" }}>The process</span>
             </div>
-            <span className="hidden md:block font-display font-black leading-none select-none" style={{ color: "rgba(12,13,17,0.04)", fontSize: "clamp(4rem, 9vw, 9rem)" }}>02</span>
+            <h2 className="font-display font-black leading-none" style={{ color: "#0C0D11", fontSize: "clamp(2.4rem, 5.5vw, 5rem)" }}>
+              How It Works
+            </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -391,14 +375,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <style>{`
-        @keyframes snowFall {
-          0% { transform: translateY(-8px) translateX(0); opacity: 0; }
-          10% { opacity: 0.8; }
-          90% { opacity: 0.25; }
-          100% { transform: translateY(100vh) translateX(28px); opacity: 0; }
-        }
-      `}</style>
     </main>
   )
 }
@@ -451,20 +427,6 @@ const reviews = [
   { text: "Season rental is a game changer. Monthly billing and a free tune-up halfway through. Couldn't recommend more.", author: "Alex & Kim, Thredbo" },
   { text: "Booked online, picked up, done. Staff were brilliant with our kids and made sure they were safe and comfortable.", author: "Priya K." },
 ]
-
-const snowParticles = Array.from({ length: 35 }, (_, i) => ({
-  size: `${1.5 + (Math.sin(i * 2.3) + 1) * 1.8}px`,
-  left: `${(i * 2.9) % 100}%`,
-  duration: 12 + (i % 7) * 2,
-  delay: -((i * 1.4) % 16),
-}))
-
-const stars = Array.from({ length: 55 }, (_, i) => ({
-  size: `${0.5 + (Math.sin(i * 1.7) + 1) * 0.9}px`,
-  left: `${(i * 1.618) % 100}%`,
-  top: `${(i * 2.1) % 55}%`,
-  opacity: 0.15 + (Math.sin(i * 3.1) + 1) * 0.25,
-}))
 
 const faqs = [
   { question: "What do I need to bring when picking up?", answer: "A valid ID and a credit card for the security deposit. Parents or guardians must be present for anyone under 18 to sign the rental agreement." },
