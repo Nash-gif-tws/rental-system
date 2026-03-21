@@ -67,10 +67,7 @@ export default function HomePage() {
                 Book Your Gear
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href="#packages" className="inline-flex items-center gap-3 px-8 py-4 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200" style={{ border: "1px solid rgba(249,248,245,0.15)", color: "rgba(249,248,245,0.7)" }}
-                onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = "rgba(196,160,74,0.5)"; (e.target as HTMLElement).style.color = "#C4A04A" }}
-                onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = "rgba(249,248,245,0.15)"; (e.target as HTMLElement).style.color = "rgba(249,248,245,0.7)" }}
-              >
+              <a href="#packages" className="inline-flex items-center gap-3 px-8 py-4 font-body text-xs tracking-[0.2em] uppercase transition-colors duration-200 border border-white/15 hover:border-[#C4A04A]/50 text-white/70 hover:text-[#C4A04A]">
                 View Packages
               </a>
             </div>
