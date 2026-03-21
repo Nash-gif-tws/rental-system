@@ -40,7 +40,7 @@ export default function HomePage() {
             <span className="font-body text-[10px] tracking-[0.3em] uppercase" style={{ color: "#C4A04A" }}>Est. 1984 · Rockdale, Sydney</span>
           </div>
 
-          <h1 className="font-display font-black text-white leading-[0.92] tracking-tight mb-6" style={{ fontSize: "clamp(3.2rem, 10vw, 10rem)" }}>
+          <h1 className="font-display font-black text-white leading-[0.92] tracking-tight mb-6" style={{ fontSize: "clamp(2.4rem, 5.5vw, 6.5rem)" }}>
             SNOWSKIERS<br />WAREHOUSE
           </h1>
 
