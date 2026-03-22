@@ -11,7 +11,6 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  ScanLine,
   ShoppingCart,
 } from "lucide-react"
 import { signOut } from "next-auth/react"
@@ -19,11 +18,10 @@ import { cn } from "@/lib/utils"
 
 const nav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/pos", label: "In-Store POS", icon: ShoppingCart },
-  { href: "/admin/scan", label: "Scan / Check Out", icon: ScanLine },
+  { href: "/admin/pos", label: "In Store POS", icon: ShoppingCart },
   { href: "/admin/bookings", label: "Bookings", icon: CalendarDays },
   { href: "/admin/inventory", label: "Inventory", icon: Package },
-  { href: "/admin/products", label: "Products & Pricing", icon: Wrench },
+  { href: "/admin/products", label: "Product Pricing", icon: Wrench },
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
   { href: "/admin/settings", label: "Settings", icon: Settings },

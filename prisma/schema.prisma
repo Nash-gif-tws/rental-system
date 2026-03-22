@@ -193,6 +193,10 @@ model Booking {
   shopifyOrderId        String?
   waiverSigned          Boolean       @default(false)
   waiverSignedAt        DateTime?
+  prepStatus            PrepStatus    @default(NOT_READY)
+  readyAt               DateTime?
+  readyBy               String?
+  pickedUpBy            String?
   items                 BookingItem[]
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
@@ -205,6 +209,11 @@ enum BookingStatus {
   RETURNED
   CANCELLED
   NO_SHOW
+}
+
+enum PrepStatus {
+  NOT_READY
+  READY_FOR_COLLECTION
 }
 
 enum SkillLevel {

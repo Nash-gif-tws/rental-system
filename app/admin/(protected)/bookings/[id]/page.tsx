@@ -4,6 +4,7 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import Link from "next/link"
 import { ArrowLeft, User, Calendar, Package, CreditCard, ClipboardList } from "lucide-react"
 import BookingActions from "@/components/admin/BookingActions"
+import PickupActions from "@/components/admin/PickupActions"
 
 export default async function BookingDetailPage({
   params,
@@ -65,6 +66,7 @@ export default async function BookingDetailPage({
           >
             Edit
           </Link>
+          <PickupActions bookingId={booking.id} prepStatus={booking.prepStatus} bookingStatus={booking.status} />
           <BookingActions booking={booking} />
         </div>
       </div>
@@ -218,6 +220,16 @@ export default async function BookingDetailPage({
             {booking.waiverSigned && (
               <div className="mt-4 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
                 <span>✓ Waiver signed {booking.waiverSignedAt ? formatDate(booking.waiverSignedAt) : ""}</span>
+              </div>
+            )}
+            {booking.prepStatus === "READY_FOR_COLLECTION" && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+                <span>✓ Ready for collection{booking.readyBy ? ` · ${booking.readyBy}` : ""}</span>
+              </div>
+            )}
+            {booking.pickedUpBy && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-lg px-3 py-2">
+                <span>✓ Picked up by {booking.pickedUpBy}</span>
               </div>
             )}
           </div>
