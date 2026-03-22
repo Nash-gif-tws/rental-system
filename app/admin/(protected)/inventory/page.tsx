@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, ClipboardList } from "lucide-react"
 import InventorySearch from "./InventorySearch"
 import InventoryTable from "@/components/admin/InventoryTable"
 
@@ -74,13 +74,22 @@ export default async function InventoryPage({
         <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">
           Inventory
         </h1>
-        <Link
-          href="/admin/inventory/new"
-          className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#d4b565] transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Add Unit
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/inventory/stocktake"
+            className="flex items-center gap-2 bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <ClipboardList className="h-4 w-4" />
+            Stocktake
+          </Link>
+          <Link
+            href="/admin/inventory/new"
+            className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#d4b565] transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Add Unit
+          </Link>
+        </div>
       </div>
 
       {/* Tabs + search */}

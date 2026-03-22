@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
-import { Plus, Package, Layers, Edit } from "lucide-react"
+import { Plus, Package, Layers, Edit, Upload } from "lucide-react"
 
 export default async function ProductsPage() {
   const [products, categories] = await Promise.all([
@@ -100,13 +100,22 @@ export default async function ProductsPage() {
           <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Products & Packages</h1>
           <p className="text-sm text-[#B4B4B4] mt-0.5">Manage what's available to rent and how it's priced</p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#d4b565] transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          New Product
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/products/import"
+            className="flex items-center gap-2 bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <Upload className="h-4 w-4" />
+            Import CSV
+          </Link>
+          <Link
+            href="/admin/products/new"
+            className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#d4b565] transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            New Product
+          </Link>
+        </div>
       </div>
 
       <Section title="Packages" icon={Layers} items={packages} />
