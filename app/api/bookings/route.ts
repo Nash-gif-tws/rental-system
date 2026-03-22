@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { generateBookingNumber } from "@/lib/utils"
+import { checkAvailability } from "@/lib/availability"
 import { z } from "zod"
 
 const CreateBookingSchema = z.object({
@@ -74,62 +75,10 @@ export async function POST(req: NextRequest) {
         customer = await tx.customer.create({ data: data.customer })
       }
 
-      // Overbooking check: for each product, verify stock is available in this window
-      const productIds = [...new Set(data.items.map((i) => i.productId))]
-
-      const availableUnits = await tx.equipmentUnit.groupBy({
-        by: ["productId"],
-        where: {
-          productId: { in: productIds },
-          isActive: true,
-          condition: { notIn: ["NEEDS_SERVICE", "RETIRED"] },
-          // Exclude units that are blocked out during this period
-          NOT: {
-            blockouts: {
-              some: {
-                startDate: { lte: end },
-                endDate: { gte: start },
-              },
-            },
-          },
-        },
-        _count: { id: true },
-      })
-
-      const unitCountMap = Object.fromEntries(
-        availableUnits.map((u) => [u.productId, u._count.id])
-      )
-
-      const bookedCounts = await tx.bookingItem.groupBy({
-        by: ["productId"],
-        where: {
-          productId: { in: productIds },
-          booking: {
-            status: { in: ["CONFIRMED", "CHECKED_OUT", "PENDING"] },
-            startDate: { lte: end },
-            endDate: { gte: start },
-          },
-        },
-        _sum: { quantity: true },
-      })
-
-      const bookedMap = Object.fromEntries(
-        bookedCounts.map((b) => [b.productId, b._sum.quantity ?? 0])
-      )
-
-      for (const item of data.items) {
-        const total = unitCountMap[item.productId] ?? 0
-        const booked = bookedMap[item.productId] ?? 0
-        if (item.quantity > total - booked) {
-          const product = await tx.product.findUnique({
-            where: { id: item.productId },
-            select: { name: true },
-          })
-          return NextResponse.json(
-            { error: `"${product?.name ?? item.productId}" is not available for the requested dates` },
-            { status: 409 }
-          )
-        }
+      // Overbooking check — handles individual products AND packages (via component stock)
+      const conflict = await checkAvailability(tx, data.items, start, end)
+      if (conflict) {
+        return NextResponse.json({ error: conflict }, { status: 409 })
       }
 
       const subtotal = data.items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)

@@ -30,11 +30,15 @@ export async function GET(req: NextRequest) {
           },
           select: { id: true, size: true },
         },
+        // Package → component links
+        packageItems: {
+          include: { product: { select: { id: true, name: true } } },
+        },
       },
       orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
     })
 
-    // Booked quantity per (productId, size) for the date range
+    // All booked items for this date range (direct product bookings)
     const bookedItems = await prisma.bookingItem.findMany({
       where: {
         booking: {
@@ -46,15 +50,7 @@ export async function GET(req: NextRequest) {
       select: { productId: true, size: true, quantity: true },
     })
 
-    // Build booked map: productId -> size -> count
-    const bookedMap: Record<string, Record<string, number>> = {}
-    for (const item of bookedItems) {
-      if (!bookedMap[item.productId]) bookedMap[item.productId] = {}
-      const sz = item.size ?? "__any__"
-      bookedMap[item.productId][sz] = (bookedMap[item.productId][sz] ?? 0) + (item.quantity ?? 1)
-    }
-
-    // Blocked units per unit id
+    // Blocked unit ids
     const blockouts = await prisma.blockout.findMany({
       where: {
         startDate: { lte: end },
@@ -68,36 +64,73 @@ export async function GET(req: NextRequest) {
     })
     const blockedUnitIds = new Set(blockouts.map((b) => b.unitId))
 
-    const result = products.map((product) => {
-      const activeUnits = product.units.filter((u) => !blockedUnitIds.has(u.id))
-      const productBooked = bookedMap[product.id] ?? {}
+    // productId → all its package parents and qty required per booking
+    // e.g. adult-skis → [{ packageId: mens-ski-package, qty: 1 }, ...]
+    const componentOfPackages: Record<string, { packageId: string; qty: number }[]> = {}
+    for (const prod of products) {
+      for (const pi of prod.packageItems) {
+        if (!componentOfPackages[pi.productId]) componentOfPackages[pi.productId] = []
+        componentOfPackages[pi.productId].push({ packageId: prod.id, qty: pi.quantity })
+      }
+    }
 
-      // Build per-size breakdown
+    // Direct booking count: productId → size → count
+    const directBookedMap: Record<string, Record<string, number>> = {}
+    for (const item of bookedItems) {
+      if (!directBookedMap[item.productId]) directBookedMap[item.productId] = {}
+      const sz = item.size ?? "__any__"
+      directBookedMap[item.productId][sz] =
+        (directBookedMap[item.productId][sz] ?? 0) + (item.quantity ?? 1)
+    }
+
+    // Total package bookings per packageId (no size breakdown — packages don't track size at package level)
+    const packageBookedCount: Record<string, number> = {}
+    for (const item of bookedItems) {
+      const prod = products.find((p) => p.id === item.productId)
+      if (prod?.isPackage) {
+        packageBookedCount[item.productId] = (packageBookedCount[item.productId] ?? 0) + (item.quantity ?? 1)
+      }
+    }
+
+    // Helper: compute available count for a single non-package product,
+    // accounting for direct bookings AND consumption via package bookings
+    function computeComponentAvailable(
+      productId: string,
+      activeUnits: { id: string; size: string | null }[]
+    ): { total: number; available: number; sizes: { size: string; total: number; available: number }[] } {
+      const nonBlockedUnits = activeUnits.filter((u) => !blockedUnitIds.has(u.id))
+      const total = nonBlockedUnits.length
+
+      // Direct bookings against this component
+      const directBooked = Object.values(directBookedMap[productId] ?? {}).reduce((s, n) => s + n, 0)
+
+      // Indirect bookings: each package that contains this component consumes qty per booking
+      const indirectBooked = (componentOfPackages[productId] ?? []).reduce((sum, { packageId, qty }) => {
+        return sum + (packageBookedCount[packageId] ?? 0) * qty
+      }, 0)
+
+      const totalBooked = directBooked + indirectBooked
+      const available = Math.max(0, total - totalBooked)
+
+      // Per-size breakdown (direct bookings only — packages don't specify component sizes)
       const sizeMap: Record<string, { total: number; booked: number }> = {}
-      for (const unit of activeUnits) {
+      for (const unit of nonBlockedUnits) {
         const sz = unit.size ?? "__none__"
         if (!sizeMap[sz]) sizeMap[sz] = { total: 0, booked: 0 }
         sizeMap[sz].total++
       }
-
-      // Subtract booked per size
+      const productBooked = directBookedMap[productId] ?? {}
       for (const [sz, count] of Object.entries(productBooked)) {
         const key = sz === "__any__" ? "__none__" : sz
         if (sizeMap[key]) {
           sizeMap[key].booked = Math.min(sizeMap[key].booked + count, sizeMap[key].total)
         } else {
-          // Booked size not in units — apply to any available size proportionally
-          // (legacy bookings without a size assigned)
           const firstKey = Object.keys(sizeMap)[0]
           if (firstKey) {
-            sizeMap[firstKey].booked = Math.min(
-              (sizeMap[firstKey].booked ?? 0) + count,
-              sizeMap[firstKey].total
-            )
+            sizeMap[firstKey].booked = Math.min((sizeMap[firstKey].booked ?? 0) + count, sizeMap[firstKey].total)
           }
         }
       }
-
       const sizes = Object.entries(sizeMap)
         .filter(([sz]) => sz !== "__none__")
         .map(([size, { total, booked }]) => ({
@@ -107,14 +140,75 @@ export async function GET(req: NextRequest) {
         }))
         .sort((a, b) => sortSize(a.size, b.size))
 
-      // For products without size tracking (size=null on all units)
-      const noSizeUnits = sizeMap["__none__"]
-      const noSizeAvailable = noSizeUnits
-        ? Math.max(0, noSizeUnits.total - noSizeUnits.booked)
-        : 0
+      return { total, available, sizes }
+    }
 
-      const totalUnits = activeUnits.length
-      const totalAvailable = sizes.reduce((s, sz) => s + sz.available, 0) + noSizeAvailable
+    // Build a lookup of non-package product availability keyed by productId
+    const componentAvailMap: Record<string, ReturnType<typeof computeComponentAvailable>> = {}
+    for (const product of products) {
+      if (!product.isPackage) {
+        componentAvailMap[product.id] = computeComponentAvailable(product.id, product.units)
+      }
+    }
+
+    const result = products.map((product) => {
+      if (!product.isPackage) {
+        // Non-package: use computed availability
+        const avail = componentAvailMap[product.id]
+        const noSizeUnits = product.units.filter((u) => !blockedUnitIds.has(u.id) && !u.size)
+        const directBooked = Object.values(directBookedMap[product.id] ?? {}).reduce((s, n) => s + n, 0)
+        const indirectBooked = (componentOfPackages[product.id] ?? []).reduce((sum, { packageId, qty }) => {
+          return sum + (packageBookedCount[packageId] ?? 0) * qty
+        }, 0)
+        const noSizeAvailable = Math.max(0, noSizeUnits.length - directBooked - indirectBooked)
+
+        return {
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          category: product.category.name,
+          categorySlug: product.category.slug,
+          isPackage: false,
+          available: avail.available,
+          totalUnits: avail.total,
+          sizes: avail.sizes,
+          hasSizes: avail.sizes.length > 0,
+          pricingTiers: product.pricingTiers,
+        }
+      }
+
+      // Package: availability = min(floor(componentAvailable / qtyRequired)) across all components
+      // If no components are configured, treat as unlimited (null = ∞)
+      const components = product.packageItems
+      if (components.length === 0) {
+        return {
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          category: product.category.name,
+          categorySlug: product.category.slug,
+          isPackage: true,
+          available: null, // unlimited — no components configured
+          totalUnits: null,
+          sizes: [],
+          hasSizes: false,
+          pricingTiers: product.pricingTiers,
+        }
+      }
+
+      // Each already-booked package consumes qty of each component — account for that
+      const alreadyBooked = packageBookedCount[product.id] ?? 0
+      const packageAvailable = components.reduce((minSoFar, pi) => {
+        const compAvail = componentAvailMap[pi.productId]
+        if (!compAvail) return minSoFar // component not found — skip
+        // Available units for this component after existing package bookings
+        const netAvail = Math.max(0, compAvail.total - (alreadyBooked * pi.quantity) -
+          Object.values(directBookedMap[pi.productId] ?? {}).reduce((s, n) => s + n, 0))
+        const packagesFromThis = Math.floor(netAvail / pi.quantity)
+        return Math.min(minSoFar, packagesFromThis)
+      }, Infinity)
+
+      const finalAvailable = packageAvailable === Infinity ? null : Math.max(0, packageAvailable)
 
       return {
         id: product.id,
@@ -122,11 +216,11 @@ export async function GET(req: NextRequest) {
         name: product.name,
         category: product.category.name,
         categorySlug: product.category.slug,
-        isPackage: product.isPackage,
-        available: totalAvailable,
-        totalUnits,
-        sizes,
-        hasSizes: sizes.length > 0,
+        isPackage: true,
+        available: finalAvailable,
+        totalUnits: finalAvailable,
+        sizes: [],
+        hasSizes: false,
         pricingTiers: product.pricingTiers,
       }
     })
@@ -143,8 +237,6 @@ function sortSize(a: string, b: string): number {
   const numA = parseFloat(a)
   const numB = parseFloat(b)
   if (!isNaN(numA) && !isNaN(numB)) return numA - numB
-
-  // Size labels: XS < S < M < L < XL < 2XL < 3XL
   const order = ["XS", "S", "M", "L", "XL", "2XL", "3XL"]
   const ia = order.indexOf(a.toUpperCase())
   const ib = order.indexOf(b.toUpperCase())

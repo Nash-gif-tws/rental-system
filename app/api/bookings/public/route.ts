@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { generateBookingNumber } from "@/lib/utils"
 import { sendBookingConfirmation } from "@/lib/email"
+import { checkAvailability } from "@/lib/availability"
 import { z } from "zod"
 import { differenceInDays } from "date-fns"
 
@@ -107,6 +108,12 @@ export async function POST(req: NextRequest) {
     quantity: item.quantity,
     unitPrice: getBestPrice(productMap[item.productId].pricingTiers, rentalDays),
   }))
+
+  // Availability check — handles individual products AND packages (via component stock)
+  const conflict = await checkAvailability(prisma as any, itemsWithPrices, start, end)
+  if (conflict) {
+    return NextResponse.json({ error: conflict }, { status: 409 })
+  }
 
   // Upsert customer by email
   let customer = await prisma.customer.findFirst({
