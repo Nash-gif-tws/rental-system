@@ -154,7 +154,7 @@ model Customer {
   id                String    @id @default(cuid())
   firstName         String
   lastName          String
-  email             String
+  email             String    @unique
   phone             String?
   dateOfBirth       DateTime?
   shopifyCustomerId String?   @unique
@@ -162,7 +162,6 @@ model Customer {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  @@index([email])
 }
 
 // ─── Bookings ────────────────────────────────────────────────────────────────

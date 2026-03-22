@@ -55,6 +55,14 @@ export async function POST(req: NextRequest) {
   if (start >= end) {
     return NextResponse.json({ error: "startDate must be before endDate" }, { status: 422 })
   }
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); yesterday.setHours(0, 0, 0, 0)
+  if (start < yesterday) {
+    return NextResponse.json({ error: "startDate cannot be in the past" }, { status: 422 })
+  }
+  const rentalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+  if (rentalDays > 180) {
+    return NextResponse.json({ error: "Rental duration cannot exceed 180 days" }, { status: 422 })
+  }
 
   try {
     const booking = await prisma.$transaction(async (tx) => {

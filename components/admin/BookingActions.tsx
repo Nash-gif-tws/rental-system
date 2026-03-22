@@ -16,23 +16,37 @@ const TRANSITIONS: Record<BookingStatus, { label: string; next: BookingStatus }[
 export default function BookingActions({ booking }: { booking: any }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const actions = TRANSITIONS[booking.status as BookingStatus] ?? []
 
   async function updateStatus(next: BookingStatus) {
     setLoading(true)
-    await fetch(`/api/bookings/${booking.id}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    })
-    router.refresh()
-    setLoading(false)
+    setError("")
+    try {
+      const res = await fetch(`/api/bookings/${booking.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setError(body.error ?? "Failed to update status")
+        return
+      }
+      router.refresh()
+    } catch {
+      setError("Network error — please try again")
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (actions.length === 0) return null
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col items-end gap-1.5">
+      {error && <p className="text-xs text-red-400 text-right">{error}</p>}
+      <div className="flex gap-2">
       {actions.map(({ label, next }) => (
         <button
           key={next}
@@ -47,6 +61,7 @@ export default function BookingActions({ booking }: { booking: any }) {
           {loading ? "..." : label}
         </button>
       ))}
+      </div>
     </div>
   )
 }

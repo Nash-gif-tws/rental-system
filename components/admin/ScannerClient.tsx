@@ -39,29 +39,44 @@ export default function ScannerClient() {
     setLoading(true)
     setResult(null)
     setActionMsg("")
-    const res = await fetch(`/api/scan?q=${encodeURIComponent(q)}`)
-    if (res.status === 404) {
-      setResult({ type: "not_found" })
-    } else {
-      setResult(await res.json())
+    try {
+      const res = await fetch(`/api/scan?q=${encodeURIComponent(q)}`)
+      if (res.status === 404) {
+        setResult({ type: "not_found" })
+      } else if (!res.ok) {
+        setActionMsg("⚠ Lookup failed — check connection and try again")
+      } else {
+        setResult(await res.json())
+      }
+    } catch {
+      setActionMsg("⚠ Network error — check your connection and try again")
+    } finally {
+      setLoading(false)
+      setQuery("")
     }
-    setLoading(false)
-    setQuery("")
   }
 
   async function updateStatus(bookingId: string, status: string) {
     setActionLoading(true)
-    const res = await fetch(`/api/bookings/${bookingId}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    })
-    if (res.ok) {
-      const label = status === "CHECKED_OUT" ? "Checked out" : "Returned"
-      setActionMsg(`✓ ${label} successfully`)
-      setResult(null)
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      })
+      if (res.ok) {
+        const label = status === "CHECKED_OUT" ? "Checked out" : "Returned"
+        setActionMsg(`✓ ${label} successfully`)
+        setResult(null)
+      } else {
+        const body = await res.json().catch(() => ({}))
+        setActionMsg(`⚠ ${body.error ?? "Update failed — please try again"}`)
+      }
+    } catch {
+      setActionMsg("⚠ Network error — status not updated. Try again.")
+    } finally {
+      setActionLoading(false)
     }
-    setActionLoading(false)
   }
 
   const booking = result?.type === "booking" ? result.booking : result?.type === "unit" ? result.unit?.bookingItems?.[0]?.booking : null
@@ -120,8 +135,12 @@ export default function ScannerClient() {
         </div>
 
         {actionMsg && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3">
-            <CheckCircle2 className="h-4 w-4" />
+          <div className={`mt-3 flex items-center gap-2 text-sm rounded-lg px-4 py-3 ${
+            actionMsg.startsWith("⚠")
+              ? "text-red-300 bg-red-500/10 border border-red-500/20"
+              : "text-emerald-300 bg-emerald-500/10 border border-emerald-500/20"
+          }`}>
+            {actionMsg.startsWith("⚠") ? <AlertCircle className="h-4 w-4 shrink-0" /> : <CheckCircle2 className="h-4 w-4 shrink-0" />}
             {actionMsg}
           </div>
         )}

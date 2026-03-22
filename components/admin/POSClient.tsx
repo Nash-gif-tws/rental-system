@@ -349,7 +349,7 @@ export default function POSClient({ products }: { products: Product[] }) {
 
   // Totals
   const subtotal = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
-  const discountAmt = discount ? subtotal * (parseFloat(discount) / 100) : 0
+  const discountAmt = discount ? Math.round(subtotal * (parseFloat(discount) / 100) * 100) / 100 : 0
   const total = subtotal - discountAmt
 
   async function handleSubmit() {
