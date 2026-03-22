@@ -2,10 +2,12 @@ import { prisma } from "@/lib/prisma"
 import { formatCurrency } from "@/lib/utils"
 import { CalendarDays, Package, Users, TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react"
 import Link from "next/link"
-import { startOfDay, endOfDay, startOfMonth, endOfMonth } from "date-fns"
+import { sydneyTodayStr, sydneyDayBounds, sydneyMonthBounds, formatSydney } from "@/lib/tz"
 
 export default async function DashboardPage() {
-  const today = new Date()
+  const todayStr = sydneyTodayStr()
+  const { start: todayStart, end: todayEnd } = sydneyDayBounds(todayStr)
+  const { start: monthStart, end: monthEnd } = sydneyMonthBounds()
 
   const [
     activeBookings,
@@ -23,20 +25,20 @@ export default async function DashboardPage() {
     prisma.booking.count({
       where: {
         status: "CONFIRMED",
-        startDate: { gte: startOfDay(today), lte: endOfDay(today) },
+        startDate: { gte: todayStart, lte: todayEnd },
       },
     }),
     prisma.booking.count({
       where: {
         status: "CHECKED_OUT",
-        endDate: { gte: startOfDay(today), lte: endOfDay(today) },
+        endDate: { gte: todayStart, lte: todayEnd },
       },
     }),
     prisma.booking.count({ where: { status: "PENDING" } }),
     prisma.booking.aggregate({
       where: {
         status: { in: ["CONFIRMED", "CHECKED_OUT", "RETURNED"] },
-        createdAt: { gte: startOfMonth(today), lte: endOfMonth(today) },
+        createdAt: { gte: monthStart, lte: monthEnd },
       },
       _sum: { subtotal: true },
     }),
@@ -90,7 +92,7 @@ export default async function DashboardPage() {
       <div>
         <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Dashboard</h1>
         <p className="text-[#B4B4B4] text-sm mt-1">
-          {today.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+          {formatSydney(new Date(), "EEEE d MMMM yyyy")}
         </p>
       </div>
 

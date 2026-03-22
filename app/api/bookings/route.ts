@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { generateBookingNumber } from "@/lib/utils"
 import { checkAvailability } from "@/lib/availability"
+import { sydneyYesterdayStart } from "@/lib/tz"
 import { z } from "zod"
 
 const CreateBookingSchema = z.object({
@@ -56,8 +57,7 @@ export async function POST(req: NextRequest) {
   if (start >= end) {
     return NextResponse.json({ error: "startDate must be before endDate" }, { status: 422 })
   }
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); yesterday.setHours(0, 0, 0, 0)
-  if (start < yesterday) {
+  if (start < sydneyYesterdayStart()) {
     return NextResponse.json({ error: "startDate cannot be in the past" }, { status: 422 })
   }
   const rentalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { generateBookingNumber } from "@/lib/utils"
 import { sendBookingConfirmation } from "@/lib/email"
 import { checkAvailability } from "@/lib/availability"
+import { sydneyYesterdayStart } from "@/lib/tz"
 import { z } from "zod"
 import { differenceInDays } from "date-fns"
 
@@ -79,8 +80,7 @@ export async function POST(req: NextRequest) {
   if (end <= start) {
     return NextResponse.json({ error: "End date must be after start date" }, { status: 400 })
   }
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); yesterday.setHours(0, 0, 0, 0)
-  if (start < yesterday) {
+  if (start < sydneyYesterdayStart()) {
     return NextResponse.json({ error: "Start date cannot be in the past" }, { status: 400 })
   }
   const rentalDays = Math.max(1, differenceInDays(end, start))

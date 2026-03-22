@@ -30,13 +30,19 @@ export type GroupedCategory = {
   }[]
 }
 
+function localDateStr(d: Date) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${y}-${m}-${day}`
+}
+
 function formatDisplayDate(dateStr: string) {
-  const d = new Date(dateStr + "T00:00:00")
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date()
   const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1)
-  const target = new Date(d); target.setHours(0, 0, 0, 0)
-  if (target.getTime() === today.getTime()) return "Today"
-  if (target.getTime() === tomorrow.getTime()) return "Tomorrow"
+  if (dateStr === localDateStr(today)) return "Today"
+  if (dateStr === localDateStr(tomorrow)) return "Tomorrow"
+  const d = new Date(dateStr + "T00:00:00")
   return d.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })
 }
 
@@ -78,7 +84,11 @@ export default function PickingListClient({
   function shiftDate(days: number) {
     const d = new Date(selectedDate + "T00:00:00")
     d.setDate(d.getDate() + days)
-    const str = d.toISOString().split("T")[0]
+    // Use local date parts (not toISOString) so the date reflects browser local time (Sydney)
+    const y = d.getFullYear()
+    const mo = String(d.getMonth() + 1).padStart(2, "0")
+    const day = String(d.getDate()).padStart(2, "0")
+    const str = `${y}-${mo}-${day}`
     const params = new URLSearchParams(searchParams.toString())
     params.set("date", str)
     router.push(`${pathname}?${params.toString()}`)
@@ -276,7 +286,7 @@ export default function PickingListClient({
         ))}
 
         <div className="mt-8 pt-4 border-t border-gray-300 text-xs text-gray-400 flex justify-between">
-          <span>Printed {new Date().toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+          <span>Printed {new Date().toLocaleString("en-AU", { timeZone: "Australia/Sydney", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
           <span>Snowskiers Warehouse — Rental Manager</span>
         </div>
       </div>

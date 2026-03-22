@@ -4,8 +4,13 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
 import { Search, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
 
+// Use local date parts (not toISOString which is UTC) so the displayed date
+// matches Sydney local time in the browser.
 function formatDateParam(d: Date) {
-  return d.toISOString().split("T")[0]
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${y}-${m}-${day}`
 }
 
 function formatDisplayDate(d: Date) {

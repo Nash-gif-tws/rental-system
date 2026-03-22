@@ -5,6 +5,7 @@ import { Plus, PackageCheck, CheckCircle, ClipboardList } from "lucide-react"
 import { BookingStatus } from "@prisma/client"
 import PickupActions from "@/components/admin/PickupActions"
 import BookingsTopBar from "@/components/admin/BookingsTopBar"
+import { sydneyTodayStr, sydneyTomorrowStr, sydneyDayBounds, formatSydney } from "@/lib/tz"
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
   PENDING: "Pending",
@@ -24,10 +25,6 @@ const STATUS_COLORS: Record<BookingStatus, string> = {
   NO_SHOW: "bg-zinc-500/20 text-zinc-400",
 }
 
-function toLocalDateString(d: Date) {
-  return d.toISOString().split("T")[0]
-}
-
 export default async function BookingsPage({
   searchParams,
 }: {
@@ -35,12 +32,10 @@ export default async function BookingsPage({
 }) {
   const params = await searchParams
 
-  // Resolve selected date (default: today)
-  const todayStr = toLocalDateString(new Date())
+  // Resolve selected date (default: today in Sydney)
+  const todayStr = sydneyTodayStr()
   const selectedDateStr = params.date ?? todayStr
-  const dayStart = new Date(selectedDateStr + "T00:00:00")
-  const dayEnd = new Date(dayStart)
-  dayEnd.setDate(dayEnd.getDate() + 1)
+  const { start: dayStart, end: dayEnd } = sydneyDayBounds(selectedDateStr)
 
   const isSearching = Boolean(params.q)
   const isStatusFilter = Boolean(params.status)
@@ -51,7 +46,7 @@ export default async function BookingsPage({
     ? await prisma.booking.findMany({
         where: {
           status: { in: ["CONFIRMED", "CHECKED_OUT"] },
-          startDate: { gte: dayStart, lt: dayEnd },
+          startDate: { gte: dayStart, lte: dayEnd },
         },
         orderBy: { createdAt: "asc" },
         include: {
@@ -76,7 +71,7 @@ export default async function BookingsPage({
     where.status = params.status
   } else {
     // Default: all bookings for selected date (any status)
-    where.startDate = { gte: dayStart, lt: dayEnd }
+    where.startDate = { gte: dayStart, lte: dayEnd }
   }
 
   const bookings = await prisma.booking.findMany({
@@ -96,7 +91,7 @@ export default async function BookingsPage({
         <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Bookings</h1>
         <div className="flex items-center gap-2">
           <Link
-            href={`/admin/bookings/picking-list?date=${(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split("T")[0] })()}`}
+            href={`/admin/bookings/picking-list?date=${sydneyTomorrowStr()}`}
             className="flex items-center gap-2 px-4 py-2 bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white hover:border-[#C4A04A]/40 rounded-lg text-sm font-medium transition-colors"
           >
             <ClipboardList className="h-4 w-4" />
@@ -145,7 +140,7 @@ export default async function BookingsPage({
             <PackageCheck className="h-4 w-4 text-[#C4A04A]" />
             <p className="text-sm font-semibold text-white">
               Pickups for{" "}
-              {selectedDateStr === todayStr ? "Today" : new Date(selectedDateStr + "T00:00:00").toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
+              {selectedDateStr === todayStr ? "Today" : formatSydney(new Date(selectedDateStr + "T00:00:00"), "EEEE d MMMM")}
             </p>
             {dayPickups.length > 0 && (
               <span className="ml-auto text-xs text-[#B4B4B4]">

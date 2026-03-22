@@ -19,7 +19,8 @@ export default function StepDates({ state, onUpdate, onNext }: {
   onUpdate: (u: Partial<BookingState>) => void
   onNext: () => void
 }) {
-  const today = new Date().toISOString().split("T")[0]
+  const _now = new Date()
+  const today = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, "0")}-${String(_now.getDate()).padStart(2, "0")}`
   const rentalDays = state.startDate && state.endDate
     ? Math.max(1, differenceInDays(new Date(state.endDate), new Date(state.startDate)))
     : 0

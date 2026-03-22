@@ -13,7 +13,7 @@
  */
 
 import nodemailer from "nodemailer"
-import { format } from "date-fns"
+import { formatSydney } from "@/lib/tz"
 
 // ── Transporter ──────────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ const STORE_EMAIL = process.env.STORE_EMAIL ?? ""
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmt(d: Date | string) {
-  return format(new Date(d), "EEEE d MMMM yyyy")
+  return formatSydney(new Date(d), "EEEE d MMMM yyyy")
 }
 
 function formatCurrency(n: number) {

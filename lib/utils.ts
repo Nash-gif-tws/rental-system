@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { format, differenceInDays } from "date-fns"
+import { differenceInDays } from "date-fns"
+import { formatSydney } from "@/lib/tz"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -16,13 +17,13 @@ export function formatCurrency(amount: number): string {
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "—"
   const d = new Date(date)
-  return isNaN(d.getTime()) ? "—" : format(d, "dd MMM yyyy")
+  return isNaN(d.getTime()) ? "—" : formatSydney(d, "dd MMM yyyy")
 }
 
 export function formatDateTime(date: Date | string | null | undefined): string {
   if (!date) return "—"
   const d = new Date(date)
-  return isNaN(d.getTime()) ? "—" : format(d, "dd MMM yyyy, h:mm a")
+  return isNaN(d.getTime()) ? "—" : formatSydney(d, "dd MMM yyyy, h:mm a")
 }
 
 export function generateBookingNumber(): string {

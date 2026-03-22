@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import PickingListClient, { type GroupedCategory, type PickItem } from "@/components/admin/PickingListClient"
+import { sydneyTomorrowStr, sydneyDayBounds } from "@/lib/tz"
 
 // Category display order for the picking list (warehouse walk order)
 const CATEGORY_ORDER: Record<string, number> = {
@@ -18,21 +19,13 @@ export default async function PickingListPage({
 }) {
   const params = await searchParams
 
-  // Default to tomorrow
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  tomorrow.setHours(0, 0, 0, 0)
-  const defaultDate = tomorrow.toISOString().split("T")[0]
-
-  const selectedDateStr = params.date ?? defaultDate
-  const dayStart = new Date(selectedDateStr + "T00:00:00")
-  const dayEnd = new Date(dayStart)
-  dayEnd.setDate(dayEnd.getDate() + 1)
+  const selectedDateStr = params.date ?? sydneyTomorrowStr()
+  const { start: dayStart, end: dayEnd } = sydneyDayBounds(selectedDateStr)
 
   const bookings = await prisma.booking.findMany({
     where: {
       status: { in: ["CONFIRMED", "PENDING"] },
-      startDate: { gte: dayStart, lt: dayEnd },
+      startDate: { gte: dayStart, lte: dayEnd },
     },
     include: {
       customer: true,
