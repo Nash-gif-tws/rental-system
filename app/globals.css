@@ -87,3 +87,18 @@ details > summary::-webkit-details-marker {
   animation: fadeUp 0.8s ease 0.5s forwards;
   opacity: 0;
 }
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  /* Hide the admin sidebar and layout chrome when printing */
+  aside, nav, header {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import Link from "next/link"
-import { Plus, PackageCheck, CheckCircle } from "lucide-react"
+import { Plus, PackageCheck, CheckCircle, ClipboardList } from "lucide-react"
 import { BookingStatus } from "@prisma/client"
 import PickupActions from "@/components/admin/PickupActions"
 import BookingsTopBar from "@/components/admin/BookingsTopBar"
@@ -94,13 +94,22 @@ export default async function BookingsPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Bookings</h1>
-        <Link
-          href="/admin/bookings/new"
-          className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#d4b565] transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          New Booking
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/bookings/picking-list?date=${(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split("T")[0] })()}`}
+            className="flex items-center gap-2 px-4 py-2 bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white hover:border-[#C4A04A]/40 rounded-lg text-sm font-medium transition-colors"
+          >
+            <ClipboardList className="h-4 w-4" />
+            Picking List
+          </Link>
+          <Link
+            href="/admin/bookings/new"
+            className="flex items-center gap-2 bg-[#C4A04A] text-[#121212] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#d4b565] transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            New Booking
+          </Link>
+        </div>
       </div>
 
       {/* Top bar: search + day navigator */}
