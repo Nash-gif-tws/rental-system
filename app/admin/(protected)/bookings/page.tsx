@@ -87,15 +87,15 @@ export default async function BookingsPage({
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Bookings</h1>
         <div className="flex items-center gap-2">
           <Link
             href={`/admin/bookings/picking-list?date=${sydneyTomorrowStr()}`}
-            className="flex items-center gap-2 px-4 py-2 bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white hover:border-[#C4A04A]/40 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white hover:border-[#C4A04A]/40 rounded-lg text-sm font-medium transition-colors"
           >
             <ClipboardList className="h-4 w-4" />
-            Picking List
+            <span className="hidden sm:inline">Picking List</span>
           </Link>
           <Link
             href="/admin/bookings/new"
@@ -207,7 +207,7 @@ export default async function BookingsPage({
       )}
 
       {/* All bookings table */}
-      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden overflow-x-auto">
         {isSearching && (
           <div className="px-5 py-3 border-b border-[#2e2e2e] flex items-center gap-2">
             <p className="text-xs text-[#B4B4B4]">

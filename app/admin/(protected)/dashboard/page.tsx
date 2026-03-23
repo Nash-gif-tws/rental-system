@@ -97,7 +97,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map(({ label, value, icon: Icon, accent, warn }) => (
           <div
             key={label}
@@ -119,7 +119,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Today's Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Link
           href="/admin/bookings?filter=pickup-today"
           className="bg-[#1e1e1e] border border-[#2e2e2e] hover:border-[#C4A04A]/40 rounded-xl p-6 transition-colors group"
@@ -182,15 +182,15 @@ export default async function DashboardPage() {
               <Link
                 key={booking.id}
                 href={`/admin/bookings/${booking.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors"
+                className="flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-white/[0.02] transition-colors gap-3"
               >
-                <div>
-                  <p className="text-sm font-medium text-white">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-white truncate">
                     {booking.customer.firstName} {booking.customer.lastName}
                   </p>
                   <p className="text-xs text-[#B4B4B4] mt-0.5">{booking.bookingNumber}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[booking.status] ?? "bg-zinc-500/20 text-zinc-400"}`}>
                     {booking.status.replace("_", " ")}
                   </span>

@@ -46,12 +46,12 @@ export default async function BookingDetailPage({
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <Link href="/admin/bookings" className="flex items-center gap-1 text-sm text-[#B4B4B4] hover:text-white mb-2 transition-colors">
             <ArrowLeft className="h-4 w-4" /> Back to Bookings
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <h1 className="font-display text-2xl font-bold tracking-wide text-white">{booking.bookingNumber}</h1>
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[booking.status] ?? "bg-zinc-500/20 text-zinc-400"}`}>
               {booking.status.replace("_", " ")}
@@ -59,7 +59,7 @@ export default async function BookingDetailPage({
           </div>
           <p className="text-sm text-[#B4B4B4] mt-1">Created {formatDateTime(booking.createdAt)}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
           <Link
             href={`/admin/bookings/${booking.id}/edit`}
             className="px-4 py-2 text-sm font-semibold bg-[#1e1e1e] border border-[#2e2e2e] text-[#B4B4B4] hover:text-white hover:border-[#C4A04A]/40 rounded-lg transition-colors"
@@ -77,7 +77,7 @@ export default async function BookingDetailPage({
           {/* Rental Period */}
           <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6">
             <SectionHeader icon={Calendar} label="Rental Period" />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-[10px] text-[#B4B4B4] uppercase tracking-widest">Start Date</p>
                 <p className="font-medium text-white mt-1">{formatDate(booking.startDate)}</p>
@@ -106,7 +106,7 @@ export default async function BookingDetailPage({
             <SectionHeader icon={Package} label="Equipment" />
             <div className="space-y-2">
               {booking.items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-[#252525] rounded-lg">
+                <div key={item.id} className="flex items-start sm:items-center justify-between gap-3 p-3 bg-[#252525] rounded-lg">
                   <div>
                     <p className="font-medium text-white text-sm">{item.product.name}</p>
                     <div className="flex gap-3 mt-0.5">

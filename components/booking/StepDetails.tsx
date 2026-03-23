@@ -37,7 +37,7 @@ export default function StepDetails({ state, onUpdate, onNext, onBack }: {
       {/* Contact */}
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6 space-y-4">
         <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.25em]">Contact Info</p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="First Name *">
             <input value={state.firstName} onChange={(e) => onUpdate({ firstName: e.target.value })} className={inputClass} />
           </Field>
@@ -59,7 +59,7 @@ export default function StepDetails({ state, onUpdate, onNext, onBack }: {
           <p className="text-[10px] font-bold text-[#B4B4B4] uppercase tracking-[0.25em]">Fitting Info</p>
           <p className="text-xs text-[#B4B4B4]/50 mt-1">Helps us prep the right gear so you spend less time in store.</p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Height (cm)" hint="e.g. 175">
             <input type="number" placeholder="175" value={state.height} onChange={(e) => onUpdate({ height: e.target.value })} className={inputClass} />
           </Field>

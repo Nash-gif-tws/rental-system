@@ -27,11 +27,11 @@ export default async function ProductsPage() {
         <h2 className="text-sm font-semibold tracking-widest uppercase text-[#B4B4B4]">{title}</h2>
         <span className="text-xs text-[#B4B4B4]">({items.length})</span>
       </div>
-      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
+      <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden overflow-x-auto">
         {items.length === 0 ? (
           <div className="p-8 text-center text-[#B4B4B4] text-sm">None yet</div>
         ) : (
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="border-b border-[#2e2e2e]">
               <tr>
                 <th className="text-left px-5 py-3 text-xs font-medium tracking-widest uppercase text-[#B4B4B4]">Name</th>
@@ -95,7 +95,7 @@ export default async function ProductsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Products & Packages</h1>
           <p className="text-sm text-[#B4B4B4] mt-0.5">Manage what's available to rent and how it's priced</p>
