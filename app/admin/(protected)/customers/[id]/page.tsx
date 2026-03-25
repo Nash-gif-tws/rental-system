@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import Link from "next/link"
-import { ArrowLeft, Mail, Phone, Calendar, Package, User } from "lucide-react"
+import { ArrowLeft, Mail, Phone, Calendar, Package, User, Copy } from "lucide-react"
 
 export default async function CustomerDetailPage({
   params,
@@ -122,34 +122,45 @@ export default async function CustomerDetailPage({
             ) : (
               <div className="divide-y divide-[#2e2e2e]">
                 {customer.bookings.map((booking) => (
-                  <Link
-                    key={booking.id}
-                    href={`/admin/bookings/${booking.id}`}
-                    className="flex items-start justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors group"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm font-bold text-white group-hover:text-[#C4A04A] transition-colors">
-                          {booking.bookingNumber}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${STATUS_COLORS[booking.status] ?? "bg-zinc-500/20 text-zinc-400"}`}>
-                          {booking.status.replace("_", " ")}
-                        </span>
+                  <div key={booking.id} className="flex items-center hover:bg-white/[0.02] transition-colors group">
+                    <Link
+                      href={`/admin/bookings/${booking.id}`}
+                      className="flex-1 flex items-start justify-between px-6 py-4 min-w-0"
+                    >
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-sm font-bold text-white group-hover:text-[#C4A04A] transition-colors">
+                            {booking.bookingNumber}
+                          </span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${STATUS_COLORS[booking.status] ?? "bg-zinc-500/20 text-zinc-400"}`}>
+                            {booking.status.replace("_", " ")}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#B4B4B4]">
+                          {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
+                        </p>
+                        <p className="text-xs text-[#B4B4B4]/50 truncate">
+                          {booking.items.map((i) => i.product.name).join(", ")}
+                        </p>
                       </div>
-                      <p className="text-xs text-[#B4B4B4]">
-                        {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
-                      </p>
-                      <p className="text-xs text-[#B4B4B4]/50">
-                        {booking.items.map((i) => i.product.name).join(", ")}
-                      </p>
+                      <div className="text-right flex-shrink-0 ml-4">
+                        <p className="text-sm font-bold text-white">
+                          {formatCurrency(booking.subtotal - booking.discountAmount)}
+                        </p>
+                        <p className="text-xs text-[#B4B4B4]/50 mt-0.5">{formatDate(booking.createdAt)}</p>
+                      </div>
+                    </Link>
+                    <div className="pr-4 flex-shrink-0">
+                      <Link
+                        href={`/admin/pos?duplicate=${booking.id}`}
+                        title="Duplicate this booking"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#B4B4B4] hover:text-[#C4A04A] hover:bg-[#C4A04A]/10 transition-colors text-xs font-medium"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Duplicate</span>
+                      </Link>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-4">
-                      <p className="text-sm font-bold text-white">
-                        {formatCurrency(booking.subtotal - booking.discountAmount)}
-                      </p>
-                      <p className="text-xs text-[#B4B4B4]/50 mt-0.5">{formatDate(booking.createdAt)}</p>
-                    </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}

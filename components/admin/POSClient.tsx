@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Minus, X, User, Search, ChevronDown, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react"
-import { format, addDays } from "date-fns"
+import { Plus, Minus, X, User, Search, ChevronDown, CheckCircle2, ArrowRight, ArrowLeft, Copy } from "lucide-react"
+import { format, addDays, differenceInDays } from "date-fns"
 import { formatCurrency } from "@/lib/utils"
+import { CalendarRangePicker, type DateRange } from "@/components/ui/CalendarPicker"
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -78,13 +79,19 @@ const PACKAGE_COMPONENTS: Record<string, PackageComponent[]> = {
     { label: "Pants Size", productSlugs: ["kids-pants", "kids-snowsuits"] },
   ],
 }
-type CartItem = {
+export type CartItem = {
   productId: string
   name: string
   categoryName: string
   qty: number
   size: string
   unitPrice: number
+}
+export type DuplicateInfo = {
+  bookingNumber: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
 }
 type Customer = {
   id?: string
@@ -162,17 +169,34 @@ function SizeTiles({
 
 // ── Main Component ─────────────────────────────────────────────────────────
 
-export default function POSClient({ products }: { products: Product[] }) {
+export default function POSClient({
+  products,
+  initialCart,
+  duplicateInfo,
+}: {
+  products: Product[]
+  initialCart?: CartItem[]
+  duplicateInfo?: DuplicateInfo
+}) {
   const router = useRouter()
   const [mode, setMode] = useState<"book" | "reserve">("book")
   const [durationDays, setDurationDays] = useState(1)
   const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"))
   const [showDurationPicker, setShowDurationPicker] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState("all")
-  const [cart, setCart] = useState<CartItem[]>([])
+  const [cart, setCart] = useState<CartItem[]>(initialCart ?? [])
   const [discount, setDiscount] = useState("")
   const [rightPanel, setRightPanel] = useState<"order" | "customer">("order")
-  const [customer, setCustomer] = useState<Customer | null>(null)
+  const [customer, setCustomer] = useState<Customer | null>(
+    duplicateInfo
+      ? {
+          firstName: duplicateInfo.customerName.split(" ")[0] ?? "",
+          lastName: duplicateInfo.customerName.split(" ").slice(1).join(" ") ?? "",
+          email: duplicateInfo.customerEmail,
+          phone: duplicateInfo.customerPhone,
+        }
+      : null
+  )
   const [customerSearch, setCustomerSearch] = useState("")
   const [customerResults, setCustomerResults] = useState<any[]>([])
   const [customerForm, setCustomerForm] = useState({ firstName: "", lastName: "", email: "", phone: "" })
@@ -184,6 +208,7 @@ export default function POSClient({ products }: { products: Product[] }) {
   // Availability / size picker
   const [availMap, setAvailMap] = useState<Record<string, SizeOption[]>>({})
   const [availBySlug, setAvailBySlug] = useState<Record<string, SizeOption[]>>({})
+  const [availTotals, setAvailTotals] = useState<Record<string, { available: number | null; total: number | null }>>({})
   const [sizePicker, setSizePicker] = useState<{ product: Product; sizes: SizeOption[] } | null>(null)
   const [packagePicker, setPackagePicker] = useState<{ product: Product; selected: Record<string, string> } | null>(null)
 
@@ -197,12 +222,15 @@ export default function POSClient({ products }: { products: Product[] }) {
       .then((data: any[]) => {
         const byId: Record<string, SizeOption[]> = {}
         const bySlug: Record<string, SizeOption[]> = {}
+        const totals: Record<string, { available: number | null; total: number | null }> = {}
         for (const p of data) {
           byId[p.id] = p.sizes ?? []
           bySlug[p.slug] = p.sizes ?? []
+          totals[p.id] = { available: p.available, total: p.totalUnits }
         }
         setAvailMap(byId)
         setAvailBySlug(bySlug)
+        setAvailTotals(totals)
       })
       .catch(() => {})
   }, [startDate, endDate])
@@ -532,6 +560,22 @@ export default function POSClient({ products }: { products: Product[] }) {
         )
       })()}
 
+      {/* ── Duplicate booking banner ─────────────────────────────────────── */}
+      {duplicateInfo && (
+        <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-[#C4A04A]/10 border border-[#C4A04A]/25 rounded-xl flex-shrink-0">
+          <Copy className="h-4 w-4 text-[#C4A04A] shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white">
+              Duplicating{" "}
+              <span className="font-mono text-[#C4A04A]">{duplicateInfo.bookingNumber}</span>
+            </p>
+            <p className="text-xs text-[#B4B4B4] mt-0.5">
+              {duplicateInfo.customerName} · Same items pre-loaded — pick new dates
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-4 pb-5 border-b border-[#2e2e2e] flex-shrink-0">
 
@@ -568,7 +612,7 @@ export default function POSClient({ products }: { products: Product[] }) {
             <ChevronDown className="h-4 w-4 text-[#B4B4B4]" />
           </button>
           {showDurationPicker && (
-            <div className="absolute top-full mt-1 left-0 z-50 bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl shadow-xl p-3 w-72">
+            <div className="absolute top-full mt-1 left-0 z-50 bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl shadow-xl p-3 w-80">
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {DURATIONS.map((d) => (
                   <button
@@ -582,13 +626,26 @@ export default function POSClient({ products }: { products: Product[] }) {
                   </button>
                 ))}
               </div>
-              <div className="border-t border-[#2e2e2e] pt-3 space-y-2">
-                <label className="text-xs text-[#B4B4B4] tracking-widest uppercase">Start Date</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors"
+              <div className="border-t border-[#2e2e2e] pt-3">
+                <p className="text-[10px] text-[#555] uppercase tracking-widest mb-2">Or pick dates on calendar</p>
+                <CalendarRangePicker
+                  selected={{
+                    from: new Date(startDate + "T12:00:00"),
+                    to: new Date(endDate + "T12:00:00"),
+                  }}
+                  onSelect={(range) => {
+                    if (!range?.from) return
+                    const newStart = format(range.from, "yyyy-MM-dd")
+                    setStartDate(newStart)
+                    if (range.to) {
+                      const days = differenceInDays(range.to, range.from)
+                      if (days > 0) {
+                        setDurationDays(days)
+                        setShowDurationPicker(false)
+                      }
+                    }
+                  }}
+                  disabled={{ before: new Date() }}
                 />
               </div>
             </div>
@@ -640,19 +697,30 @@ export default function POSClient({ products }: { products: Product[] }) {
                       const emoji = CATEGORY_EMOJI[product.category.name] ?? "📦"
                       const inCart = !!cartItem
                       const sizes = availMap[product.id] ?? []
+                      const avail = availTotals[product.id]
+                      const totalAvail = sizes.length > 0
+                        ? sizes.reduce((s, sz) => s + sz.available, 0)
+                        : avail?.available ?? null
+                      const totalUnits = sizes.length > 0
+                        ? sizes.reduce((s, sz) => s + sz.total, 0)
+                        : avail?.total ?? null
+                      const isUnavailable = totalAvail !== null && totalAvail === 0
 
                       return (
                         <div
                           key={product.id}
                           className={`relative rounded-xl border transition-all duration-150 overflow-hidden ${
-                            inCart
-                              ? "border-[#C4A04A]/60 bg-[#C4A04A]/5"
-                              : "border-[#2e2e2e] bg-[#1e1e1e] hover:border-[#444]"
+                            isUnavailable
+                              ? "border-[#222] bg-[#181818] opacity-60"
+                              : inCart
+                                ? "border-[#C4A04A]/60 bg-[#C4A04A]/5"
+                                : "border-[#2e2e2e] bg-[#1e1e1e] hover:border-[#444]"
                           }`}
                         >
                           <button
                             className="w-full text-left p-4"
-                            onClick={() => handleProductClick(product)}
+                            onClick={() => !isUnavailable && handleProductClick(product)}
+                            disabled={isUnavailable}
                           >
                             <div className="text-2xl mb-2">{emoji}</div>
                             <p className="font-medium text-white text-sm leading-tight">{product.name}</p>
@@ -670,10 +738,22 @@ export default function POSClient({ products }: { products: Product[] }) {
                                 {cartItem.size}
                               </span>
                             )}
-                            {!inCart && sizes.length > 0 && (
-                              <p className="text-[10px] text-[#555] mt-1">
-                                {sizes.filter(s => s.available > 0).length} sizes available
-                              </p>
+                            {/* Availability indicator */}
+                            {!inCart && totalAvail !== null && (
+                              isUnavailable ? (
+                                <span className="inline-flex mt-1.5 text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded">
+                                  UNAVAILABLE
+                                </span>
+                              ) : totalAvail <= 2 ? (
+                                <p className="text-[10px] mt-1 text-amber-400 font-medium">
+                                  Only {totalAvail} left
+                                  {totalUnits ? ` / ${totalUnits}` : ""}
+                                </p>
+                              ) : (
+                                <p className="text-[10px] text-[#555] mt-1">
+                                  {totalAvail}{totalUnits ? ` / ${totalUnits}` : ""} available
+                                </p>
+                              )
                             )}
                           </button>
 

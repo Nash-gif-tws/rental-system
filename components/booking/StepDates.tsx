@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { differenceInDays } from "date-fns"
+import { differenceInDays, format } from "date-fns"
 import { ArrowRight, MapPin, CreditCard, RefreshCcw, Tag } from "lucide-react"
 import type { BookingState } from "./BookingWizard"
+import { CalendarRangePicker, type DateRange } from "@/components/ui/CalendarPicker"
 
 type PriceItem = { slug: string; label: string; price: number }
 type PriceGroup = { group: string; items: PriceItem[] }
@@ -56,30 +57,50 @@ export default function StepDates({ state, onUpdate, onNext }: {
         <p className="text-[#B4B4B4] text-sm mt-2">Pick your dates — prices update instantly below.</p>
       </div>
 
-      {/* Date inputs */}
+      {/* Date picker */}
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-5 space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-2">Pickup date</label>
-            <input
-              type="date"
-              min={today}
-              value={state.startDate}
-              onChange={(e) => onUpdate({ startDate: e.target.value, endDate: "" })}
-              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors"
-            />
+        {/* Selected dates summary */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-[#121212] border border-[#2e2e2e] rounded-lg px-4 py-3">
+            <p className="text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1">Pickup</p>
+            <p className={`text-sm font-semibold ${state.startDate ? "text-white" : "text-[#444]"}`}>
+              {state.startDate ? format(new Date(state.startDate + "T12:00:00"), "d MMM yyyy") : "Select date"}
+            </p>
           </div>
-          <div>
-            <label className="block text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-2">Return date</label>
-            <input
-              type="date"
-              min={state.startDate || today}
-              value={state.endDate}
-              onChange={(e) => onUpdate({ endDate: e.target.value })}
-              disabled={!state.startDate}
-              className="w-full px-4 py-3 bg-[#121212] border border-[#2e2e2e] rounded-lg text-sm text-white focus:outline-none focus:border-[#C4A04A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            />
+          <div className="bg-[#121212] border border-[#2e2e2e] rounded-lg px-4 py-3">
+            <p className="text-[10px] font-semibold text-[#B4B4B4] uppercase tracking-[0.2em] mb-1">Return</p>
+            <p className={`text-sm font-semibold ${state.endDate ? "text-white" : "text-[#444]"}`}>
+              {state.endDate ? format(new Date(state.endDate + "T12:00:00"), "d MMM yyyy") : "Select date"}
+            </p>
           </div>
+        </div>
+
+        <p className="text-[11px] text-[#555] text-center">
+          {!state.startDate ? "Tap your pickup date to start" : !state.endDate ? "Now tap your return date" : ""}
+        </p>
+
+        {/* Calendar */}
+        <div className="flex justify-center">
+          <CalendarRangePicker
+            selected={
+              state.startDate
+                ? {
+                    from: new Date(state.startDate + "T12:00:00"),
+                    to: state.endDate ? new Date(state.endDate + "T12:00:00") : undefined,
+                  }
+                : undefined
+            }
+            onSelect={(range: DateRange | undefined) => {
+              if (!range?.from) {
+                onUpdate({ startDate: "", endDate: "" })
+                return
+              }
+              const newStart = format(range.from, "yyyy-MM-dd")
+              const newEnd = range.to ? format(range.to, "yyyy-MM-dd") : ""
+              onUpdate({ startDate: newStart, endDate: newEnd })
+            }}
+            disabled={{ before: new Date(today + "T00:00:00") }}
+          />
         </div>
 
         {rentalDays > 0 && (
