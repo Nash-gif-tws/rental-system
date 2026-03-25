@@ -62,7 +62,7 @@ export default function Sidebar({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <nav aria-label="Main navigation" className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {nav.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/")
           return (
@@ -70,6 +70,7 @@ export default function Sidebar({
               key={href}
               href={href}
               onClick={onClose}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all",
                 active
@@ -77,7 +78,7 @@ export default function Sidebar({
                   : "text-[#B4B4B4] hover:bg-white/5 hover:text-white"
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
               {label}
             </Link>
           )
@@ -94,9 +95,9 @@ export default function Sidebar({
           <button
             onClick={() => signOut({ callbackUrl: "/admin/login" })}
             className="ml-2 p-2 rounded-lg hover:bg-white/10 text-[#B4B4B4] hover:text-white transition-colors"
-            title="Sign out"
+            aria-label="Sign out"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>

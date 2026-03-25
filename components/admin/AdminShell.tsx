@@ -20,6 +20,7 @@ export default function AdminShell({
         <div
           className="fixed inset-0 bg-black/60 z-30 lg:hidden"
           onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
         />
       )}
 
@@ -49,7 +50,7 @@ export default function AdminShell({
           <p className="text-[10px] tracking-[0.2em] text-[#B4B4B4] uppercase">Rental Manager</p>
         </div>
 
-        <main className="flex-1">
+        <main className="flex-1" id="main-content">
           <div className="p-4 sm:p-6 lg:p-8">{children}</div>
         </main>
       </div>

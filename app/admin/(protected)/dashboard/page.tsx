@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma"
 import { formatCurrency } from "@/lib/utils"
-import { CalendarDays, Package, Users, TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react"
+import { CalendarDays, Package, Users, DollarSign, Clock, CheckCircle2, AlertCircle, Plus } from "lucide-react"
 import Link from "next/link"
 import { sydneyTodayStr, sydneyDayBounds, sydneyMonthBounds, formatSydney } from "@/lib/tz"
+
+export const revalidate = 60
 
 export default async function DashboardPage() {
   const todayStr = sydneyTodayStr()
@@ -62,7 +64,7 @@ export default async function DashboardPage() {
     {
       label: "This Month Revenue",
       value: formatCurrency(monthlyRevenue._sum.subtotal ?? 0),
-      icon: TrendingUp,
+      icon: DollarSign,
       accent: true,
     },
     {
@@ -78,30 +80,41 @@ export default async function DashboardPage() {
     },
   ]
 
+  // Text colours chosen for ≥4.5:1 contrast against the badge background on #1e1e1e
   const STATUS_COLORS: Record<string, string> = {
-    PENDING: "bg-yellow-500/20 text-yellow-300",
-    CONFIRMED: "bg-[#C4A04A]/20 text-[#C4A04A]",
-    CHECKED_OUT: "bg-purple-500/20 text-purple-300",
-    RETURNED: "bg-emerald-500/20 text-emerald-300",
-    CANCELLED: "bg-red-500/20 text-red-300",
-    NO_SHOW: "bg-zinc-500/20 text-zinc-400",
+    PENDING: "bg-amber-500/20 text-amber-100",
+    CONFIRMED: "bg-[#C4A04A]/20 text-[#e8cc90]",
+    CHECKED_OUT: "bg-purple-500/20 text-purple-200",
+    RETURNED: "bg-emerald-500/20 text-emerald-200",
+    CANCELLED: "bg-red-500/20 text-red-200",
+    NO_SHOW: "bg-zinc-500/20 text-zinc-300",
   }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Dashboard</h1>
-        <p className="text-[#B4B4B4] text-sm mt-1">
-          {formatSydney(new Date(), "EEEE d MMMM yyyy")}
-        </p>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-wide text-white uppercase">Dashboard</h1>
+          <p className="text-[#B4B4B4] text-sm mt-1">
+            {formatSydney(new Date(), "EEEE d MMMM yyyy")}
+          </p>
+        </div>
+        <Link
+          href="/admin/pos"
+          className="flex items-center gap-2 px-4 py-2 bg-[#C4A04A] hover:bg-[#d4b565] text-[#121212] text-sm font-semibold rounded-lg transition-colors shrink-0"
+          aria-label="Create a new booking"
+        >
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">New Booking</span>
+        </Link>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch">
         {stats.map(({ label, value, icon: Icon, accent, warn }) => (
           <div
             key={label}
-            className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-6"
+            className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl p-5 sm:p-6 flex flex-col justify-between"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -170,7 +183,7 @@ export default async function DashboardPage() {
       <div className="bg-[#1e1e1e] border border-[#2e2e2e] rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#2e2e2e] flex items-center justify-between">
           <h2 className="font-semibold text-white text-sm tracking-wide">Recent Bookings</h2>
-          <Link href="/admin/bookings" className="text-xs text-[#C4A04A] hover:text-[#d4b565] font-medium transition-colors">
+          <Link href="/admin/bookings" className="text-xs text-[#C4A04A] hover:text-[#d4b565] font-medium transition-colors" aria-label="View all bookings">
             View all →
           </Link>
         </div>
@@ -185,8 +198,8 @@ export default async function DashboardPage() {
                 className="flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-white/[0.02] transition-colors gap-3"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    {booking.customer.firstName} {booking.customer.lastName}
+                  <p className="text-sm font-medium text-white truncate capitalize">
+                    {booking.customer.firstName.toLowerCase()} {booking.customer.lastName.toLowerCase()}
                   </p>
                   <p className="text-xs text-[#B4B4B4] mt-0.5">{booking.bookingNumber}</p>
                 </div>
